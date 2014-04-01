@@ -5,7 +5,13 @@ integration between PubNub and AngularJS. PubNub makes it
 easy to integrate real-time bidirectional communication
 into your app.
 
-# Getting the PubNub Angular SDK into Your App
+# The Easiest Way Possible
+
+Using [Bower](http://bower.io):
+
+```bower install pubnub-angular```
+
+# Integrating PubNub Angular SDK into Your App
 
 Your HTML page will include 3 key libraries:
 
