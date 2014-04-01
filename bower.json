@@ -1,0 +1,26 @@
+{
+  "name": "pubnub-angular",
+  "version": "1.1.0",
+  "authors": [
+    "Sunny Gleason <sunny.gleason@gmail.com>"
+  ],
+  "description": "Official PubNub AngularJS + Bower Package",
+  "main": "lib/pubnub-angular.js",
+  "keywords": [
+    "PubNub",
+    "Angular",
+    "AngularJS",
+    "Real",
+    "Time",
+    "WebSocket"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/pubnub/pubnub-angular",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
