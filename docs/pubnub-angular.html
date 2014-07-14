@@ -119,7 +119,7 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
-              <p>Initialize the instance with PubNub Angular API with specified values.</p>
+              <p><a href="http://www.pubnub.com/docs/javascript/api/reference.html#init">Initialize</a> the instance with PubNub Angular API with specified values.</p>
 
             </div>
             
@@ -310,7 +310,7 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-15">&#182;</a>
               </div>
-              <p>Subscribing to channels is accomplished by calling the PubNub <code>ngSubscribe</code> method. After the channel is subscribed, the app can reigster root scope message events by calling <code>$rootScope.$on</code> with the event string returned by <code>PubNub.ngMsgEv(channel)</code>.</p>
+              <p>Subscribing to channels is accomplished by calling the PubNub <a href="http://www.pubnub.com/docs/javascript/api/reference.html#subscribe"><code>ngSubscribe</code></a> method. After the channel is subscribed, the app can reigster root scope message events by calling <code>$rootScope.$on</code> with the event string returned by <code>PubNub.ngMsgEv(channel)</code>.</p>
 
             </div>
             
@@ -329,7 +329,7 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-16">&#182;</a>
               </div>
-              <p>Unsubscribing is as easy as calling the <code>PubNub.ngUnsubscribe()</code> method. The library even takes care of removing the Angular event handlers for you to prevent unsightly memory leaks!</p>
+              <p>Unsubscribing is as easy as calling the <a href="http://www.pubnub.com/docs/javascript/api/reference.html#unsubscribe"><code>PubNub.ngUnsubscribe()</code></a> method. The library even takes care of removing the Angular event handlers for you to prevent unsightly memory leaks!</p>
 
             </div>
             
@@ -350,7 +350,7 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-17">&#182;</a>
               </div>
-              <p>Publishing to channels is trivial - just use the <code>PubNub.ngPublish()</code> method.</p>
+              <p>Publishing to channels is trivial - just use the <a href="http://www.pubnub.com/docs/javascript/api/reference.html#publish"><code>PubNub.ngPublish()</code></a> method.</p>
 
             </div>
             
@@ -365,7 +365,7 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-18">&#182;</a>
               </div>
-              <p>It can be super-handy to gather the previous several hundred messages from the PubNub channel history. The PubNub Angular API makes this easy by bridging the event model of the PubNub JS history API and the AngularJS event broadcast model so that historical messages come through the same event interface.</p>
+              <p>It can be super-handy to gather the previous several hundred messages from the PubNub channel <a href="http://www.pubnub.com/docs/javascript/api/reference.html#history">history</a>. The PubNub Angular API makes this easy by bridging the event model of the PubNub JS history API and the AngularJS event broadcast model so that historical messages come through the same event interface.</p>
 
             </div>
             
@@ -382,7 +382,7 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-19">&#182;</a>
               </div>
-              <p>It’s also easy to integrate presence events using the Angular API. In the example above, we just add an additional couple lines of code to call the <code>PubNub.ngHereNow()</code> method (retrieve current users).</p>
+              <p>It’s also easy to integrate presence events using the Angular API. In the example above, we just add an additional couple lines of code to call the <a href="http://www.pubnub.com/docs/javascript/api/reference.html#here_now"><code>PubNub.ngHereNow()</code></a> method (retrieve current users).</p>
 
             </div>
             
@@ -403,7 +403,7 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-20">&#182;</a>
               </div>
-              <p>Register for presence events by calling <code>$rootScope.$on</code> with the event string returned by <code>PubNub.ngPrsEv(channel)</code>.</p>
+              <p>Register for presence events by calling <code>$rootScope.$on</code> with the event string returned by <code>PubNub.ngPrsEv(channel)</code>. <a href="http://www.pubnub.com/docs/javascript/api/reference.html#where_now">Further info on ngWhereNow</a>.</p>
 
             </div>
             
@@ -463,7 +463,7 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-24">&#182;</a>
               </div>
-              <p>The method <code>ngAuth</code> updates the auth_key associated with the PubNub session</p>
+              <p>The method <a href="http://www.pubnub.com/docs/javascript/api/reference.html#auth"><code>ngAuth</code></a> updates the auth_key associated with the PubNub session</p>
 
             </div>
             
@@ -478,7 +478,7 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-25">&#182;</a>
               </div>
-              <p>Often times, it’s desirable to lock down applications and channels. With PAM (PubNub Access Manager), it’s easy. There are 2 calls: <code>ngGrant</code> which grants access for users having a specified auth key, and <code>ngAudit</code> which returns the current policy configuration. Note: to perform access control operations, the PubNub client must be initialized with the secret key (which should always be protected by server-only access).</p>
+              <p>Often times, it’s desirable to lock down applications and channels. With PAM (PubNub Access Manager), it’s easy. There are 2 calls: <a href="http://www.pubnub.com/docs/javascript/api/reference.html#grant"><code>ngGrant</code></a> which grants access for users having a specified auth key, and <a href="http://www.pubnub.com/docs/javascript/api/reference.html#audit"><code>ngAudit</code></a> which returns the current policy configuration. Note: to perform access control operations, the PubNub client must be initialized with the secret key (which should always be protected by server-only access).</p>
 
             </div>
             

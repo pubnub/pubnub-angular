@@ -27,7 +27,7 @@ angular.module('pubnub.angular.service', [])
 
     c.initialized = -> !!c['_instance']
 
-    # Initialize the instance with PubNub Angular API with specified values.
+    # [Initialize](http://www.pubnub.com/docs/javascript/api/reference.html#init) the instance with PubNub Angular API with specified values.
     c.init = ->
       c['_instance'] = PUBNUB.init.apply PUBNUB, arguments
       c['_channels'] = []
@@ -109,14 +109,14 @@ angular.module('pubnub.angular.service', [])
     # It's also possible to retrieve the extended Presence state data for a channel using the `PubNub.ngPresenceData(channel)` function.
     c.ngPresenceData = (channel) -> c['_presData'][channel] || {}
 
-    # Subscribing to channels is accomplished by calling the PubNub `ngSubscribe` method. After the channel is subscribed, the app can reigster root scope message events by calling `$rootScope.$on` with the event string returned by `PubNub.ngMsgEv(channel)`.
+    # Subscribing to channels is accomplished by calling the PubNub [`ngSubscribe`](http://www.pubnub.com/docs/javascript/api/reference.html#subscribe) method. After the channel is subscribed, the app can reigster root scope message events by calling `$rootScope.$on` with the event string returned by `PubNub.ngMsgEv(channel)`.
     c.ngSubscribe = (args) ->
       c['_channels'].push args.channel if c['_channels'].indexOf(args.channel) < 0
       c['_presence'][args.channel] ||= []
       args = c._ngInstallHandlers args
       c.jsapi.subscribe(args)
 
-    # Unsubscribing is as easy as calling the `PubNub.ngUnsubscribe()` method. The library even takes care of removing the Angular event handlers for you to prevent unsightly memory leaks!
+    # Unsubscribing is as easy as calling the [`PubNub.ngUnsubscribe()`](http://www.pubnub.com/docs/javascript/api/reference.html#unsubscribe) method. The library even takes care of removing the Angular event handlers for you to prevent unsightly memory leaks!
     c.ngUnsubscribe = (args) ->
       cpos = c['_channels'].indexOf(args.channel)
       c['_channels'].splice cpos, 1 if cpos != -1
@@ -125,15 +125,15 @@ angular.module('pubnub.angular.service', [])
       delete $rootScope.$$listeners[c.ngPrsEv(args.channel)]
       c.jsapi.unsubscribe(args)
 
-    # Publishing to channels is trivial - just use the `PubNub.ngPublish()` method.
+    # Publishing to channels is trivial - just use the [`PubNub.ngPublish()`](http://www.pubnub.com/docs/javascript/api/reference.html#publish) method.
     c.ngPublish = -> c['_instance']['publish'].apply c['_instance'], arguments
 
-    # It can be super-handy to gather the previous several hundred messages from the PubNub channel history. The PubNub Angular API makes this easy by bridging the event model of the PubNub JS history API and the AngularJS event broadcast model so that historical messages come through the same event interface.
+    # It can be super-handy to gather the previous several hundred messages from the PubNub channel [history](http://www.pubnub.com/docs/javascript/api/reference.html#history). The PubNub Angular API makes this easy by bridging the event model of the PubNub JS history API and the AngularJS event broadcast model so that historical messages come through the same event interface.
     c.ngHistory = (args) ->
       args.callback = c._ngFireMessages args.channel
       c.jsapi.history args
 
-    # It's also easy to integrate presence events using the Angular API. In the example above, we just add an additional couple lines of code to call the `PubNub.ngHereNow()` method (retrieve current users).
+    # It's also easy to integrate presence events using the Angular API. In the example above, we just add an additional couple lines of code to call the [`PubNub.ngHereNow()`](http://www.pubnub.com/docs/javascript/api/reference.html#here_now) method (retrieve current users).
     c.ngHereNow = (args) ->
       args = c._ngInstallHandlers(args)
       args.state = true
@@ -142,7 +142,7 @@ angular.module('pubnub.angular.service', [])
       delete args.message
       c.jsapi.here_now(args)
 
-    # Register for presence events by calling `$rootScope.$on` with the event string returned by `PubNub.ngPrsEv(channel)`.
+    # Register for presence events by calling `$rootScope.$on` with the event string returned by `PubNub.ngPrsEv(channel)`. [Further info on ngWhereNow](http://www.pubnub.com/docs/javascript/api/reference.html#where_now).
     c.ngWhereNow = (args) -> c.jsapi.where_now(args)
 
     # The method `ngState` retrieves extended user state for a channel.
@@ -154,10 +154,10 @@ angular.module('pubnub.angular.service', [])
     # The method `ngPrsEv` returns the root scope broadcast event name for presence events for a given channel.
     c.ngPrsEv = (channel) -> "pn-presence:#{channel}"
 
-    # The method `ngAuth` updates the auth_key associated with the PubNub session
+    # The method [`ngAuth`](http://www.pubnub.com/docs/javascript/api/reference.html#auth) updates the auth_key associated with the PubNub session
     c.ngAuth   = -> c['_instance']['auth'].apply c['_instance'], arguments
 
-    # Often times, it's desirable to lock down applications and channels. With PAM (PubNub Access Manager), it's easy. There are 2 calls: `ngGrant` which grants access for users having a specified auth key, and `ngAudit` which returns the current policy configuration. Note: to perform access control operations, the PubNub client must be initialized with the secret key (which should always be protected by server-only access).
+    # Often times, it's desirable to lock down applications and channels. With PAM (PubNub Access Manager), it's easy. There are 2 calls: [`ngGrant`](http://www.pubnub.com/docs/javascript/api/reference.html#grant) which grants access for users having a specified auth key, and [`ngAudit`](http://www.pubnub.com/docs/javascript/api/reference.html#audit) which returns the current policy configuration. Note: to perform access control operations, the PubNub client must be initialized with the secret key (which should always be protected by server-only access).
     c.ngAudit  = -> c['_instance']['audit'].apply c['_instance'], arguments
     c.ngGrant  = -> c['_instance']['grant'].apply c['_instance'], arguments
 
