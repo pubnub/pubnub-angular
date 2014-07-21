@@ -1,33 +1,33 @@
 # Strict mode catches some errors, prevents unsafe actions from being taken, and throws errors.
 'use strict'
 
-# Set up an Angular [module](https://docs.angularjs.org/guide/module). Notice the [dependency](https://docs.angularjs.org/guide/di) on the PubNub Angular library.
+# Set up an Angular [module](https://docs.angularjs.org/guide/module). Notice the identifier `pubnub.angular.service` for when declare a [dependency](https://docs.angularjs.org/guide/di) on the PubNub Angular library.
 angular.module('pubnub.angular.service', [])
-  # Set up a factory. See more on [$rootScope](https://docs.angularjs.org/api/ng/service/$rootScope).
+  # Set up a factory for injecting a `PubNub` service into your Angular Controller or Service. Depends on the Angular [$rootScope](https://docs.angularjs.org/api/ng/service/$rootScope) so that the PubNub object is persistent across controller instantiations.
   .factory 'PubNub', ['$rootScope', ($rootScope) ->
-    # Initialize an instance object. Set the default version, instance, channels, presense, and jsapi.
+    # Initialize an object for the PubNub service's data. Set the current version, instance, channels, presence, and jsapi for advanced access.
     c = {
-      # The current working version of the PubNub Angular library
+      # Our current version of this PubNub Angular library
       'VERSION'   : '1.1.0'
-      # A reference to the PubNub vanilla JavaScript API object
+      # A reference to the PubNub vanilla JavaScript API object (aka PUBNUB from https://github.com/pubnub/javascript/blob/master/web/pubnub.js)
       '_instance' : null
       # The list of channels that we currently know about
       '_channels' : []
-      # The map of channel name to channel members that we currently know about
+      # A map of channel name to channel members that we currently know about
       '_presence' : {}
-      # A map references to the vanilla JavaScript API functions for advanced client usage
+      # A map of references to vanilla JavaScript API functions for advanced client usage
       'jsapi'       : {}
     }
 
-    # Helper methods. Include the "map" and "each" functions into the PubNub Angular API.
-    # We need to create and invoke a closure so that we can get both "c" and the method name "k" into the function.
+    # Include the "map" and "each" functions into the PubNub Angular API as helper functions.
+    # We create and invoke a closure to capture both the angular context method name into the helper function.
     for k in ['map', 'each']
       if PUBNUB?[k] instanceof Function
         ((kk) -> c[kk] = ->
           c['_instance']?[kk].apply c['_instance'], arguments)(k)
 
     # Add bindings to the original vanilla JavaScript PubNub API methods under the "jsapi" key.
-    # We need to create and invoke a closure so that we can get both "c" and the method name "k" into the function.
+    # We create and invoke a closure to capture both the angular context method name into the helper function.
     for k of PUBNUB
       if PUBNUB?[k] instanceof Function
         ((kk) -> c['jsapi'][kk] = ->
@@ -36,7 +36,7 @@ angular.module('pubnub.angular.service', [])
     # Add a field so that clients can tell the library has been initialized.
     c.initialized = -> !!c['_instance']
 
-    # [Initialize](http://www.pubnub.com/docs/javascript/api/reference.html#init) the PubNub Client API. You must do this before trying to use the API as it establishes account credentials.
+    # [Initialize](http://www.pubnub.com/docs/javascript/api/reference.html#init) the PubNub Client API. You must do this before trying to use the API to establish account credentials. Overwrites the current state, so this method should only be called once when instantiating an Angular application.
     c.init = ->
       c['_instance'] = PUBNUB.init.apply PUBNUB, arguments
       c['_channels'] = []
@@ -44,14 +44,15 @@ angular.module('pubnub.angular.service', [])
       c['_presData'] = {}
       c['_instance']
 
-    # Destroy the PubNub Angular library state. This is currently partial and best-effort because the vanilla PubNub library does not have a destroy method.
+    # Destroy the PubNub Angular library state. This is currently partial / best-effort because the vanilla PubNub library does not have a destroy method yet.
     c.destroy = ->
       c['_instance'] = null
       c['_channels'] = null
       c['_presence'] = null
       c['_presData'] = null
+      # TODO - destroy PUBNUB instance & reset memory using PUBNUB's destroy method when it's available.
 
-    # Internal method that creates a message handler for a specified channel name.
+    # Internal method that creates a message handler for a specified channel name. Uses a closure so that we capture the channel name within the message handler callback.
     c._ngFireMessages = (realChannel) ->
       (messages, t1, t2) ->
         c.each messages[0], (message) ->
@@ -60,7 +61,7 @@ angular.module('pubnub.angular.service', [])
             channel: realChannel
           }
 
-    # Internal method that creates wrappers for the message and presence event handlers. This is necessary because we want the Angular library to keep track of channels and presence events.
+    # Internal method that creates wrappers for the message and presence event handlers. Wrappers are necessary because we want the Angular library to keep track of channels and presence events on the application's behalf.
     c._ngInstallHandlers = (args) ->
       oldmessage = args.message
       # Create a message handler wrapper that broadcasts the message event and calls the original user-provided message handler.
@@ -77,6 +78,7 @@ angular.module('pubnub.angular.service', [])
       args.presence = ->
         event = arguments[0]
         channel = args.channel
+        # We must handle two sources of presence data: `here_now` and `presence` events. The `here_now` events include a `uuids` field. Normal `presence` events have a `uuid` field and an `action` field (join or leave).
         if event.uuids
           c.each event.uuids, (uuid) ->
             state = if uuid.state then uuid.state else null
@@ -110,14 +112,14 @@ angular.module('pubnub.angular.service', [])
     c.ngListChannels  = ->
       c['_channels'].slice 0
 
-    # The PubNub Angular API takes care of keeping track of channel presence information. Call the `PubNub.ngListPresence(channel)` method to return a list of presently subscribed users in the specified channel.
+    # The PubNub Angular API takes care of keeping track of channel presence information. Call the `PubNub.ngListPresence(channel)` method to return a list of presently subscribed user uuids in the specified channel.
     c.ngListPresence = (channel) ->
       c['_presence'][channel]?.slice 0
 
-    # It's also possible to retrieve the extended Presence state data for a channel using the `PubNub.ngPresenceData(channel)` function.
+    # It's also possible to retrieve the extended Presence state data for users in a channel using the `PubNub.ngPresenceData(channel)` function. Returns a map of UUID to state data.
     c.ngPresenceData = (channel) -> c['_presData'][channel] || {}
 
-    # Subscribing to channels is accomplished by calling the PubNub [`ngSubscribe`](http://www.pubnub.com/docs/javascript/api/reference.html#subscribe) method. After the channel is subscribed, the app can reigster root scope message events by calling `$rootScope.$on` with the event string returned by `PubNub.ngMsgEv(channel)`.
+    # Subscribing to channels is accomplished by calling the PubNub [`ngSubscribe`](http://www.pubnub.com/docs/javascript/api/reference.html#subscribe) method. After the channel is subscribed, the app can register root scope message events by calling `$rootScope.$on` with the event string returned by `PubNub.ngMsgEv(channel)`.
     c.ngSubscribe = (args) ->
       c['_channels'].push args.channel if c['_channels'].indexOf(args.channel) < 0
       c['_presence'][args.channel] ||= []
@@ -141,7 +143,7 @@ angular.module('pubnub.angular.service', [])
       args.callback = c._ngFireMessages args.channel
       c.jsapi.history args
 
-    # It's also easy to integrate presence events using the Angular API. In the example above, we just add an additional couple lines of code to call the [`PubNub.ngHereNow()`](http://www.pubnub.com/docs/javascript/api/reference.html#here_now) method (retrieve current users).
+    # It's also easy to integrate presence events using the Angular API. In the example above, we just add an additional couple lines of code to call the [`PubNub.ngHereNow()`](http://www.pubnub.com/docs/javascript/api/reference.html#here_now) method (retrieve current users in a channel).
     c.ngHereNow = (args) ->
       args = c._ngInstallHandlers(args)
       args.state = true
@@ -156,18 +158,19 @@ angular.module('pubnub.angular.service', [])
     # You can obtain information about the current metadata associated with a uuid by calling the `ngState()` function in your application. [More info on ngState](http://www.pubnub.com/docs/javascript/api/reference.html#state).
     c.ngState    = (args) -> c.jsapi.state(args)
 
-    # The method `ngMsgEv` returns the root scope broadcast event name for message events for a given channel.
+    # Each channel has a unique "message event name" for message events. The method `ngMsgEv(channel)` returns that broadcast event name for message events for a given channel as they are broadcast via `$rootScope`.
     c.ngMsgEv = (channel) -> "pn-message:#{channel}"
 
-    # The method `ngPrsEv` returns the root scope broadcast event name for presence events for a given channel.
+    # Each channel has a unique "presence event name" for presence events. The method `ngPrsEv(channel)` returns that broadcast event name for presence events for a given channel as they are broadcast via `$rootScope`.
     c.ngPrsEv = (channel) -> "pn-presence:#{channel}"
 
-    # The method [`ngAuth`](http://www.pubnub.com/docs/javascript/api/reference.html#auth) updates the auth_key associated with the PubNub session
+    # The method [`ngAuth`](http://www.pubnub.com/docs/javascript/api/reference.html#auth) updates the auth_key associated with the PubNub session.
     c.ngAuth   = -> c['_instance']['auth'].apply c['_instance'], arguments
 
     # Often times, it's desirable to lock down applications and channels. With PAM (PubNub Access Manager), it's easy. There are 2 calls: [`ngGrant`](http://www.pubnub.com/docs/javascript/api/reference.html#grant) which grants access for users having a specified auth key, and [`ngAudit`](http://www.pubnub.com/docs/javascript/api/reference.html#audit) which returns the current policy configuration. Note: to perform access control operations, the PubNub client must be initialized with the secret key (which should always be protected by server-only access).
     c.ngAudit  = -> c['_instance']['audit'].apply c['_instance'], arguments
     c.ngGrant  = -> c['_instance']['grant'].apply c['_instance'], arguments
 
+    # ... And we're done! We return this object as the PubNub AngularJS service instance.
     c
   ]
