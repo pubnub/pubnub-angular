@@ -1,33 +1,42 @@
 # Strict mode catches some errors, prevents unsafe actions from being taken, and throws errors.
 'use strict'
 
-# Set up an Angular module. Notice the dependency on the PubNub Angular library.
+# Set up an Angular [module](https://docs.angularjs.org/guide/module). Notice the [dependency](https://docs.angularjs.org/guide/di) on the PubNub Angular library.
 angular.module('pubnub.angular.service', [])
+  # Set up a factory. See more on [$rootScope](https://docs.angularjs.org/api/ng/service/$rootScope).
   .factory 'PubNub', ['$rootScope', ($rootScope) ->
-    # Initialize an instance object.
+    # Initialize an instance object. Set the default version, instance, channels, presense, and jsapi.
     c = {
+      # The current working version of the PubNub Angular library
       'VERSION'   : '1.1.0'
+      # A reference to the PubNub vanilla JavaScript API object
       '_instance' : null
+      # The list of channels that we currently know about
       '_channels' : []
+      # The map of channel name to channel members that we currently know about
       '_presence' : {}
+      # A map references to the vanilla JavaScript API functions for advanced client usage
       'jsapi'       : {}
     }
 
-    # Helper methods.
+    # Helper methods. Include the "map" and "each" functions into the PubNub Angular API.
+    # We need to create and invoke a closure so that we can get both "c" and the method name "k" into the function.
     for k in ['map', 'each']
       if PUBNUB?[k] instanceof Function
         ((kk) -> c[kk] = ->
           c['_instance']?[kk].apply c['_instance'], arguments)(k)
 
-    # Core (original) PubNub API methods.
+    # Add bindings to the original vanilla JavaScript PubNub API methods under the "jsapi" key.
+    # We need to create and invoke a closure so that we can get both "c" and the method name "k" into the function.
     for k of PUBNUB
       if PUBNUB?[k] instanceof Function
         ((kk) -> c['jsapi'][kk] = ->
           c['_instance']?[kk].apply c['_instance'], arguments)(k)
 
+    # Add a field so that clients can tell the library has been initialized.
     c.initialized = -> !!c['_instance']
 
-    # [Initialize](http://www.pubnub.com/docs/javascript/api/reference.html#init) the instance with PubNub Angular API with specified values.
+    # [Initialize](http://www.pubnub.com/docs/javascript/api/reference.html#init) the PubNub Client API. You must do this before trying to use the API as it establishes account credentials.
     c.init = ->
       c['_instance'] = PUBNUB.init.apply PUBNUB, arguments
       c['_channels'] = []
@@ -35,15 +44,14 @@ angular.module('pubnub.angular.service', [])
       c['_presData'] = {}
       c['_instance']
 
-    # Destroy an instance's specified values.
+    # Destroy the PubNub Angular library state. This is currently partial and best-effort because the vanilla PubNub library does not have a destroy method.
     c.destroy = ->
       c['_instance'] = null
       c['_channels'] = null
       c['_presence'] = null
       c['_presData'] = null
-      \* TODO - destroy PUBNUB instance & reset memory. *\
 
-    # Specify how to broadcast messages.
+    # Internal method that creates a message handler for a specified channel name.
     c._ngFireMessages = (realChannel) ->
       (messages, t1, t2) ->
         c.each messages[0], (message) ->
@@ -52,10 +60,10 @@ angular.module('pubnub.angular.service', [])
             channel: realChannel
           }
 
-    # Specify the details of message and presence arguments.
+    # Internal method that creates wrappers for the message and presence event handlers. This is necessary because we want the Angular library to keep track of channels and presence events.
     c._ngInstallHandlers = (args) ->
       oldmessage = args.message
-      # Message arguments.
+      # Create a message handler wrapper that broadcasts the message event and calls the original user-provided message handler.
       args.message = ->
         $rootScope.$broadcast c.ngMsgEv(args.channel), {
           message: arguments[0],
@@ -64,7 +72,7 @@ angular.module('pubnub.angular.service', [])
         }
         oldmessage(arguments) if oldmessage
 
-      # Presence arguments.
+      # Create a presence handler wrapper that broadcasts the presence event and calls the original user-provided presence handler.
       oldpresence = args.presence
       args.presence = ->
         event = arguments[0]
@@ -102,7 +110,7 @@ angular.module('pubnub.angular.service', [])
     c.ngListChannels  = ->
       c['_channels'].slice 0
 
-    # Using the presence event as a trigger, we retrieve the Presence list for a channel using the `PubNub.ngListPresence(channel)` function.
+    # The PubNub Angular API takes care of keeping track of channel presence information. Call the `PubNub.ngListPresence(channel)` method to return a list of presently subscribed users in the specified channel.
     c.ngListPresence = (channel) ->
       c['_presence'][channel]?.slice 0
 
@@ -142,10 +150,10 @@ angular.module('pubnub.angular.service', [])
       delete args.message
       c.jsapi.here_now(args)
 
-    # Register for presence events by calling `$rootScope.$on` with the event string returned by `PubNub.ngPrsEv(channel)`. [Further info on ngWhereNow](http://www.pubnub.com/docs/javascript/api/reference.html#where_now).
+    # You can obtain information about the current list of a channels to which a uuid is subscribed to by calling the `ngWhereNow()` function in your application. [More info on ngWhereNow](http://www.pubnub.com/docs/javascript/api/reference.html#where_now).
     c.ngWhereNow = (args) -> c.jsapi.where_now(args)
 
-    # The method `ngState` retrieves extended user state for a channel.
+    # You can obtain information about the current metadata associated with a uuid by calling the `ngState()` function in your application. [More info on ngState](http://www.pubnub.com/docs/javascript/api/reference.html#state).
     c.ngState    = (args) -> c.jsapi.state(args)
 
     # The method `ngMsgEv` returns the root scope broadcast event name for message events for a given channel.
