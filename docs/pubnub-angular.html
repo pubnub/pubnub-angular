@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>pubnub-angular.coffee</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>pubnub-angular.coffee</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <p>Strict mode catches some errors, prevents unsafe actions from being taken, and throws errors.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-string">'use strict'</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Set up an Angular <a href="https://docs.angularjs.org/guide/module">module</a>. Notice the <a href="https://docs.angularjs.org/guide/di">dependency</a> on the PubNub Angular library.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>angular.<span class="hljs-built_in">module</span>(<span class="hljs-string">'pubnub.angular.service'</span>, [])</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Set up a factory. See more on <a href="https://docs.angularjs.org/api/ng/service/$rootScope">$rootScope</a>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  .factory <span class="hljs-string">'PubNub'</span>, [<span class="hljs-string">'$rootScope'</span>, <span class="hljs-function"><span class="hljs-params">($rootScope)</span> -&gt;</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Initialize an instance object. Set the default version, instance, channels, presense, and jsapi.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    c = {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>The current working version of the PubNub Angular library</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-string">'VERSION'</span>   : <span class="hljs-string">'1.1.0'</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>A reference to the PubNub vanilla JavaScript API object</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-string">'_instance'</span> : <span class="hljs-literal">null</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>The list of channels that we currently know about</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-string">'_channels'</span> : []</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>The map of channel name to channel members that we currently know about</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-string">'_presence'</span> : {}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>A map references to the vanilla JavaScript API functions for advanced client usage</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-string">'jsapi'</span>       : {}
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Helper methods. Include the “map” and “each” functions into the PubNub Angular API.
+We need to create and invoke a closure so that we can get both “c” and the method name “k” into the function.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> [<span class="hljs-string">'map'</span>, <span class="hljs-string">'each'</span>]
+      <span class="hljs-keyword">if</span> PUBNUB?[k] <span class="hljs-keyword">instanceof</span> Function
+        <span class="hljs-function"><span class="hljs-params">((kk) -&gt; c[kk] = -&gt;
+          c[<span class="hljs-string">'_instance'</span>]?[kk].apply c[<span class="hljs-string">'_instance'</span>], arguments)(k)</span>
+
+</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>Add bindings to the original vanilla JavaScript PubNub API methods under the “jsapi” key.
+We need to create and invoke a closure so that we can get both “c” and the method name “k” into the function.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">for</span> k <span class="hljs-keyword">of</span> PUBNUB
+      <span class="hljs-keyword">if</span> PUBNUB?[k] <span class="hljs-keyword">instanceof</span> Function
+        <span class="hljs-function"><span class="hljs-params">((kk) -&gt; c[<span class="hljs-string">'jsapi'</span>][kk] = -&gt;
+          c[<span class="hljs-string">'_instance'</span>]?[kk].apply c[<span class="hljs-string">'_instance'</span>], arguments)(k)</span>
+
+</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>Add a field so that clients can tell the library has been initialized.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    c.<span class="hljs-function"><span class="hljs-title">initialized</span> = -&gt;</span> !!c[<span class="hljs-string">'_instance'</span>]</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p><a href="http://www.pubnub.com/docs/javascript/api/reference.html#init">Initialize</a> the PubNub Client API. You must do this before trying to use the API as it establishes account credentials.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    c.<span class="hljs-function"><span class="hljs-title">init</span> = -&gt;</span>
+      c[<span class="hljs-string">'_instance'</span>] = PUBNUB.init.apply PUBNUB, arguments
+      c[<span class="hljs-string">'_channels'</span>] = []
+      c[<span class="hljs-string">'_presence'</span>] = {}
+      c[<span class="hljs-string">'_presData'</span>] = {}
+      c[<span class="hljs-string">'_instance'</span>]</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>Destroy the PubNub Angular library state. This is currently partial and best-effort because the vanilla PubNub library does not have a destroy method.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    c.<span class="hljs-function"><span class="hljs-title">destroy</span> = -&gt;</span>
+      c[<span class="hljs-string">'_instance'</span>] = <span class="hljs-literal">null</span>
+      c[<span class="hljs-string">'_channels'</span>] = <span class="hljs-literal">null</span>
+      c[<span class="hljs-string">'_presence'</span>] = <span class="hljs-literal">null</span>
+      c[<span class="hljs-string">'_presData'</span>] = <span class="hljs-literal">null</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>Internal method that creates a message handler for a specified channel name.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    c.<span class="hljs-function"><span class="hljs-title">_ngFireMessages</span> = <span class="hljs-params">(realChannel)</span> -&gt;</span>
+      <span class="hljs-function"><span class="hljs-params">(messages, t1, t2)</span> -&gt;</span>
+        c.each messages[<span class="hljs-number">0</span>], <span class="hljs-function"><span class="hljs-params">(message)</span> -&gt;</span>
+          $rootScope.$broadcast <span class="hljs-string">"pn-message:<span class="hljs-subst">#{realChannel}</span>"</span>, {
+            <span class="hljs-attribute">message</span>: message
+            <span class="hljs-attribute">channel</span>: realChannel
+          }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>Internal method that creates wrappers for the message and presence event handlers. This is necessary because we want the Angular library to keep track of channels and presence events.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    c.<span class="hljs-function"><span class="hljs-title">_ngInstallHandlers</span> = <span class="hljs-params">(args)</span> -&gt;</span>
+      oldmessage = args.message</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>Create a message handler wrapper that broadcasts the message event and calls the original user-provided message handler.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      args.<span class="hljs-function"><span class="hljs-title">message</span> = -&gt;</span>
+        $rootScope.$broadcast c.ngMsgEv(args.channel), {
+          <span class="hljs-attribute">message</span>: arguments[<span class="hljs-number">0</span>],
+          <span class="hljs-attribute">env</span>: arguments[<span class="hljs-number">1</span>],
+          <span class="hljs-attribute">channel</span>: args.channel
+        }
+        oldmessage(arguments) <span class="hljs-keyword">if</span> oldmessage</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p>Create a presence handler wrapper that broadcasts the presence event and calls the original user-provided presence handler.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      oldpresence = args.presence
+      args.<span class="hljs-function"><span class="hljs-title">presence</span> = -&gt;</span>
+        event = arguments[<span class="hljs-number">0</span>]
+        channel = args.channel
+        <span class="hljs-keyword">if</span> event.uuids
+          c.each event.uuids, <span class="hljs-function"><span class="hljs-params">(uuid)</span> -&gt;</span>
+            state = <span class="hljs-keyword">if</span> uuid.state <span class="hljs-keyword">then</span> uuid.state <span class="hljs-keyword">else</span> <span class="hljs-literal">null</span>
+            uuid  = <span class="hljs-keyword">if</span> uuid.uuid  <span class="hljs-keyword">then</span> uuid.uuid <span class="hljs-keyword">else</span> uuid
+            c[<span class="hljs-string">'_presence'</span>][channel] ||= []
+            c[<span class="hljs-string">'_presence'</span>][channel].push uuid <span class="hljs-keyword">if</span> c[<span class="hljs-string">'_presence'</span>][channel].indexOf(uuid) &lt; <span class="hljs-number">0</span>
+            c[<span class="hljs-string">'_presData'</span>][channel] ||= {}
+            c[<span class="hljs-string">'_presData'</span>][channel][uuid] = state <span class="hljs-keyword">if</span> state
+        <span class="hljs-keyword">else</span>
+          <span class="hljs-keyword">if</span> event.uuid &amp;&amp; event.action
+            c[<span class="hljs-string">'_presence'</span>][channel] ||= []
+            c[<span class="hljs-string">'_presData'</span>][channel] ||= {}
+            <span class="hljs-keyword">if</span> event.action == <span class="hljs-string">'leave'</span>
+              cpos = c[<span class="hljs-string">'_presence'</span>][channel].indexOf event.uuid
+              c[<span class="hljs-string">'_presence'</span>][channel].splice cpos, <span class="hljs-number">1</span> <span class="hljs-keyword">if</span> cpos != -<span class="hljs-number">1</span>
+              <span class="hljs-keyword">delete</span> c[<span class="hljs-string">'_presData'</span>][channel][event.uuid]
+            <span class="hljs-keyword">else</span>
+              c[<span class="hljs-string">'_presence'</span>][channel].push event.uuid <span class="hljs-keyword">if</span> c[<span class="hljs-string">'_presence'</span>][channel].indexOf(event.uuid) &lt; <span class="hljs-number">0</span>
+              c[<span class="hljs-string">'_presData'</span>][channel][event.uuid] = event.data <span class="hljs-keyword">if</span> event.data
+
+        $rootScope.$broadcast c.ngPrsEv(args.channel), {
+          <span class="hljs-attribute">event</span>: event,
+          <span class="hljs-attribute">message</span>: arguments[<span class="hljs-number">1</span>],
+          <span class="hljs-attribute">channel</span>: channel
+        }
+        oldpresence(arguments) <span class="hljs-keyword">if</span> oldpresence
+
+      args</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <p>The PubNub Angular API takes care of keeping track of currently subscribed channels. Call the <code>PubNub.ngListChannels()</code> method to return a list of presently subscribed channels.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    c.<span class="hljs-function"><span class="hljs-title">ngListChannels</span>  = -&gt;</span>
+      c[<span class="hljs-string">'_channels'</span>].slice <span class="hljs-number">0</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <p>The PubNub Angular API takes care of keeping track of channel presence information. Call the <code>PubNub.ngListPresence(channel)</code> method to return a list of presently subscribed users in the specified channel.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    c.<span class="hljs-function"><span class="hljs-title">ngListPresence</span> = <span class="hljs-params">(channel)</span> -&gt;</span>
+      c[<span class="hljs-string">'_presence'</span>][channel]?.slice <span class="hljs-number">0</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <p>It’s also possible to retrieve the extended Presence state data for a channel using the <code>PubNub.ngPresenceData(channel)</code> function.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    c.<span class="hljs-function"><span class="hljs-title">ngPresenceData</span> = <span class="hljs-params">(channel)</span> -&gt;</span> c[<span class="hljs-string">'_presData'</span>][channel] || {}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-22">&#182;</a>
+              </div>
+              <p>Subscribing to channels is accomplished by calling the PubNub <a href="http://www.pubnub.com/docs/javascript/api/reference.html#subscribe"><code>ngSubscribe</code></a> method. After the channel is subscribed, the app can reigster root scope message events by calling <code>$rootScope.$on</code> with the event string returned by <code>PubNub.ngMsgEv(channel)</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    c.<span class="hljs-function"><span class="hljs-title">ngSubscribe</span> = <span class="hljs-params">(args)</span> -&gt;</span>
+      c[<span class="hljs-string">'_channels'</span>].push args.channel <span class="hljs-keyword">if</span> c[<span class="hljs-string">'_channels'</span>].indexOf(args.channel) &lt; <span class="hljs-number">0</span>
+      c[<span class="hljs-string">'_presence'</span>][args.channel] ||= []
+      args = c._ngInstallHandlers args
+      c.jsapi.subscribe(args)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-23">&#182;</a>
+              </div>
+              <p>Unsubscribing is as easy as calling the <a href="http://www.pubnub.com/docs/javascript/api/reference.html#unsubscribe"><code>PubNub.ngUnsubscribe()</code></a> method. The library even takes care of removing the Angular event handlers for you to prevent unsightly memory leaks!</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    c.<span class="hljs-function"><span class="hljs-title">ngUnsubscribe</span> = <span class="hljs-params">(args)</span> -&gt;</span>
+      cpos = c[<span class="hljs-string">'_channels'</span>].indexOf(args.channel)
+      c[<span class="hljs-string">'_channels'</span>].splice cpos, <span class="hljs-number">1</span> <span class="hljs-keyword">if</span> cpos != -<span class="hljs-number">1</span>
+      c[<span class="hljs-string">'_presence'</span>][args.channel] = <span class="hljs-literal">null</span>
+      <span class="hljs-keyword">delete</span> $rootScope.$$listeners[c.ngMsgEv(args.channel)]
+      <span class="hljs-keyword">delete</span> $rootScope.$$listeners[c.ngPrsEv(args.channel)]
+      c.jsapi.unsubscribe(args)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-24">&#182;</a>
+              </div>
+              <p>Publishing to channels is trivial - just use the <a href="http://www.pubnub.com/docs/javascript/api/reference.html#publish"><code>PubNub.ngPublish()</code></a> method.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    c.<span class="hljs-function"><span class="hljs-title">ngPublish</span> = -&gt;</span> c[<span class="hljs-string">'_instance'</span>][<span class="hljs-string">'publish'</span>].apply c[<span class="hljs-string">'_instance'</span>], arguments</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-25">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-25">&#182;</a>
+              </div>
+              <p>It can be super-handy to gather the previous several hundred messages from the PubNub channel <a href="http://www.pubnub.com/docs/javascript/api/reference.html#history">history</a>. The PubNub Angular API makes this easy by bridging the event model of the PubNub JS history API and the AngularJS event broadcast model so that historical messages come through the same event interface.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    c.<span class="hljs-function"><span class="hljs-title">ngHistory</span> = <span class="hljs-params">(args)</span> -&gt;</span>
+      args.callback = c._ngFireMessages args.channel
+      c.jsapi.history args</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-26">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-26">&#182;</a>
+              </div>
+              <p>It’s also easy to integrate presence events using the Angular API. In the example above, we just add an additional couple lines of code to call the <a href="http://www.pubnub.com/docs/javascript/api/reference.html#here_now"><code>PubNub.ngHereNow()</code></a> method (retrieve current users).</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    c.<span class="hljs-function"><span class="hljs-title">ngHereNow</span> = <span class="hljs-params">(args)</span> -&gt;</span>
+      args = c._ngInstallHandlers(args)
+      args.state = <span class="hljs-literal">true</span>
+      args.callback = args.presence
+      <span class="hljs-keyword">delete</span> args.presence
+      <span class="hljs-keyword">delete</span> args.message
+      c.jsapi.here_now(args)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-27">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-27">&#182;</a>
+              </div>
+              <p>You can obtain information about the current list of a channels to which a uuid is subscribed to by calling the <code>ngWhereNow()</code> function in your application. <a href="http://www.pubnub.com/docs/javascript/api/reference.html#where_now">More info on ngWhereNow</a>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    c.<span class="hljs-function"><span class="hljs-title">ngWhereNow</span> = <span class="hljs-params">(args)</span> -&gt;</span> c.jsapi.where_now(args)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-28">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-28">&#182;</a>
+              </div>
+              <p>You can obtain information about the current metadata associated with a uuid by calling the <code>ngState()</code> function in your application. <a href="http://www.pubnub.com/docs/javascript/api/reference.html#state">More info on ngState</a>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    c.<span class="hljs-function"><span class="hljs-title">ngState</span>    = <span class="hljs-params">(args)</span> -&gt;</span> c.jsapi.state(args)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-29">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-29">&#182;</a>
+              </div>
+              <p>The method <code>ngMsgEv</code> returns the root scope broadcast event name for message events for a given channel.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    c.<span class="hljs-function"><span class="hljs-title">ngMsgEv</span> = <span class="hljs-params">(channel)</span> -&gt;</span> <span class="hljs-string">"pn-message:<span class="hljs-subst">#{channel}</span>"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-30">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-30">&#182;</a>
+              </div>
+              <p>The method <code>ngPrsEv</code> returns the root scope broadcast event name for presence events for a given channel.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    c.<span class="hljs-function"><span class="hljs-title">ngPrsEv</span> = <span class="hljs-params">(channel)</span> -&gt;</span> <span class="hljs-string">"pn-presence:<span class="hljs-subst">#{channel}</span>"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-31">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-31">&#182;</a>
+              </div>
+              <p>The method <a href="http://www.pubnub.com/docs/javascript/api/reference.html#auth"><code>ngAuth</code></a> updates the auth_key associated with the PubNub session</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    c.<span class="hljs-function"><span class="hljs-title">ngAuth</span>   = -&gt;</span> c[<span class="hljs-string">'_instance'</span>][<span class="hljs-string">'auth'</span>].apply c[<span class="hljs-string">'_instance'</span>], arguments</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-32">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-32">&#182;</a>
+              </div>
+              <p>Often times, it’s desirable to lock down applications and channels. With PAM (PubNub Access Manager), it’s easy. There are 2 calls: <a href="http://www.pubnub.com/docs/javascript/api/reference.html#grant"><code>ngGrant</code></a> which grants access for users having a specified auth key, and <a href="http://www.pubnub.com/docs/javascript/api/reference.html#audit"><code>ngAudit</code></a> which returns the current policy configuration. Note: to perform access control operations, the PubNub client must be initialized with the secret key (which should always be protected by server-only access).</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    c.<span class="hljs-function"><span class="hljs-title">ngAudit</span>  = -&gt;</span> c[<span class="hljs-string">'_instance'</span>][<span class="hljs-string">'audit'</span>].apply c[<span class="hljs-string">'_instance'</span>], arguments
+    c.<span class="hljs-function"><span class="hljs-title">ngGrant</span>  = -&gt;</span> c[<span class="hljs-string">'_instance'</span>][<span class="hljs-string">'grant'</span>].apply c[<span class="hljs-string">'_instance'</span>], arguments
+
+    c
+  ]</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
