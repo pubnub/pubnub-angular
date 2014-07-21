@@ -1,7 +1,20 @@
-# Strict mode catches some errors, prevents unsafe actions from being taken, and throws errors.
+# Annotated Source Code for the PubNub AngularJS library.
+# Welcome! Thank you for reading this documentation - if you have any feedback or suggestions, please file a GitHub issue and we'll take a look right away!
+# 
+# Using this library should be as easy as:
+#
+# 1. Install the library using `bower install pubnub-angular`
+# 2. Include the JS libraries for pubnub and pubnub-angular into your HTML using SCRIPT tags
+# 3. Declare a dependency on "pubnub.angular.service" in your application's Angular module
+# 4. Inject the PubNub service object into your AngularJS services and controllers as you see fit!
+#
+# For step-by-step instructions, check out https://github.com/pubnub/pubnub-angular/blob/master/README.md
+#
+
+# We love strict mode.
 'use strict'
 
-# Set up an Angular [module](https://docs.angularjs.org/guide/module). Notice the identifier `pubnub.angular.service` for when declare a [dependency](https://docs.angularjs.org/guide/di) on the PubNub Angular library.
+# Set up an Angular [module](https://docs.angularjs.org/guide/module). Notice the identifier `pubnub.angular.service`, used when declaring a [dependency](https://docs.angularjs.org/guide/di) on the PubNub Angular library.
 angular.module('pubnub.angular.service', [])
   # Set up a factory for injecting a `PubNub` service into your Angular Controller or Service. Depends on the Angular [$rootScope](https://docs.angularjs.org/api/ng/service/$rootScope) so that the PubNub object is persistent across controller instantiations.
   .factory 'PubNub', ['$rootScope', ($rootScope) ->
