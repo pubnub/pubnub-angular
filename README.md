@@ -67,6 +67,16 @@ The Angular ```PubNub``` service is injected into the controller as follows:
 .controller('JoinCtrl', function($scope, PubNub) { ... });
 ```
 
+Initialize PubNub (only once!) as follows:
+
+```javascript
+PubNub.init({
+	publish_key:'your pub key',
+	subscribe_key:'your sub key',
+	uuid:'an_optional_user_uuid'
+        })
+```
+
 That's it - you're ready to start using the AngularJS PubNub SDK!
 
 
@@ -95,14 +105,13 @@ the event string returned by PubNub.ngMsgEv(channel).
 
 ```javascript
 $scope.subscribe = function() {
-  ...
   PubNub.ngSubscribe({ channel: theChannel })
-  ...
+  
   $rootScope.$on(PubNub.ngMsgEv(theChannel), function(event, payload) {
     // payload contains message, channel, env...
     console.log('got a message event:', payload);    
   })
-  ...
+  
   $rootScope.$on(PubNub.ngPrsEv(theChannel), function(event, payload) {
     // payload contains message, channel, env...
     console.log('got a presence event:', payload);
@@ -138,12 +147,11 @@ returned by PubNub.ngPrsEv(channel).
 
 ```javascript
 $scope.subscribe = function() {
-  ...
   // subscribe to the channel
   PubNub.ngSubscribe({ channel: theChannel })
   // handle message events
   $rootScope.$on(PubNub.ngMsgEv(theChannel), function(event, payload) { ... })
-  ...
+  
   // handle presence events
   $rootScope.$on(PubNub.ngPrsEv(theChannel), function(event, payload) {
     // payload contains message, channel, env...
