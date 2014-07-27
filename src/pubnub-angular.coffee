@@ -21,7 +21,7 @@ angular.module('pubnub.angular.service', [])
     # Initialize an object for the PubNub service's data. Set the current version, instance, channels, presence, and jsapi for advanced access.
     c = {
       # Our current version of this PubNub Angular library
-      'VERSION'   : '1.2.0-BETA'
+      'VERSION'   : '1.2.0-beta.1'
       # A reference to the PubNub vanilla JavaScript API object (aka PUBNUB from https://github.com/pubnub/javascript/blob/master/web/pubnub.js)
       '_instance' : null
       # The list of channels that we currently know about
@@ -219,7 +219,6 @@ angular.module('pubnub.angular.service', [])
         olderr(r) if olderr
       oldcallback = args.callback
       args.callback = (o) ->
-        oldcallback(o)
         $rootScope.$apply()
         oldcallback(o) if oldcallback
       theObj = c['jsapi']['get_synced_object'].apply c['_instance'], [args]
