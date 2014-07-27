@@ -17,11 +17,11 @@
 # Set up an Angular [module](https://docs.angularjs.org/guide/module). Notice the identifier `pubnub.angular.service`, used when declaring a [dependency](https://docs.angularjs.org/guide/di) on the PubNub Angular library.
 angular.module('pubnub.angular.service', [])
   # Set up a factory for injecting a `PubNub` service into your Angular Controller or Service. Depends on the Angular [$rootScope](https://docs.angularjs.org/api/ng/service/$rootScope) so that the PubNub object is persistent across controller instantiations.
-  .factory 'PubNub', ['$rootScope', ($rootScope) ->
+  .factory 'PubNub', ['$rootScope', '$q', ($rootScope, $q) ->
     # Initialize an object for the PubNub service's data. Set the current version, instance, channels, presence, and jsapi for advanced access.
     c = {
       # Our current version of this PubNub Angular library
-      'VERSION'   : '1.1.0'
+      'VERSION'   : '1.2.0-BETA'
       # A reference to the PubNub vanilla JavaScript API object (aka PUBNUB from https://github.com/pubnub/javascript/blob/master/web/pubnub.js)
       '_instance' : null
       # The list of channels that we currently know about
@@ -183,6 +183,87 @@ angular.module('pubnub.angular.service', [])
     # Often times, it's desirable to lock down applications and channels. With PAM (PubNub Access Manager), it's easy. There are 2 calls: [`ngGrant`](http://www.pubnub.com/docs/javascript/api/reference.html#grant) which grants access for users having a specified auth key, and [`ngAudit`](http://www.pubnub.com/docs/javascript/api/reference.html#audit) which returns the current policy configuration. Note: to perform access control operations, the PubNub client must be initialized with the secret key (which should always be protected by server-only access).
     c.ngAudit  = -> c['_instance']['audit'].apply c['_instance'], arguments
     c.ngGrant  = -> c['_instance']['grant'].apply c['_instance'], arguments
+
+    # PubNub DataSync BETA
+    c.datasync_BETA = {}
+
+    _makeDataSyncOperation = (op) -> (args) ->
+      return unless args && args['object_id']
+      deferred = $q.defer()
+      oldcallback = args.callback
+      args.callback = (x) ->
+        deferred.resolve(x)
+        $rootScope.$apply()
+        oldcallback(x) if oldcallback
+      args.error = (x) ->
+        deferred.reject(x)
+      c['jsapi'][op].apply c['_instance'], [args]
+      deferred.promise
+
+    # PubNub DataSync BETA: Get Object
+    c.datasync_BETA.ngGet = _makeDataSyncOperation('get')
+    # PubNub DataSync BETA: Set Object
+    c.datasync_BETA.ngSet = _makeDataSyncOperation('set')
+    # PubNub DataSync BETA: Merge Object
+    c.datasync_BETA.ngMerge = _makeDataSyncOperation('merge')
+    # PubNub DataSync BETA: Remove Object
+    c.datasync_BETA.ngRemove = _makeDataSyncOperation('remove')
+
+    # PubNub DataSync BETA: Get Synced Object. NOTE: only one of 'ngGetSyncedObject' or 'ngWatch' may be used for a given object. Using both appears to corrupt the connection.
+    c.datasync_BETA.ngGetSyncedObject = (args) ->
+      return unless args && args['object_id']
+      deferred = $q.defer()
+      olderr = args.error
+      args.error = (r) ->
+        deferred.reject(r)
+        olderr(r) if olderr
+      oldcallback = args.callback
+      args.callback = (o) ->
+        oldcallback(o)
+        $rootScope.$apply()
+        oldcallback(o) if oldcallback
+      theObj = c['jsapi']['get_synced_object'].apply c['_instance'], [args]
+      deferred.resolve(theObj.data)
+      deferred.promise
+
+    # PubNub DataSync BETA: $rootScope broadcast event name for object/path combination
+    c.datasync_BETA.ngObjPathEv      = (object_id, path) -> 'pn-datasync-obj:' + c.datasync_BETA.ngObjPathChan(object_id, path)
+    # PubNub DataSync BETA: $rootScope broadcast event name for recursive object/path combination
+    c.datasync_BETA.ngObjPathRecEv   = (object_id, path) -> 'pn-datasync-obj-rec:' + c.datasync_BETA.ngObjPathRecChan(object_id, path)
+    # PubNub DataSync BETA: $rootScope broadcast event name for object datastore operations
+    c.datasync_BETA.ngObjDsEv        = (object_id)       -> 'pn-datasync-obj-ds:' + c.datasync_BETA.ngObjDsChan(object_id)
+
+    # PubNub DataSync BETA: Watch an object. Events are broadcast on $rootScope. NOTE: only one of 'ngGetSyncedObject' or 'ngWatch' may be used for a given object. Using both appears to corrupt the connection.
+    c.datasync_BETA.ngWatch = (args) ->
+      return unless args && args['object_id']
+      object_id = args['object_id']
+      path      = args['path']
+      datastore = { chan : c.datasync_BETA.ngObjDsChan(object_id), ev : c.datasync_BETA.ngObjDsEv(object_id) }
+      object_ds = { chan : c.datasync_BETA.ngObjPathChan(object_id, path), ev : c.datasync_BETA.ngObjPathEv(object_id, path) }
+      object_ds_rec = { chan : c.datasync_BETA.ngObjPathRecChan(object_id, path), ev : c.datasync_BETA.ngObjPathRecEv(object_id, path) }
+      oldcallback = args.callback
+      [object_ds, object_ds_rec, datastore].forEach (cfg) ->
+        ((chan, ev) ->
+          args.channel = chan
+          args.callback = (o) ->
+            payload = {
+              event: ev
+              channel: chan
+              object_id : object_id
+              path : path
+              payload : o
+            }
+            $rootScope.$broadcast(ev, payload)
+            oldcallback(payload) if oldcallback
+          c['jsapi']['subscribe'].apply c['_instance'], [args]
+        )(cfg.chan, cfg.ev)
+
+    # PubNub DataSync BETA: Internal use only. Channel Name for object/path combination
+    c.datasync_BETA.ngObjPathChan    = (object_id, path) -> 'pn_ds_' + object_id + (if path then '.' + path else '')
+    # PubNub DataSync BETA: Internal use only. Channel Name for recursive object/path combination
+    c.datasync_BETA.ngObjPathRecChan = (object_id, path) -> c.datasync_BETA.ngObjPathChan(object_id, path) + '.*'
+    # PubNub DataSync BETA: Internal use only. Channel Name for object data store operations
+    c.datasync_BETA.ngObjDsChan      = (object_id)       -> 'pn_dstr_' + object_id
 
     # ... And we're done! We return this object as the PubNub AngularJS service instance.
     c
