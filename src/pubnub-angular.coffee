@@ -17,7 +17,7 @@
 # Set up an Angular [module](https://docs.angularjs.org/guide/module). Notice the identifier `pubnub.angular.service`, used when declaring a [dependency](https://docs.angularjs.org/guide/di) on the PubNub Angular library.
 angular.module('pubnub.angular.service', [])
   # Set up a factory for injecting a `PubNub` service into your Angular Controller or Service. Depends on the Angular [$rootScope](https://docs.angularjs.org/api/ng/service/$rootScope) so that the PubNub object is persistent across controller instantiations.
-  .factory 'PubNub', ['$rootScope', '$q', ($rootScope, $q) ->
+  .factory 'PubNub', ['$rootScope', '$q', '$timeout', ($rootScope, $q, $timeout) ->
     # Initialize an object for the PubNub service's data. Set the current version, instance, channels, presence, and jsapi for advanced access.
     c = {
       # Our current version of this PubNub Angular library
@@ -212,18 +212,16 @@ angular.module('pubnub.angular.service', [])
     # PubNub DataSync BETA: Get Synced Object. NOTE: only one of 'ngGetSyncedObject' or 'ngWatch' may be used for a given object. Using both appears to corrupt the connection.
     c.datasync_BETA.ngGetSyncedObject = (args) ->
       return unless args && args['object_id']
-      deferred = $q.defer()
       olderr = args.error
       args.error = (r) ->
-        deferred.reject(r)
         olderr(r) if olderr
       oldcallback = args.callback
       args.callback = (o) ->
-        $rootScope.$apply()
         oldcallback(o) if oldcallback
-      theObj = c['jsapi']['get_synced_object'].apply c['_instance'], [args]
-      deferred.resolve(theObj.data)
-      deferred.promise
+        $rootScope.$apply()
+      toRet = (c['jsapi']['get_synced_object'].apply c['_instance'], [args])
+      $timeout((-> args.callback(toRet.data)), 800) # FIXME: remove timeout when JS SDK supports callback fully
+      toRet.data
 
     # PubNub DataSync BETA: $rootScope broadcast event name for object/path combination
     c.datasync_BETA.ngObjPathEv      = (object_id, path) -> 'pn-datasync-obj:' + c.datasync_BETA.ngObjPathChan(object_id, path)
