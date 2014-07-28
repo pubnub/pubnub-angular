@@ -83,7 +83,7 @@ Welcome! Thank you for reading this documentation - if you have any feedback or 
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  .factory <span class="hljs-string">'PubNub'</span>, [<span class="hljs-string">'$rootScope'</span>, <span class="hljs-string">'$q'</span>, <span class="hljs-function"><span class="hljs-params">($rootScope, $q)</span> -&gt;</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre>  .factory <span class="hljs-string">'PubNub'</span>, [<span class="hljs-string">'$rootScope'</span>, <span class="hljs-string">'$q'</span>, <span class="hljs-string">'$timeout'</span>, <span class="hljs-function"><span class="hljs-params">($rootScope, $q, $timeout)</span> -&gt;</span></pre></div></div>
             
         </li>
         
@@ -113,7 +113,7 @@ Welcome! Thank you for reading this documentation - if you have any feedback or 
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>      <span class="hljs-string">'VERSION'</span>   : <span class="hljs-string">'1.2.0-BETA'</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-string">'VERSION'</span>   : <span class="hljs-string">'1.2.0-beta.1'</span></pre></div></div>
             
         </li>
         
@@ -671,7 +671,7 @@ We create and invoke a closure to capture both the angular context method name i
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-37">&#182;</a>
               </div>
-              <p>PubNub DataSync BETA: Get Object</p>
+              <p>PubNub DataSync BETA: Get Object. Returns a $q promise</p>
 
             </div>
             
@@ -686,7 +686,7 @@ We create and invoke a closure to capture both the angular context method name i
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-38">&#182;</a>
               </div>
-              <p>PubNub DataSync BETA: Set Object</p>
+              <p>PubNub DataSync BETA: Set Object. Returns a $q promise</p>
 
             </div>
             
@@ -701,7 +701,7 @@ We create and invoke a closure to capture both the angular context method name i
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-39">&#182;</a>
               </div>
-              <p>PubNub DataSync BETA: Merge Object</p>
+              <p>PubNub DataSync BETA: Merge Object. Returns a $q promise</p>
 
             </div>
             
@@ -716,7 +716,7 @@ We create and invoke a closure to capture both the angular context method name i
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-40">&#182;</a>
               </div>
-              <p>PubNub DataSync BETA: Remove Object</p>
+              <p>PubNub DataSync BETA: Remove Object. Returns a $q promise</p>
 
             </div>
             
@@ -737,19 +737,16 @@ We create and invoke a closure to capture both the angular context method name i
             
             <div class="content"><div class='highlight'><pre>    c.datasync_BETA.<span class="hljs-function"><span class="hljs-title">ngGetSyncedObject</span> = <span class="hljs-params">(args)</span> -&gt;</span>
       <span class="hljs-keyword">return</span> <span class="hljs-keyword">unless</span> args &amp;&amp; args[<span class="hljs-string">'object_id'</span>]
-      deferred = $q.defer()
       olderr = args.error
       args.<span class="hljs-function"><span class="hljs-title">error</span> = <span class="hljs-params">(r)</span> -&gt;</span>
-        deferred.reject(r)
         olderr(r) <span class="hljs-keyword">if</span> olderr
       oldcallback = args.callback
       args.<span class="hljs-function"><span class="hljs-title">callback</span> = <span class="hljs-params">(o)</span> -&gt;</span>
-        oldcallback(o)
-        $rootScope.$apply()
         oldcallback(o) <span class="hljs-keyword">if</span> oldcallback
-      theObj = c[<span class="hljs-string">'jsapi'</span>][<span class="hljs-string">'get_synced_object'</span>].apply c[<span class="hljs-string">'_instance'</span>], [args]
-      deferred.resolve(theObj.data)
-      deferred.promise</pre></div></div>
+        $rootScope.$apply()
+      toRet = (c[<span class="hljs-string">'jsapi'</span>][<span class="hljs-string">'get_synced_object'</span>].apply c[<span class="hljs-string">'_instance'</span>], [args])
+      $timeout((<span class="hljs-function">-&gt;</span> args.callback(toRet.data)), <span class="hljs-number">800</span>) <span class="hljs-comment"># FIXME: remove timeout when JS SDK supports callback fully</span>
+      toRet.data</pre></div></div>
             
         </li>
         

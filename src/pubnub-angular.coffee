@@ -200,13 +200,13 @@ angular.module('pubnub.angular.service', [])
       c['jsapi'][op].apply c['_instance'], [args]
       deferred.promise
 
-    # PubNub DataSync BETA: Get Object
+    # PubNub DataSync BETA: Get Object. Returns a $q promise
     c.datasync_BETA.ngGet = _makeDataSyncOperation('get')
-    # PubNub DataSync BETA: Set Object
+    # PubNub DataSync BETA: Set Object. Returns a $q promise
     c.datasync_BETA.ngSet = _makeDataSyncOperation('set')
-    # PubNub DataSync BETA: Merge Object
+    # PubNub DataSync BETA: Merge Object. Returns a $q promise
     c.datasync_BETA.ngMerge = _makeDataSyncOperation('merge')
-    # PubNub DataSync BETA: Remove Object
+    # PubNub DataSync BETA: Remove Object. Returns a $q promise
     c.datasync_BETA.ngRemove = _makeDataSyncOperation('remove')
 
     # PubNub DataSync BETA: Get Synced Object. NOTE: only one of 'ngGetSyncedObject' or 'ngWatch' may be used for a given object. Using both appears to corrupt the connection.
