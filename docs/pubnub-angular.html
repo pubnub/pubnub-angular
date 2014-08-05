@@ -731,22 +731,18 @@ We create and invoke a closure to capture both the angular context method name i
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-41">&#182;</a>
               </div>
-              <p>PubNub DataSync BETA: Get Synced Object. NOTE: only one of ‘ngGetSyncedObject’ or ‘ngWatch’ may be used for a given object. Using both appears to corrupt the connection.</p>
+              <p>PubNub DataSync BETA: Internal use only. Creates a callback for sync events</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    c.datasync_BETA.<span class="hljs-function"><span class="hljs-title">ngGetSyncedObject</span> = <span class="hljs-params">(args)</span> -&gt;</span>
-      <span class="hljs-keyword">return</span> <span class="hljs-keyword">unless</span> args &amp;&amp; args[<span class="hljs-string">'object_id'</span>]
-      olderr = args.error
-      args.<span class="hljs-function"><span class="hljs-title">error</span> = <span class="hljs-params">(r)</span> -&gt;</span>
-        olderr(r) <span class="hljs-keyword">if</span> olderr
-      oldcallback = args.callback
-      args.<span class="hljs-function"><span class="hljs-title">callback</span> = <span class="hljs-params">(o)</span> -&gt;</span>
-        oldcallback(o) <span class="hljs-keyword">if</span> oldcallback
-        $rootScope.$apply()
-      toRet = (c[<span class="hljs-string">'jsapi'</span>][<span class="hljs-string">'get_synced_object'</span>].apply c[<span class="hljs-string">'_instance'</span>], [args])
-      $timeout((<span class="hljs-function">-&gt;</span> args.callback(toRet.data)), <span class="hljs-number">800</span>) <span class="hljs-comment"># FIXME: remove timeout when JS SDK supports callback fully</span>
-      toRet.data</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-title">_syncCallback</span> = <span class="hljs-params">(name, object_id, path)</span> -&gt;</span> <span class="hljs-function"><span class="hljs-params">(r)</span> -&gt;</span>
+      $rootScope.$broadcast(c.datasync_BETA.ngObjPathRecEv(object_id, path), {
+        <span class="hljs-attribute">action</span>: name
+        object_id : object_id
+        path : path
+        payload : r
+      })
+      $rootScope.$apply()</pre></div></div>
             
         </li>
         
@@ -757,11 +753,16 @@ We create and invoke a closure to capture both the angular context method name i
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-42">&#182;</a>
               </div>
-              <p>PubNub DataSync BETA: $rootScope broadcast event name for object/path combination</p>
+              <p>PubNub DataSync BETA: Sync object. Retrieves the specified object and metadata, with live updates and Angular $broadcast events enabled. NOTE: only one of ‘ngSync’ or ‘ngWatch’ may be used for a given object. Using both appears to corrupt the connection.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    c.datasync_BETA.<span class="hljs-function"><span class="hljs-title">ngObjPathEv</span>      = <span class="hljs-params">(object_id, path)</span> -&gt;</span> <span class="hljs-string">'pn-datasync-obj:'</span> + c.datasync_BETA.ngObjPathChan(object_id, path)</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    c.datasync_BETA.<span class="hljs-function"><span class="hljs-title">ngSync</span> = <span class="hljs-params">(object_id)</span> -&gt;</span>
+      <span class="hljs-keyword">return</span> <span class="hljs-keyword">unless</span> object_id
+      result = c[<span class="hljs-string">'jsapi'</span>][<span class="hljs-string">'sync'</span>].apply c[<span class="hljs-string">'_instance'</span>], [object_id]
+      [<span class="hljs-string">'ready'</span>,<span class="hljs-string">'change'</span>,<span class="hljs-string">'update'</span>,<span class="hljs-string">'remove'</span>,<span class="hljs-string">'set'</span>,<span class="hljs-string">'error'</span>].forEach <span class="hljs-function"><span class="hljs-params">(x)</span> -&gt;</span> result.<span class="hljs-literal">on</span>[x](_syncCallback(x, object_id, <span class="hljs-literal">null</span>))
+      [<span class="hljs-string">'connect'</span>,<span class="hljs-string">'disconnect'</span>,<span class="hljs-string">'reconnect'</span>].forEach <span class="hljs-function"><span class="hljs-params">(x)</span> -&gt;</span> result.<span class="hljs-literal">on</span>.network[x](_syncCallback(x, object_id, <span class="hljs-literal">null</span>))
+      result</pre></div></div>
             
         </li>
         
@@ -772,11 +773,11 @@ We create and invoke a closure to capture both the angular context method name i
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-43">&#182;</a>
               </div>
-              <p>PubNub DataSync BETA: $rootScope broadcast event name for recursive object/path combination</p>
+              <p>PubNub DataSync BETA: $rootScope broadcast event name for object/path combination</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    c.datasync_BETA.<span class="hljs-function"><span class="hljs-title">ngObjPathRecEv</span>   = <span class="hljs-params">(object_id, path)</span> -&gt;</span> <span class="hljs-string">'pn-datasync-obj-rec:'</span> + c.datasync_BETA.ngObjPathRecChan(object_id, path)</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    c.datasync_BETA.<span class="hljs-function"><span class="hljs-title">ngObjPathEv</span>      = <span class="hljs-params">(object_id, path)</span> -&gt;</span> <span class="hljs-string">'pn-datasync-obj:'</span> + c.datasync_BETA.ngObjPathChan(object_id, path)</pre></div></div>
             
         </li>
         
@@ -787,11 +788,11 @@ We create and invoke a closure to capture both the angular context method name i
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-44">&#182;</a>
               </div>
-              <p>PubNub DataSync BETA: $rootScope broadcast event name for object datastore operations</p>
+              <p>PubNub DataSync BETA: $rootScope broadcast event name for recursive object/path combination</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    c.datasync_BETA.<span class="hljs-function"><span class="hljs-title">ngObjDsEv</span>        = <span class="hljs-params">(object_id)</span>       -&gt;</span> <span class="hljs-string">'pn-datasync-obj-ds:'</span> + c.datasync_BETA.ngObjDsChan(object_id)</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    c.datasync_BETA.<span class="hljs-function"><span class="hljs-title">ngObjPathRecEv</span>   = <span class="hljs-params">(object_id, path)</span> -&gt;</span> <span class="hljs-string">'pn-datasync-obj-rec:'</span> + c.datasync_BETA.ngObjPathRecChan(object_id, path)</pre></div></div>
             
         </li>
         
@@ -802,7 +803,22 @@ We create and invoke a closure to capture both the angular context method name i
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-45">&#182;</a>
               </div>
-              <p>PubNub DataSync BETA: Watch an object. Events are broadcast on $rootScope. NOTE: only one of ‘ngGetSyncedObject’ or ‘ngWatch’ may be used for a given object. Using both appears to corrupt the connection.</p>
+              <p>PubNub DataSync BETA: $rootScope broadcast event name for object datastore operations</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    c.datasync_BETA.<span class="hljs-function"><span class="hljs-title">ngObjDsEv</span>        = <span class="hljs-params">(object_id)</span>       -&gt;</span> <span class="hljs-string">'pn-datasync-obj-ds:'</span> + c.datasync_BETA.ngObjDsChan(object_id)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-46">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-46">&#182;</a>
+              </div>
+              <p>PubNub DataSync BETA: Watch an object. Events are broadcast on $rootScope. NOTE: only one of ‘ngSync’ or ‘ngWatch’ may be used for a given object. Using both appears to corrupt the connection.</p>
 
             </div>
             
@@ -835,11 +851,11 @@ We create and invoke a closure to capture both the angular context method name i
         </li>
         
         
-        <li id="section-46">
+        <li id="section-47">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-46">&#182;</a>
+                <a class="pilcrow" href="#section-47">&#182;</a>
               </div>
               <p>PubNub DataSync BETA: Internal use only. Channel Name for object/path combination</p>
 
@@ -850,11 +866,11 @@ We create and invoke a closure to capture both the angular context method name i
         </li>
         
         
-        <li id="section-47">
+        <li id="section-48">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-47">&#182;</a>
+                <a class="pilcrow" href="#section-48">&#182;</a>
               </div>
               <p>PubNub DataSync BETA: Internal use only. Channel Name for recursive object/path combination</p>
 
@@ -865,11 +881,11 @@ We create and invoke a closure to capture both the angular context method name i
         </li>
         
         
-        <li id="section-48">
+        <li id="section-49">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-48">&#182;</a>
+                <a class="pilcrow" href="#section-49">&#182;</a>
               </div>
               <p>PubNub DataSync BETA: Internal use only. Channel Name for object data store operations</p>
 
@@ -880,11 +896,11 @@ We create and invoke a closure to capture both the angular context method name i
         </li>
         
         
-        <li id="section-49">
+        <li id="section-50">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-49">&#182;</a>
+                <a class="pilcrow" href="#section-50">&#182;</a>
               </div>
               <p>… And we’re done! We return this object as the PubNub AngularJS service instance.</p>
 

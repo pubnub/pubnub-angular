@@ -209,19 +209,23 @@ angular.module('pubnub.angular.service', [])
     # PubNub DataSync BETA: Remove Object. Returns a $q promise
     c.datasync_BETA.ngRemove = _makeDataSyncOperation('remove')
 
-    # PubNub DataSync BETA: Get Synced Object. NOTE: only one of 'ngGetSyncedObject' or 'ngWatch' may be used for a given object. Using both appears to corrupt the connection.
-    c.datasync_BETA.ngGetSyncedObject = (args) ->
-      return unless args && args['object_id']
-      olderr = args.error
-      args.error = (r) ->
-        olderr(r) if olderr
-      oldcallback = args.callback
-      args.callback = (o) ->
-        oldcallback(o) if oldcallback
-        $rootScope.$apply()
-      toRet = (c['jsapi']['get_synced_object'].apply c['_instance'], [args])
-      $timeout((-> args.callback(toRet.data)), 800) # FIXME: remove timeout when JS SDK supports callback fully
-      toRet.data
+    # PubNub DataSync BETA: Internal use only. Creates a callback for sync events
+    _syncCallback = (name, object_id, path) -> (r) ->
+      $rootScope.$broadcast(c.datasync_BETA.ngObjPathRecEv(object_id, path), {
+        action: name
+        object_id : object_id
+        path : path
+        payload : r
+      })
+      $rootScope.$apply()
+
+    # PubNub DataSync BETA: Sync object. Retrieves the specified object and metadata, with live updates and Angular $broadcast events enabled. NOTE: only one of 'ngSync' or 'ngWatch' may be used for a given object. Using both appears to corrupt the connection.
+    c.datasync_BETA.ngSync = (object_id) ->
+      return unless object_id
+      result = c['jsapi']['sync'].apply c['_instance'], [object_id]
+      ['ready','change','update','remove','set','error'].forEach (x) -> result.on[x](_syncCallback(x, object_id, null))
+      ['connect','disconnect','reconnect'].forEach (x) -> result.on.network[x](_syncCallback(x, object_id, null))
+      result
 
     # PubNub DataSync BETA: $rootScope broadcast event name for object/path combination
     c.datasync_BETA.ngObjPathEv      = (object_id, path) -> 'pn-datasync-obj:' + c.datasync_BETA.ngObjPathChan(object_id, path)
@@ -230,7 +234,7 @@ angular.module('pubnub.angular.service', [])
     # PubNub DataSync BETA: $rootScope broadcast event name for object datastore operations
     c.datasync_BETA.ngObjDsEv        = (object_id)       -> 'pn-datasync-obj-ds:' + c.datasync_BETA.ngObjDsChan(object_id)
 
-    # PubNub DataSync BETA: Watch an object. Events are broadcast on $rootScope. NOTE: only one of 'ngGetSyncedObject' or 'ngWatch' may be used for a given object. Using both appears to corrupt the connection.
+    # PubNub DataSync BETA: Watch an object. Events are broadcast on $rootScope. NOTE: only one of 'ngSync' or 'ngWatch' may be used for a given object. Using both appears to corrupt the connection.
     c.datasync_BETA.ngWatch = (args) ->
       return unless args && args['object_id']
       object_id = args['object_id']
