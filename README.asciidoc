@@ -27,7 +27,7 @@ Your HTML page will include 3 key libraries:
 
 The HTML code looks like this:
 
-[source,javascript]
+[source,html]
 ----
 <script src="http://cdn.pubnub.com/pubnub.min.js"></script>
 <script src="components/angular/angular.js"></script>
