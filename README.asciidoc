@@ -76,6 +76,16 @@ The Angular `PubNub` service is injected into the controller as follows:
 .controller('JoinCtrl', function($scope, PubNub) { ... });
 ----
 
+Initialize PubNub (only once!) as follows:
+
+```javascript
+PubNub.init({
+  publish_key:'your pub key',
+  subscribe_key:'your sub key',
+  uuid:'an_optional_user_uuid'
+})
+```
+
 That's it - you're ready to start using the AngularJS PubNub SDK!
 
 
