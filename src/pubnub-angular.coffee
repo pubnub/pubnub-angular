@@ -153,8 +153,22 @@ angular.module('pubnub.angular.service', [])
 
     # It can be super-handy to gather the previous several hundred messages from the PubNub channel [history](http://www.pubnub.com/docs/javascript/api/reference.html#history). The PubNub Angular API makes this easy by bridging the event model of the PubNub JS history API and the AngularJS event broadcast model so that historical messages come through the same event interface.
     c.ngHistory = (args) ->
+      # TODO: in the next API version, save & restore the callback
       args.callback = c._ngFireMessages args.channel
       c.jsapi.history args
+
+    # Sometimes, it's better to retrieve history as a promise. The 'ngHistoryQ' method returns a promise that is fulfilled when the history call returns. More about [history](http://www.pubnub.com/docs/javascript/api/reference.html#history). This method does not send historical events through the root scope event mechanism.
+    c.ngHistoryQ = (args) ->
+      deferred = $q.defer()
+      oldcallback = args.callback
+      args.callback = (x) ->
+        deferred.resolve(x)
+        $rootScope.$apply()
+        oldcallback(x) if oldcallback
+      args.error = (x) ->
+        deferred.reject(x)
+      c['jsapi']['history'].apply c['_instance'], [args]
+      deferred.promise
 
     # It's also easy to integrate presence events using the Angular API. In the example above, we just add an additional couple lines of code to call the [`PubNub.ngHereNow()`](http://www.pubnub.com/docs/javascript/api/reference.html#here_now) method (retrieve current users in a channel).
     c.ngHereNow = (args) ->
