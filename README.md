@@ -87,8 +87,9 @@ Publishing to channels is trivial:
 ```javascript
 $scope.publish = function() {
   PubNub.ngPublish({
-    channel: $scope.selectedChannel,
-    message: $scope.newMessage
+    callback : function(info) { console.log(info) },
+    channel  : $scope.selectedChannel,
+    message  : $scope.newMessage
   });
 };
 ```
