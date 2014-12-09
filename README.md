@@ -36,7 +36,7 @@ attribute or the equivalent:
 ```html
 <body ng-app="PubNubAngularApp">
 ```
-    
+
 Where 'PubNubAngularApp' is the name of the Angular module
 containing your app.
 
@@ -107,12 +107,12 @@ the event string returned by PubNub.ngMsgEv(channel).
 ```javascript
 $scope.subscribe = function() {
   PubNub.ngSubscribe({ channel: theChannel })
-  
+
   $rootScope.$on(PubNub.ngMsgEv(theChannel), function(event, payload) {
     // payload contains message, channel, env...
-    console.log('got a message event:', payload);    
+    console.log('got a message event:', payload);
   })
-  
+
   $rootScope.$on(PubNub.ngPrsEv(theChannel), function(event, payload) {
     // payload contains message, channel, env...
     console.log('got a presence event:', payload);
@@ -152,7 +152,7 @@ $scope.subscribe = function() {
   PubNub.ngSubscribe({ channel: theChannel })
   // handle message events
   $rootScope.$on(PubNub.ngMsgEv(theChannel), function(event, payload) { ... })
-  
+
   // handle presence events
   $rootScope.$on(PubNub.ngPrsEv(theChannel), function(event, payload) {
     // payload contains message, channel, env...
@@ -160,7 +160,7 @@ $scope.subscribe = function() {
   })
 
   // obtain the list of current channel subscribers
-  PubNub.ngHereNow { channel: theChannel }
+  PubNub.ngHereNow({ channel: theChannel })
 ```
 
 Using the presence event as a trigger, we retrieve the Presence
@@ -182,7 +182,7 @@ event broadcast model so that historical messages come through the same
 event interface.
 
 ```javascript
-  PubNub.ngHistory({channel:theChannel, count:500});
+  PubNub.ngHistory({ channel:theChannel, count:500 })
   // messages will be broadcast via $rootScope...
 ```
 
@@ -202,6 +202,5 @@ library even takes care of removing the Angular event handlers for you to
 prevent memory leaks!
 
 ```javascript
-  PubNub.ngUnsubscribe({channel:theChannel})
+  PubNub.ngUnsubscribe({ channel:theChannel })
 ```
-
