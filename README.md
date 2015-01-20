@@ -1,4 +1,6 @@
-# PubNub AngularJS SDK
+## Contact support@pubnub.com for all questions
+
+### PubNub AngularJS SDK
 
 Welcome! We're here to get you started quickly with your
 integration between PubNub and AngularJS. PubNub makes it
@@ -205,3 +207,4 @@ prevent memory leaks!
   PubNub.ngUnsubscribe({channel:theChannel})
 ```
 
+## Contact support@pubnub.com for all questions
