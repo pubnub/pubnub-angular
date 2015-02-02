@@ -32,26 +32,29 @@ angular.module('pubnub.angular.service', [])
       'jsapi'       : {}
     }
 
-    # Include the "map" and "each" functions into the PubNub Angular API as helper functions.
-    # We create and invoke a closure to capture both the angular context method name into the helper function.
+
+
+    # helper methods
     for k in ['map', 'each']
-      if PUBNUB?[k] instanceof Function
+      if pubnub?[k] instanceof Function
         ((kk) -> c[kk] = ->
           c['_instance']?[kk].apply c['_instance'], arguments)(k)
 
-    # Add bindings to the original vanilla JavaScript PubNub API methods under the "jsapi" key.
-    # We create and invoke a closure to capture both the angular context method name into the helper function.
-    for k of PUBNUB
-      if PUBNUB?[k] instanceof Function
+
+    # core (original) PubNub API methods
+    # these simply build proxies for each pubnub api method
+    for k of pubnub
+      if pubnub?[k] instanceof Function
         ((kk) -> c['jsapi'][kk] = ->
           c['_instance']?[kk].apply c['_instance'], arguments)(k)
+
 
     # Add a field so that clients can tell the library has been initialized.
     c.initialized = -> !!c['_instance']
 
     # [Initialize](http://www.pubnub.com/docs/javascript/api/reference.html#init) the PubNub Client API. You must do this before trying to use the API to establish account credentials. Overwrites the current state, so this method should only be called once when instantiating an Angular application.
     c.init = ->
-      c['_instance'] = PUBNUB.init.apply PUBNUB, arguments
+      c['_instance'] = pubnub
       c['_channels'] = []
       c['_presence'] = {}
       c['_presData'] = {}
@@ -134,10 +137,19 @@ angular.module('pubnub.angular.service', [])
 
     # Subscribing to channels is accomplished by calling the PubNub [`ngSubscribe`](http://www.pubnub.com/docs/javascript/api/reference.html#subscribe) method. After the channel is subscribed, the app can register root scope message events by calling `$rootScope.$on` with the event string returned by `PubNub.ngMsgEv(channel)`.
     c.ngSubscribe = (args) ->
-      c['_channels'].push args.channel if c['_channels'].indexOf(args.channel) < 0
-      c['_presence'][args.channel] ||= []
-      args = c._ngInstallHandlers args
-      c.jsapi.subscribe(args)
+      if args.channel
+        c['_channels'].push args.channel if c['_channels'].indexOf(args.channel) < 0
+        c['_presence'][args.channel] ||= []
+        args = c._ngInstallHandlers args
+        c.jsapi.subscribe(args)
+
+      if args.channel_group
+        c['_channels'].push args.channel_group if c['_channels'].indexOf(args.channel_group) < 0
+        c['_presence'][args.channel_group] ||= []
+        args.channel = args.channel_group
+        args = c._ngInstallHandlers args
+        delete args['channel']
+        c.jsapi.subscribe(args)
 
     # Unsubscribing is as easy as calling the [`PubNub.ngUnsubscribe()`](http://www.pubnub.com/docs/javascript/api/reference.html#unsubscribe) method. The library even takes care of removing the Angular event handlers for you to prevent unsightly memory leaks!
     c.ngUnsubscribe = (args) ->
@@ -147,6 +159,9 @@ angular.module('pubnub.angular.service', [])
       delete $rootScope.$$listeners[c.ngMsgEv(args.channel)]
       delete $rootScope.$$listeners[c.ngPrsEv(args.channel)]
       c.jsapi.unsubscribe(args)
+
+    c.ngChannelGroupAddChannel = (args) ->
+      c.jsapi.channel_groups_add_channel
 
     # Publishing to channels is trivial - just use the [`PubNub.ngPublish()`](http://www.pubnub.com/docs/javascript/api/reference.html#publish) method.
     c.ngPublish = -> c['_instance']['publish'].apply c['_instance'], arguments
