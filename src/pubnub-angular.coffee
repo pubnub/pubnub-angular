@@ -32,22 +32,19 @@ angular.module('pubnub.angular.service', [])
       'jsapi'       : {}
     }
 
-
-
-    # helper methods
+    # Include the "map" and "each" functions into the PubNub Angular API as helper functions.
+    # We create and invoke a closure to capture both the angular context method name into the helper function.
     for k in ['map', 'each']
       if pubnub?[k] instanceof Function
         ((kk) -> c[kk] = ->
           c['_instance']?[kk].apply c['_instance'], arguments)(k)
 
-
-    # core (original) PubNub API methods
-    # these simply build proxies for each pubnub api method
+    # Add bindings to the original vanilla JavaScript PubNub API methods under the "jsapi" key.
+    # We create and invoke a closure to capture both the angular context method name into the helper function.
     for k of pubnub
       if pubnub?[k] instanceof Function
         ((kk) -> c['jsapi'][kk] = ->
           c['_instance']?[kk].apply c['_instance'], arguments)(k)
-
 
     # Add a field so that clients can tell the library has been initialized.
     c.initialized = -> !!c['_instance']
@@ -82,18 +79,29 @@ angular.module('pubnub.angular.service', [])
       oldmessage = args.message
       # Create a message handler wrapper that broadcasts the message event and calls the original user-provided message handler.
       args.message = ->
-        $rootScope.$broadcast c.ngMsgEv(args.channel), {
-          message: arguments[0],
-          env: arguments[1],
-          channel: args.channel
-        }
+        if args.channel 
+         $rootScope.$broadcast c.ngMsgEv(args.channel), {
+           message: arguments[0],
+           env: arguments[1],
+           channel: args.channel
+         }
+
+        if args.channel_group
+          $rootScope.$broadcast c.ngMsgEv(args.channel_group), {
+            message: arguments[0],
+            env: arguments[1],
+            channel_group: args.channel_group
+          }
+
         oldmessage(arguments) if oldmessage
 
       # Create a presence handler wrapper that broadcasts the presence event and calls the original user-provided presence handler.
       oldpresence = args.presence
       args.presence = ->
         event = arguments[0]
-        channel = args.channel
+        if args.channel_group
+          channel = args.channel_group
+
         # We must handle two sources of presence data: `here_now` and `presence` events. The `here_now` events include a `uuids` field. Normal `presence` events have a `uuid` field and an `action` field (join or leave).
         if event.uuids
           c.each event.uuids, (uuid) ->
@@ -115,11 +123,20 @@ angular.module('pubnub.angular.service', [])
               c['_presence'][channel].push event.uuid if c['_presence'][channel].indexOf(event.uuid) < 0
               c['_presData'][channel][event.uuid] = event.data if event.data
 
-        $rootScope.$broadcast c.ngPrsEv(args.channel), {
+        if args.channel 
+          $rootScope.$broadcast c.ngPrsEv(channel), {
           event: event,
           message: arguments[1],
           channel: channel
-        }
+          }
+
+        if args.channel_group
+          $rootScope.$broadcast c.ngPrsEv(channel), {
+            event: event,
+            message: arguments[1],
+            channel_group: args.channel_group
+          }          
+
         oldpresence(arguments) if oldpresence
 
       args
@@ -136,6 +153,12 @@ angular.module('pubnub.angular.service', [])
     c.ngPresenceData = (channel) -> c['_presData'][channel] || {}
 
     # Subscribing to channels is accomplished by calling the PubNub [`ngSubscribe`](http://www.pubnub.com/docs/javascript/api/reference.html#subscribe) method. After the channel is subscribed, the app can register root scope message events by calling `$rootScope.$on` with the event string returned by `PubNub.ngMsgEv(channel)`.
+    #c.ngSubscribe = (args) ->
+    #  c['_channels'].push args.channel if c['_channels'].indexOf(args.channel) < 0
+    #  c['_presence'][args.channel] ||= []
+    #  args = c._ngInstallHandlers args
+    #  c.jsapi.subscribe(args)
+
     c.ngSubscribe = (args) ->
       if args.channel
         c['_channels'].push args.channel if c['_channels'].indexOf(args.channel) < 0
@@ -146,7 +169,6 @@ angular.module('pubnub.angular.service', [])
       if args.channel_group
         c['_channels'].push args.channel_group if c['_channels'].indexOf(args.channel_group) < 0
         c['_presence'][args.channel_group] ||= []
-        args.channel = args.channel_group
         args = c._ngInstallHandlers args
         delete args['channel']
         c.jsapi.subscribe(args)
@@ -159,9 +181,6 @@ angular.module('pubnub.angular.service', [])
       delete $rootScope.$$listeners[c.ngMsgEv(args.channel)]
       delete $rootScope.$$listeners[c.ngPrsEv(args.channel)]
       c.jsapi.unsubscribe(args)
-
-    c.ngChannelGroupAddChannel = (args) ->
-      c.jsapi.channel_groups_add_channel
 
     # Publishing to channels is trivial - just use the [`PubNub.ngPublish()`](http://www.pubnub.com/docs/javascript/api/reference.html#publish) method.
     c.ngPublish = -> c['_instance']['publish'].apply c['_instance'], arguments
@@ -194,6 +213,19 @@ angular.module('pubnub.angular.service', [])
       delete args.message
       c.jsapi.here_now(args)
 
+    c.ngChannelGroupAddChannel = (args) ->
+      c.jsapi.channel_groups_add_channel({ 
+              channel_group: args.channel_group,
+              channel: args.channel})
+
+    c.ngChannelGroupRemoveChannel = (args) ->
+      c.jsapi.channel_group_remove_channel({
+          channel_group: args.channel_group,
+          channel: args.channel
+        })
+
+
+
     # You can obtain information about the current list of a channels to which a uuid is subscribed to by calling the `ngWhereNow()` function in your application. [More info on ngWhereNow](http://www.pubnub.com/docs/javascript/api/reference.html#where_now).
     c.ngWhereNow = (args) -> c.jsapi.where_now(args)
 
@@ -205,6 +237,8 @@ angular.module('pubnub.angular.service', [])
 
     # Each channel has a unique "presence event name" for presence events. The method `ngPrsEv(channel)` returns that broadcast event name for presence events for a given channel as they are broadcast via `$rootScope`.
     c.ngPrsEv = (channel) -> "pn-presence:#{channel}"
+
+    c.ngCgEv = (channel_group) -> "pn-channelgroup:#{channel_group}"
 
     # The method [`ngAuth`](http://www.pubnub.com/docs/javascript/api/reference.html#auth) updates the auth_key associated with the PubNub session.
     c.ngAuth   = -> c['_instance']['auth'].apply c['_instance'], arguments
