@@ -15,7 +15,6 @@
     "Time",
     "WebSocket"
   ],
-  "license": "MIT",
   "homepage": "https://github.com/pubnub/pubnub-angular",
   "ignore": [
     "**/.*",
