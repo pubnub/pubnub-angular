@@ -6,7 +6,7 @@
     "Alexander Novikov <alexander.novikoff@gmail.com>"
   ],
   "description": "Official PubNub AngularJS Package",
-  "main": "lib/pubnub-angular.js",
+  "main": "dist/pubnub-angular.js",
   "keywords": [
     "PubNub",
     "Angular",
