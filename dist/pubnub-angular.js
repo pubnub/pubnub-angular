@@ -19,7 +19,7 @@ angular.module('pubnub.angular.service', []).factory('Pubnub', ['$rootScope', fu
 
     var service = {},
         wrappers = {},
-        defaultInstanceName = 'main',
+        defaultInstanceName = 'default',
         i;
 
     service.init = function (initConfig) {
@@ -32,7 +32,7 @@ angular.module('pubnub.angular.service', []).factory('Pubnub', ['$rootScope', fu
         if (exists(instance)) {
             return instance;
         } else if (typeof instanceName === 'string' && instanceName.length > 0) {
-            wrappers[instanceName] = new Wrapper(name);
+            wrappers[instanceName] = new Wrapper(instanceName);
 
             return wrappers[instanceName];
         }
@@ -43,32 +43,32 @@ angular.module('pubnub.angular.service', []).factory('Pubnub', ['$rootScope', fu
     service.getEventNameFor = function (methodName, callbackName, instanceName) {
         if (!instanceName) instanceName = defaultInstanceName;
 
-        return [PUBNUB_PREFIX, instanceName, callbackName].join(':');
+        return [PUBNUB_PREFIX, instanceName, methodName, callbackName].join(':');
     };
 
     service.getMessageEventNameFor = function (channelName, instanceName) {
         if (!instanceName) instanceName = defaultInstanceName;
 
-        return [PUBNUB_PREFIX, instanceName, 'subscribe', channelName].join(':');
+        return [PUBNUB_PREFIX, instanceName, 'subscribe', 'callback', channelName].join(':');
     };
 
     service.getPresenceEventNameFor = function (channelName, instanceName) {
         if (!instanceName) instanceName = defaultInstanceName;
 
-        return [PUBNUB_PREFIX, instanceName, 'presence', channelName].join(':');
+        return [PUBNUB_PREFIX, instanceName, 'subscribe', 'presence', channelName].join(':');
     };
 
     service.subscribe = function (args) {
         this.getInstance(defaultInstanceName).subscribe(args);
     };
 
-    function Wrapper(name) {
-        this.name = name;
+    function Wrapper(label) {
+        this.label = label;
         this.pubnubInstance = null;
     }
 
-    Wrapper.prototype.getName = function () {
-        return this.name;
+    Wrapper.prototype.getLabel = function () {
+        return this.label;
     };
 
     // Wrap standard methods
@@ -76,7 +76,7 @@ angular.module('pubnub.angular.service', []).factory('Pubnub', ['$rootScope', fu
         (function (method) {
             Wrapper.prototype[method] = function (args) {
                 if ('triggerEvent' in args && !!args['triggerEvent']) {
-                    mockCallbacks(this.name, method, args, ['callback', 'error']);
+                    mockCallbacks(this.getLabel(), method, args, ['callback', 'error']);
                 }
 
                 this.getOriginalInstance()[method](args);
@@ -90,7 +90,7 @@ angular.module('pubnub.angular.service', []).factory('Pubnub', ['$rootScope', fu
 
     // Wrap subscribe callbacks
     Wrapper.prototype.subscribe = function (args) {
-        mockCallbacks(this.name, 'subscribe', args, config.subscribe_callbacks_to_wrap);
+        mockCallbacks(this.getLabel(), 'subscribe', args, config.subscribe_callbacks_to_wrap);
 
         this.getOriginalInstance().subscribe(args);
     };
@@ -123,7 +123,10 @@ angular.module('pubnub.angular.service', []).factory('Pubnub', ['$rootScope', fu
 
             (function (callbackName) {
                 object[currentCallbackName] = function () {
-                    $rootScope.$broadcast(service.getEventNameFor(methodName, callbackName, instanceName), arguments);
+                    $rootScope.$broadcast.bind.apply(
+                        $rootScope.$broadcast,
+                        [$rootScope, service.getEventNameFor(methodName, callbackName, instanceName)].concat(Array.prototype.slice.call(arguments))
+                    )();
 
                     if (callbackName in originalCallbacks && typeof originalCallbacks[callbackName] === 'function') {
                         originalCallbacks[callbackName].apply(null, arguments);
@@ -133,7 +136,10 @@ angular.module('pubnub.angular.service', []).factory('Pubnub', ['$rootScope', fu
                     if (methodName === 'subscribe') {
                         switch (callbackName) {
                             case 'callback':
-                                $rootScope.$broadcast(service.getMessageEventNameFor(arguments[2], instanceName), arguments);
+                                $rootScope.$broadcast.bind.apply(
+                                    $rootScope.$broadcast,
+                                    [$rootScope, service.getMessageEventNameFor(arguments[2], instanceName)].concat(Array.prototype.slice.call(arguments))
+                                )();
                                 break;
                             case 'presence':
                                 $rootScope.$broadcast(service.getPresenceEventNameFor(arguments[2], instanceName), arguments);
