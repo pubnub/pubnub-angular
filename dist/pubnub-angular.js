@@ -22,6 +22,11 @@ angular.module('pubnub.angular.service', []).factory('Pubnub', ['$rootScope', fu
         defaultInstanceName = 'default',
         i;
 
+    /**
+     * Initializer for default instance
+     *
+     * @param {Object} initConfig
+     */
     service.init = function (initConfig) {
         return service.getInstance(defaultInstanceName).init(initConfig);
     };
@@ -46,28 +51,61 @@ angular.module('pubnub.angular.service', []).factory('Pubnub', ['$rootScope', fu
         return instance;
     };
 
+    /**
+     * Generate unique method/callback event name
+     *
+     * @param {string} methodName
+     * @param {string} callbackName
+     * @param {string} instanceName
+     * @returns {string} event name
+     */
     service.getEventNameFor = function (methodName, callbackName, instanceName) {
         if (!instanceName) instanceName = defaultInstanceName;
 
         return [PUBNUB_PREFIX, instanceName, methodName, callbackName].join(':');
     };
 
+    /**
+     * Generate unique message event name for specified channel
+     *
+     * @param {string} channelName
+     * @param {string} instanceName
+     * @returns {string} event name
+     */
     service.getMessageEventNameFor = function (channelName, instanceName) {
         if (!instanceName) instanceName = defaultInstanceName;
 
         return [PUBNUB_PREFIX, instanceName, 'subscribe', 'callback', channelName].join(':');
     };
 
+    /**
+     * Generate unique presence event name for specified channel
+     *
+     * @param {string} channelName
+     * @param {string} instanceName
+     * @returns {string} event name
+     */
     service.getPresenceEventNameFor = function (channelName, instanceName) {
         if (!instanceName) instanceName = defaultInstanceName;
 
         return [PUBNUB_PREFIX, instanceName, 'subscribe', 'presence', channelName].join(':');
     };
 
+    /**
+     * Subscribe method wrapper for default instance
+     *
+     * @param {object} args
+     */
     service.subscribe = function (args) {
         this.getInstance(defaultInstanceName).subscribe(args);
     };
 
+    /**
+     * Wrapper for native Pubnub JavaScript SDK
+     *
+     * @param {string} label
+     * @constructor
+     */
     function Wrapper(label) {
         this.label = label;
         this.pubnubInstance = null;
@@ -82,7 +120,7 @@ angular.module('pubnub.angular.service', []).factory('Pubnub', ['$rootScope', fu
         return this.label;
     };
 
-    // Wrap standard methods
+    // Wrap standard methods dynamically
     for (i = 0; i < config.methods_to_delegate.length; i++) {
         (function (method) {
             Wrapper.prototype[method] = function (args) {
@@ -99,22 +137,37 @@ angular.module('pubnub.angular.service', []).factory('Pubnub', ['$rootScope', fu
         })(config.methods_to_delegate[i]);
     }
 
-    // Wrap subscribe callbacks
+    /**
+     * Subscribe method wrapper
+     *
+     * @param {object} args
+     */
     Wrapper.prototype.subscribe = function (args) {
         mockCallbacks(this.getLabel(), 'subscribe', args, getCallbacksToMock(args, config.subscribe_callbacks_to_wrap));
 
         this.getOriginalInstance().subscribe(args);
     };
 
+    /**
+     * New pubnub instance initializer
+     *
+     * @param {object} initConfig
+     */
     Wrapper.prototype.init = function (initConfig) {
         this.pubnubInstance = new PUBNUB.init(initConfig);
     };
 
+    /**
+     * Pubnub original instance getter
+     *
+     * @throws {ReferenceError} when instance is not initialized yet
+     * @returns {Object}
+     */
     Wrapper.prototype.getOriginalInstance = function () {
         if (this.pubnubInstance) {
             return this.pubnubInstance;
         } else {
-            throw new Error("Pubnub default instance is not initialized yet. Invoke #init() method first.")
+            throw new ReferenceError("Pubnub default instance is not initialized yet. Invoke #init() method first.")
         }
     };
 
