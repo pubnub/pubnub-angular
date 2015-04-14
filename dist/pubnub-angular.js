@@ -5,6 +5,7 @@ angular.module('pubnub.angular.service', []).factory('Pubnub', ['$rootScope', fu
 
     var config = {
         pubnub_prefix: 'pubnub',
+        default_instance_name: 'default',
         methods_to_delegate: ['history', 'replay', 'publish', 'unsubscribe', 'here_now', 'grant', 'revoke',
             'audit', 'time', 'where_now', 'state',
             'channel_group', 'channel_group_list_channels', 'channel_group_list_groups', 'channel_group_list_namespaces',
@@ -18,7 +19,6 @@ angular.module('pubnub.angular.service', []).factory('Pubnub', ['$rootScope', fu
 
     var service = {},
         wrappers = {},
-        defaultInstanceName = 'default',
         i;
 
     /**
@@ -27,7 +27,7 @@ angular.module('pubnub.angular.service', []).factory('Pubnub', ['$rootScope', fu
      * @param {Object} initConfig
      */
     service.init = function (initConfig) {
-        return service.getInstance(defaultInstanceName).init(initConfig);
+        return service.getInstance(config.default_instance_name).init(initConfig);
     };
 
     /**
@@ -59,7 +59,7 @@ angular.module('pubnub.angular.service', []).factory('Pubnub', ['$rootScope', fu
      * @returns {string} event name
      */
     service.getEventNameFor = function (methodName, callbackName, instanceName) {
-        if (!instanceName) instanceName = defaultInstanceName;
+        if (!instanceName) instanceName = config.default_instance_name;
 
         return [config.pubnub_prefix, instanceName, methodName, callbackName].join(':');
     };
@@ -72,7 +72,7 @@ angular.module('pubnub.angular.service', []).factory('Pubnub', ['$rootScope', fu
      * @returns {string} event name
      */
     service.getMessageEventNameFor = function (channelName, instanceName) {
-        if (!instanceName) instanceName = defaultInstanceName;
+        if (!instanceName) instanceName = config.default_instance_name;
 
         return [config.pubnub_prefix, instanceName, 'subscribe', 'callback', channelName].join(':');
     };
@@ -85,7 +85,7 @@ angular.module('pubnub.angular.service', []).factory('Pubnub', ['$rootScope', fu
      * @returns {string} event name
      */
     service.getPresenceEventNameFor = function (channelName, instanceName) {
-        if (!instanceName) instanceName = defaultInstanceName;
+        if (!instanceName) instanceName = config.default_instance_name;
 
         return [config.pubnub_prefix, instanceName, 'subscribe', 'presence', channelName].join(':');
     };
@@ -96,7 +96,7 @@ angular.module('pubnub.angular.service', []).factory('Pubnub', ['$rootScope', fu
      * @param {object} args
      */
     service.subscribe = function (args) {
-        this.getInstance(defaultInstanceName).subscribe(args);
+        this.getInstance(config.default_instance_name).subscribe(args);
     };
 
     /**
@@ -131,7 +131,7 @@ angular.module('pubnub.angular.service', []).factory('Pubnub', ['$rootScope', fu
             };
 
             service[method] = function (args) {
-                return this.getInstance(defaultInstanceName)[method](args);
+                return this.getInstance(config.default_instance_name)[method](args);
             }
         })(config.methods_to_delegate[i]);
     }
