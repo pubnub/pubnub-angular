@@ -3,9 +3,8 @@ angular.module('pubnub.angular.service', []).factory('Pubnub', ['$rootScope', fu
         throw new Error("PUBNUB is not in global scope. Ensure that pubnub.js file is included before pubnub-angular.js");
     }
 
-    var PUBNUB_PREFIX = "pubnub";
-
     var config = {
+        pubnub_prefix: 'pubnub',
         methods_to_delegate: ['history', 'replay', 'publish', 'unsubscribe', 'here_now', 'grant', 'revoke',
             'audit', 'time', 'where_now', 'state',
             'channel_group', 'channel_group_list_channels', 'channel_group_list_groups', 'channel_group_list_namespaces',
@@ -62,7 +61,7 @@ angular.module('pubnub.angular.service', []).factory('Pubnub', ['$rootScope', fu
     service.getEventNameFor = function (methodName, callbackName, instanceName) {
         if (!instanceName) instanceName = defaultInstanceName;
 
-        return [PUBNUB_PREFIX, instanceName, methodName, callbackName].join(':');
+        return [config.pubnub_prefix, instanceName, methodName, callbackName].join(':');
     };
 
     /**
@@ -75,7 +74,7 @@ angular.module('pubnub.angular.service', []).factory('Pubnub', ['$rootScope', fu
     service.getMessageEventNameFor = function (channelName, instanceName) {
         if (!instanceName) instanceName = defaultInstanceName;
 
-        return [PUBNUB_PREFIX, instanceName, 'subscribe', 'callback', channelName].join(':');
+        return [config.pubnub_prefix, instanceName, 'subscribe', 'callback', channelName].join(':');
     };
 
     /**
@@ -88,7 +87,7 @@ angular.module('pubnub.angular.service', []).factory('Pubnub', ['$rootScope', fu
     service.getPresenceEventNameFor = function (channelName, instanceName) {
         if (!instanceName) instanceName = defaultInstanceName;
 
-        return [PUBNUB_PREFIX, instanceName, 'subscribe', 'presence', channelName].join(':');
+        return [config.pubnub_prefix, instanceName, 'subscribe', 'presence', channelName].join(':');
     };
 
     /**
