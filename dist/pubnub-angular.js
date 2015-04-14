@@ -13,7 +13,7 @@ angular.module('pubnub.angular.service', []).factory('Pubnub', ['$rootScope', fu
             'channel_group_add_channel', 'channel_group_cloak', 'set_uuid', 'get_uuid', 'uuid', 'auth',
             'set_cipher_key', 'get_cipher_key', 'raw_encrypt', 'raw_decrypt',
             'set_heartbeat', 'get_heartbeat', 'set_heartbeat_interval', 'get_heartbeat_interval'],
-
+        common_callbacks_to_wrap: ['callback', 'error'],
         subscribe_callbacks_to_wrap: ['callback', 'connect', 'reconnect', 'disconnect', 'error', 'idle', 'presence']
     };
 
@@ -26,6 +26,12 @@ angular.module('pubnub.angular.service', []).factory('Pubnub', ['$rootScope', fu
         return service.getInstance(defaultInstanceName).init(initConfig);
     };
 
+    /**
+     * Instance getter
+     *
+     * @param instanceName
+     * @returns {Wrapper}
+     */
     service.getInstance = function (instanceName) {
         var instance = wrappers[instanceName];
 
@@ -67,6 +73,11 @@ angular.module('pubnub.angular.service', []).factory('Pubnub', ['$rootScope', fu
         this.pubnubInstance = null;
     }
 
+    /**
+     * Get instance label
+     *
+     * @returns {String}
+     */
     Wrapper.prototype.getLabel = function () {
         return this.label;
     };
@@ -75,22 +86,22 @@ angular.module('pubnub.angular.service', []).factory('Pubnub', ['$rootScope', fu
     for (i = 0; i < config.methods_to_delegate.length; i++) {
         (function (method) {
             Wrapper.prototype[method] = function (args) {
-                if ('triggerEvent' in args && !!args['triggerEvent']) {
-                    mockCallbacks(this.getLabel(), method, args, ['callback', 'error']);
+                if (isObject(args)) {
+                    mockCallbacks(this.getLabel(), method, args, getCallbacksToMock(args, config.common_callbacks_to_wrap));
                 }
 
-                this.getOriginalInstance()[method](args);
+                return this.getOriginalInstance()[method](args);
             };
 
             service[method] = function (args) {
-                this.getInstance(defaultInstanceName)[method](args);
+                return this.getInstance(defaultInstanceName)[method](args);
             }
         })(config.methods_to_delegate[i]);
     }
 
     // Wrap subscribe callbacks
     Wrapper.prototype.subscribe = function (args) {
-        mockCallbacks(this.getLabel(), 'subscribe', args, config.subscribe_callbacks_to_wrap);
+        mockCallbacks(this.getLabel(), 'subscribe', args, getCallbacksToMock(args, config.subscribe_callbacks_to_wrap));
 
         this.getOriginalInstance().subscribe(args);
     };
@@ -107,10 +118,74 @@ angular.module('pubnub.angular.service', []).factory('Pubnub', ['$rootScope', fu
         }
     };
 
+    /**
+     * Check does input value contain any value
+     *
+     * @param input
+     * @returns {boolean}
+     */
     function exists(input) {
         return (typeof input !== 'undefined' && input !== null);
     }
 
+    /**
+     * Check is input value an object
+     *
+     * @param input
+     * @returns {boolean}
+     */
+    function isObject(input) {
+        return typeof input === 'object' && input !== null;
+    }
+
+    /**
+     * Check is input value is a function
+     *
+     * @param input
+     * @returns {boolean}
+     */
+    function isFunction(input) {
+        return typeof input === 'function';
+    }
+
+    /**
+     * Return allowed and enabled in args callbacks array
+     *
+     * @param {Object} argsValue from method call
+     * @param {Array} initialCallbackNames from config object
+     * @returns {Array} of callbacks to mock
+     */
+    function getCallbacksToMock(argsValue, initialCallbackNames) {
+        var triggerEventsValue = argsValue['triggerEvents'],
+            result = [],
+            length,
+            value,
+            i;
+
+        if (triggerEventsValue === true) {
+            return initialCallbackNames;
+        } else if (isObject(triggerEventsValue)) {
+            length = triggerEventsValue.length;
+
+            for (i = 0; i < length; i++) {
+                value = triggerEventsValue[i];
+                if (initialCallbackNames.indexOf(value) >= 0) result.push(value);
+            }
+
+            return result;
+        } else {
+            return [];
+        }
+    }
+
+    /**
+     * Mock passed in callbacks with callback-wrappers to invoke both original callbacks and angular events
+     *
+     * @param {string} instanceName
+     * @param {string} methodName
+     * @param {Object} object
+     * @param {Array} callbacksList
+     */
     function mockCallbacks(instanceName, methodName, object, callbacksList) {
         var l = callbacksList.length,
             originalCallbacks = {},
@@ -119,16 +194,22 @@ angular.module('pubnub.angular.service', []).factory('Pubnub', ['$rootScope', fu
 
         for (i = 0; i < l; i++) {
             currentCallbackName = callbacksList[i];
+
+            if (!isObject(object)) {
+                return;
+            }
+
             originalCallbacks[currentCallbackName] = object[currentCallbackName];
 
             (function (callbackName) {
                 object[currentCallbackName] = function () {
                     $rootScope.$broadcast.bind.apply(
                         $rootScope.$broadcast,
-                        [$rootScope, service.getEventNameFor(methodName, callbackName, instanceName)].concat(Array.prototype.slice.call(arguments))
+                        [$rootScope, service.getEventNameFor(methodName, callbackName, instanceName)]
+                            .concat(Array.prototype.slice.call(arguments))
                     )();
 
-                    if (callbackName in originalCallbacks && typeof originalCallbacks[callbackName] === 'function') {
+                    if (callbackName in originalCallbacks && isFunction(originalCallbacks[callbackName])) {
                         originalCallbacks[callbackName].apply(null, arguments);
                     }
 
@@ -138,11 +219,16 @@ angular.module('pubnub.angular.service', []).factory('Pubnub', ['$rootScope', fu
                             case 'callback':
                                 $rootScope.$broadcast.bind.apply(
                                     $rootScope.$broadcast,
-                                    [$rootScope, service.getMessageEventNameFor(arguments[2], instanceName)].concat(Array.prototype.slice.call(arguments))
+                                    [$rootScope, service.getMessageEventNameFor(arguments[2], instanceName)]
+                                        .concat(Array.prototype.slice.call(arguments))
                                 )();
                                 break;
                             case 'presence':
-                                $rootScope.$broadcast(service.getPresenceEventNameFor(arguments[2], instanceName), arguments);
+                                $rootScope.$broadcast.bind.apply(
+                                    $rootScope.$broadcast,
+                                    [$rootScope, service.getPresenceEventNameFor(arguments[2], instanceName)]
+                                        .concat(Array.prototype.slice.call(arguments))
+                                )();
                                 break;
                             default:
                                 break;

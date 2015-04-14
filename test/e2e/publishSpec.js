@@ -1,8 +1,6 @@
-"use strict";
-
-var expect = chai.expect;
-
 describe("#publish()", function () {
+    "use strict";
+
     var stringMessage = "hey",
         channel = "pubnub-angular-test-publish",
         Pubnub,
@@ -10,12 +8,19 @@ describe("#publish()", function () {
 
     beforeEach(module('pubnub.angular.service'));
 
-    beforeEach(inject(function (_Pubnub_, _$rootScope_) {
-        $rootScope = _$rootScope_;
-        Pubnub = _Pubnub_;
-    }));
+    beforeEach(function (done) {
+        inject(function (_Pubnub_, _$rootScope_) {
+            $rootScope = _$rootScope_;
+            Pubnub = _Pubnub_;
+            setTimeout(function () {
+                done();
+            }, 1000)
+        })
+    });
 
     describe("success callback", function () {
+        this.timeout(2000);
+
         beforeEach(function () {
             Pubnub.init(config.demo)
         });
@@ -25,7 +30,7 @@ describe("#publish()", function () {
                 Pubnub.publish({
                     channel: channel,
                     message: stringMessage,
-                    triggerEvent: true,
+                    triggerEvents: true,
                     callback: function (payload) {
                         expect(payload[0]).to.be.equal(1);
                         expect(payload[1]).to.be.equal('Sent');
@@ -35,12 +40,12 @@ describe("#publish()", function () {
             });
         });
 
-        it("should trigger event", function (done) {
+        it("should trigger event when triggerEvents is true", function (done) {
             inject(function () {
                 Pubnub.publish({
                     channel: channel,
                     message: stringMessage,
-                    triggerEvent: true
+                    triggerEvents: true
                 });
 
                 $rootScope.$on(Pubnub.getEventNameFor('publish', 'callback'), function (event, result) {
@@ -48,6 +53,40 @@ describe("#publish()", function () {
                     expect(result[1]).to.be.equal('Sent');
                     done();
                 });
+            });
+        });
+
+        it("should trigger event when triggerEvents is an array containing 'callback' element", function (done) {
+            inject(function () {
+                Pubnub.publish({
+                    channel: channel,
+                    message: stringMessage,
+                    triggerEvents: ['callback']
+                });
+
+                $rootScope.$on(Pubnub.getEventNameFor('publish', 'callback'), function (event, result) {
+                    expect(result[0]).to.be.equal(1);
+                    expect(result[1]).to.be.equal('Sent');
+                    done();
+                });
+            });
+        });
+
+        it("should not trigger event when triggerEvents is an array without 'callback' element", function (done) {
+            inject(function () {
+                var spy = sinon.spy();
+
+                Pubnub.publish({
+                    channel: channel,
+                    message: stringMessage,
+                    triggerEvents: ['error'],
+                    callback: function () {
+                        expect(spy).to.have.not.been.called;
+                        done();
+                    }
+                });
+
+                $rootScope.$on(Pubnub.getEventNameFor('publish', 'callback'), spy);
             });
         });
     });
@@ -83,7 +122,7 @@ describe("#publish()", function () {
                 Pubnub.publish({
                     channel: channel,
                     message: stringMessage,
-                    triggerEvent: true
+                    triggerEvents: true
                 });
             });
         });
