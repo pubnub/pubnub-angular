@@ -22,7 +22,8 @@ module.exports = function (grunt) {
         uglify: {
             dist: {
                 options: {
-                    width: 80,
+                    sourceMap: true,
+                    maxLineLen: 80,
                     mangle: {
                         expect: []
                     }
