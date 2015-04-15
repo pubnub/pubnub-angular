@@ -24,7 +24,6 @@ module.exports = function (grunt) {
                     'src/config.js',
                     'src/service.js',
                     'src/wrapper.js',
-                    'src/helpers.js',
                     'src/mocks.js',
                     'src/pubnub-angular.postfix'
                 ],
@@ -35,7 +34,7 @@ module.exports = function (grunt) {
             dist: {
                 options: {
                     sourceMap: true,
-                    maxLineLen: 80,
+                    maxLineLen: 120,
                     mangle: {
                         expect: []
                     }

@@ -20,7 +20,7 @@ service.init = function (initConfig) {
 service.getInstance = function (instanceName) {
     var instance = wrappers[instanceName];
 
-    if (exists(instance)) {
+    if (angular.isDefined(instance) && instance instanceof Wrapper) {
         return instance;
     } else if (typeof instanceName === 'string' && instanceName.length > 0) {
         wrappers[instanceName] = new Wrapper(instanceName);

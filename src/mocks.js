@@ -14,7 +14,7 @@ function getCallbacksToMock(argsValue, initialCallbackNames) {
 
     if (triggerEventsValue === true) {
         return initialCallbackNames;
-    } else if (isObject(triggerEventsValue)) {
+    } else if (angular.isObject(triggerEventsValue)) {
         length = triggerEventsValue.length;
 
         for (i = 0; i < length; i++) {
@@ -45,7 +45,7 @@ function mockCallbacks(instanceName, methodName, object, callbacksList) {
     for (i = 0; i < l; i++) {
         currentCallbackName = callbacksList[i];
 
-        if (!isObject(object)) {
+        if (!angular.isObject(object)) {
             return;
         }
 
@@ -59,7 +59,7 @@ function mockCallbacks(instanceName, methodName, object, callbacksList) {
                         .concat(Array.prototype.slice.call(arguments))
                 )();
 
-                if (callbackName in originalCallbacks && isFunction(originalCallbacks[callbackName])) {
+                if (callbackName in originalCallbacks && angular.isFunction(originalCallbacks[callbackName])) {
                     originalCallbacks[callbackName].apply(null, arguments);
                 }
 

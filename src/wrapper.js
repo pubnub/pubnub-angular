@@ -22,7 +22,7 @@ Wrapper.prototype.getLabel = function () {
 for (i = 0; i < config.methods_to_delegate.length; i++) {
     (function (method) {
         Wrapper.prototype[method] = function (args) {
-            if (isObject(args)) {
+            if (angular.isObject(args)) {
                 mockCallbacks(this.getLabel(), method, args, getCallbacksToMock(args, config.common_callbacks_to_wrap));
             }
 

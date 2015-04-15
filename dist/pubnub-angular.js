@@ -1,7 +1,7 @@
 angular.module('pubnub.angular.service', [])
     .factory('Pubnub', ['$rootScope', function ($rootScope) {
 
-if (!exists(PUBNUB)) {
+if (!angular.isDefined(PUBNUB)) {
     throw new Error("PUBNUB is not in global scope. Ensure that pubnub.js file is included before pubnub-angular.js");
 }
 
@@ -41,7 +41,7 @@ service.init = function (initConfig) {
 service.getInstance = function (instanceName) {
     var instance = wrappers[instanceName];
 
-    if (exists(instance)) {
+    if (angular.isDefined(instance) && instance instanceof Wrapper) {
         return instance;
     } else if (typeof instanceName === 'string' && instanceName.length > 0) {
         wrappers[instanceName] = new Wrapper(instanceName);
@@ -125,7 +125,7 @@ Wrapper.prototype.getLabel = function () {
 for (i = 0; i < config.methods_to_delegate.length; i++) {
     (function (method) {
         Wrapper.prototype[method] = function (args) {
-            if (isObject(args)) {
+            if (angular.isObject(args)) {
                 mockCallbacks(this.getLabel(), method, args, getCallbacksToMock(args, config.common_callbacks_to_wrap));
             }
 
@@ -173,36 +173,6 @@ Wrapper.prototype.getOriginalInstance = function () {
 };
 
 /**
- * Check does input value contain any value
- *
- * @param input
- * @returns {boolean}
- */
-function exists(input) {
-    return (typeof input !== 'undefined' && input !== null);
-}
-
-/**
- * Check is input value an object
- *
- * @param input
- * @returns {boolean}
- */
-function isObject(input) {
-    return typeof input === 'object' && input !== null;
-}
-
-/**
- * Check is input value is a function
- *
- * @param input
- * @returns {boolean}
- */
-function isFunction(input) {
-    return typeof input === 'function';
-}
-
-/**
  * Return allowed and enabled in args callbacks array
  *
  * @param {Object} argsValue from method call
@@ -218,7 +188,7 @@ function getCallbacksToMock(argsValue, initialCallbackNames) {
 
     if (triggerEventsValue === true) {
         return initialCallbackNames;
-    } else if (isObject(triggerEventsValue)) {
+    } else if (angular.isObject(triggerEventsValue)) {
         length = triggerEventsValue.length;
 
         for (i = 0; i < length; i++) {
@@ -249,7 +219,7 @@ function mockCallbacks(instanceName, methodName, object, callbacksList) {
     for (i = 0; i < l; i++) {
         currentCallbackName = callbacksList[i];
 
-        if (!isObject(object)) {
+        if (!angular.isObject(object)) {
             return;
         }
 
@@ -263,7 +233,7 @@ function mockCallbacks(instanceName, methodName, object, callbacksList) {
                         .concat(Array.prototype.slice.call(arguments))
                 )();
 
-                if (callbackName in originalCallbacks && isFunction(originalCallbacks[callbackName])) {
+                if (callbackName in originalCallbacks && angular.isFunction(originalCallbacks[callbackName])) {
                     originalCallbacks[callbackName].apply(null, arguments);
                 }
 
