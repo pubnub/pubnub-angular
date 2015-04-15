@@ -1,6 +1,18 @@
 module.exports = function (grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+        karma: {
+            e2e: {
+                configFile: 'karma.e2e.conf.js',
+                singleRun: true,
+                browsers: ['PhantomJS']
+            },
+            unit: {
+                configFile: 'karma.unit.conf.js',
+                singleRun: true,
+                browsers: ['PhantomJS']
+            }
+        },
         concat: {
             options: {
                 separator: '\n'
@@ -32,18 +44,15 @@ module.exports = function (grunt) {
                     'dist/<%= pkg.name %>.min.js': ['<%= concat.dist.dest %>']
                 }
             }
-        },
-        test: {
-            end2end: 'karma.e2e.conf.js',
-            unit: 'karma.unit.conf.js'
         }
     });
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-karma');
 
     grunt.registerTask('package', ['concat', 'uglify']);
     grunt.registerTask('default', ['package']);
-    grunt.registerTask('test:e2e', 'Run Karma e2e tests', ['test:e2e']);
-    grunt.registerTask('test:unit', 'Run Karma unit tests', ['test:unit']);
+
+    grunt.registerTask('test', ['karma:unit', 'karma:e2e'])
 };

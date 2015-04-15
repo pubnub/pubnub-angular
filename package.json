@@ -3,6 +3,9 @@
   "version": "2.0.0-beta.1",
   "description": "Official PubNub AngularJS Package",
   "main": "dist/pubnub-angular.js",
+  "scripts": {
+    "test": "grunt test"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/pubnub/pubnub-angular"
@@ -26,6 +29,7 @@
     "grunt": "^0.4.5",
     "grunt-contrib-concat": "^0.5.1",
     "grunt-contrib-uglify": "^0.9.1",
+    "grunt-karma": "^0.10.1",
     "karma": "^0.12.31",
     "karma-chai": "^0.1.0",
     "karma-chai-plugins": "^0.2.4",
