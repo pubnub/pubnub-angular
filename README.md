@@ -7,7 +7,7 @@ integration between PubNub and AngularJS. PubNub makes it
 easy to integrate real-time bidirectional communication
 into your app.
 
-```Pubnub``` service is a wrapper for Pubnub JavaScript SDK
+**Pubnub** service is a wrapper for Pubnub JavaScript SDK
 that adds a few of extra features to simplify it's usage with AngularJS:
 
 * Multiple instance behaviour. All instances are accessible
@@ -86,12 +86,12 @@ are hidden inside service and are accessible via instance getter. Methods of def
 instance are mapped directly to Pubnub service just like ```Pubnub.publish({...})```.
 In most use cases usage of the only default Pubnub instance will be enough, but if you
 need multiple instances with different credentials, you should
-use ```Pubnub.getInstance(instanceName)``` instance getter. In this case publish
+use ```Pubnub.getInstance(instanceName)``` getter. In this case publish
 method will looks like ```Pubnub.getInstance(instanceName).publish({})```.
 
 To summarize above let's check out the following 2 examples. Both of them performs the
-same job - create 2 Pubnub instances with different credentials, publish from one and
-grant permissions from another.
+same job - creation of  2 Pubnub instances with different credentials.
+Publish method is invoked on the __defaultInstance__ and grant method on __anotherInstance__.
 
 First example shows how to do that using native **Pubnub JavaScript SDK**:
 
@@ -121,7 +121,7 @@ anotherInstance.grant({
 });
 ```
 
-Second example shows how to use **Pubnub Angular SDK** for this purposes:
+Second example shows how to use **Pubnub AngularJS SDK** for this purposes:
 
 ```javascript
 Pubnub.init({
@@ -156,7 +156,7 @@ That's it - you're ready to start using the AngularJS PubNub SDK!
 Another key feature of this SDK is ability to trigger method events
 in addition to passed in callbacks. By default events will not be triggered.
 
-To enable all possible events for the method, add ```triggerEvents: true```
+To enable all possible events for certain method, add ```triggerEvents: true```
 option to the method arguments:
 
 ```javascript
@@ -210,20 +210,22 @@ Pubnub.subscribe({
   });
 };
 
-$rootScope.$on(Pubnub.getMessageEventNameFor($scope.selectedChannel), function (ngEvent, payload) {
+$rootScope.$on(Pubnub.getMessageEventNameFor($scope.selectedChannel), function (ngEvent, message, envelope, channel) {
     $scope.$apply(function () {
         // add message to the messages list
-        $scope.chatMessages.unshift(payload.message);
+        $scope.chatMessages.unshift(message);
     });
 });
 
-$rootScope.$on(Pubnub.getPresenceEventNameFor($scope.selectedChannel), function (ngEvent, payload) {
+$rootScope.$on(Pubnub.getPresenceEventNameFor($scope.selectedChannel), function (ngEvent, pnEvent, envelope, channel) {
     $scope.$apply(function () {
         // apply presence event (join|leave) on users list
-        $scope.statusSentSuccessfully = false;
+        handlePresenceEvent(pnEvent);
     });
 });
 ```
+
+Notice, that params order in broadcasted events is the same as in native SDK, except that ngEvent object is prepended as the first param.
 
 For the required callbacks, for ex. _callback_ callback in subscribe
 method, you should add it using one of the next ways:
