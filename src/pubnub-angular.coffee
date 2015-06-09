@@ -72,8 +72,8 @@ angular.module('pubnub.angular.service', [])
           $rootScope.$broadcast "pn-message:#{realChannel}", {
             message: message
             channel: realChannel,
-            start: messages[1],
-            end: messages[2]
+            end: messages[1],
+            start: messages[2]
           }
 
     # Internal method that creates wrappers for the message and presence event handlers. Wrappers are necessary because we want the Angular library to keep track of channels and presence events on the application's behalf.
