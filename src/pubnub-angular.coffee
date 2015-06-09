@@ -67,13 +67,13 @@ angular.module('pubnub.angular.service', [])
 
     # Internal method that creates a message handler for a specified channel name. Uses a closure so that we capture the channel name within the message handler callback.
     c._ngFireMessages = (realChannel) ->
-      (messages, t1, t2) ->
+      (messages) ->
         c.each messages[0], (message) ->
           $rootScope.$broadcast "pn-message:#{realChannel}", {
             message: message
             channel: realChannel,
-            start: t1,
-            end: t2
+            start: messages[1],
+            end: messages[2]
           }
 
     # Internal method that creates wrappers for the message and presence event handlers. Wrappers are necessary because we want the Angular library to keep track of channels and presence events on the application's behalf.
