@@ -35,14 +35,14 @@ angular.module('pubnub.angular.service', [])
     # Include the "map" and "each" functions into the PubNub Angular API as helper functions.
     # We create and invoke a closure to capture both the angular context method name into the helper function.
     for k in ['map', 'each']
-      if pubnub?[k] instanceof Function
+      if PUBNUB?[k] instanceof Function
         ((kk) -> c[kk] = ->
           c['_instance']?[kk].apply c['_instance'], arguments)(k)
 
     # Add bindings to the original vanilla JavaScript PubNub API methods under the "jsapi" key.
     # We create and invoke a closure to capture both the angular context method name into the helper function.
-    for k of pubnub
-      if pubnub?[k] instanceof Function
+    for k of PUBNUB
+      if PUBNUB?[k] instanceof Function
         ((kk) -> c['jsapi'][kk] = ->
           c['_instance']?[kk].apply c['_instance'], arguments)(k)
 
@@ -51,7 +51,7 @@ angular.module('pubnub.angular.service', [])
 
     # [Initialize](http://www.pubnub.com/docs/javascript/api/reference.html#init) the PubNub Client API. You must do this before trying to use the API to establish account credentials. Overwrites the current state, so this method should only be called once when instantiating an Angular application.
     c.init = ->
-      c['_instance'] = pubnub
+      c['_instance'] = PUBNUB.init.apply PUBNUB, arguments
       c['_channels'] = []
       c['_presence'] = {}
       c['_presData'] = {}
