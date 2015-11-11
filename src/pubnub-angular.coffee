@@ -187,11 +187,13 @@ angular.module('pubnub.angular.service', [])
 
     # It can be super-handy to gather the previous several hundred messages from the PubNub channel [history](http://www.pubnub.com/docs/javascript/api/reference.html#history). The PubNub Angular API makes this easy by bridging the event model of the PubNub JS history API and the AngularJS event broadcast model so that historical messages come through the same event interface.
     c.ngHistory = (args) ->
-      # TODO: in the next API version, save & restore the callback
-      args.callback = c._ngFireMessages args.channel
+      oldcallback = args.callback
+      args.callback = (x) ->
+        c._ngFireMessages args.channel
+        oldcallback(x) if oldcallback
       c.jsapi.history args
 
-    # Sometimes, it's better to retrieve history as a promise. The 'ngHistoryQ' method returns a promise that is fulfilled when the history call returns. More about [history](http://www.pubnub.com/docs/javascript/api/reference.html#history). This method does not send historical events through the root scope event mechanism.
+    # Sometimes, it's better to retrieve history as a promise. The 'ngHistoryQ' method returns a promise that is fulfilled when the history call returns. More about [history](http://www.pubnub.com/docs/javascript/api/reference.html#history). This method does not send historical events through the $rootScope event mechanism.
     c.ngHistoryQ = (args) ->
       deferred = $q.defer()
       oldcallback = args.callback
