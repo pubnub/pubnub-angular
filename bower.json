@@ -1,6 +1,6 @@
 {
   "name": "pubnub-angular",
-  "version": "2.0.0-beta.2",
+  "version": "2.0.0",
   "authors": [
     "Sunny Gleason <sunny.gleason@gmail.com>",
     "Alexander Novikov <alexander.novikoff@gmail.com>"
