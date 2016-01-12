@@ -30,6 +30,7 @@
     "karma-phantomjs-launcher": "^0.2.3",
     "karma-sinon-chai": "^1.1.0",
     "karma-spec-reporter": "0.0.23",
-    "mocha": "^2.3.4"
+    "mocha": "^2.3.4",
+    "phantomjs": "^1.9.19"
   }
 }
