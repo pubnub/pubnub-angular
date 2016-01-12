@@ -1,0 +1,2 @@
+angular.module('pubnub.angular.service', [])
+    .factory('Pubnub', ['$rootScope', function ($rootScope) {

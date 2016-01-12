@@ -1,35 +1,40 @@
 ## Contact support@pubnub.com for all questions
 
-### PubNub AngularJS SDK
+# PubNub AngularJS SDK 2.0
 
 Welcome! We're here to get you started quickly with your
 integration between PubNub and AngularJS. PubNub makes it
 easy to integrate real-time bidirectional communication
 into your app.
 
-NEW! For internals / annotated source code, please check
-this out! http://pubnub.github.io/pubnub-angular/docs/pubnub-angular.html
+**Pubnub** service is a wrapper for Pubnub JavaScript SDK
+that adds a few of extra features to simplify it's usage with AngularJS:
 
-# The Easiest Way Possible
+* Multiple instance behaviour. All instances are accessible
+throughout application via ```Pubnub``` service.
+
+* Events. For every PubNub method method you can specify ```triggerEvents```
+option, that will broadcast certain callback as an AngularJS event.
+
+You can still use the native Pubnub JavaScript SDK if you feel this will be
+more suitable for your situation.
+
+## Integrating PubNub Angular SDK into Your App
+
+Your HTML page will include 2 key libraries:
+
+* PubNub JavaScript SDK
+* PubNub JavaScript SDK Angular Service
 
 Using [Bower](http://bower.io):
 
-```bower install pubnub-angular```
+```bower install --save pubnub pubnub-angular```
 
-# Integrating PubNub Angular SDK into Your App
-
-Your HTML page will include 3 key libraries:
-
-* The core PubNub JS Library (generally from the CDN)
-* AngularJS (usually as a Bower component)
-* PubNub Angular (as a Bower component or copy&paste)
-
-The HTML code looks like this:
+Or using CDNs:
 
 ```html
 <script src="http://cdn.pubnub.com/pubnub.min.js"></script>
-<script src="components/angular/angular.js"></script>
-<script src="components/pubnub-angular/pubnub-angular.js"></script>
+<script src="http://cdn.pubnub.com/pubnub-angular.min.js"></script>
 ```
 
 We presume your app is already Angular-enabled with an ng-app
@@ -38,7 +43,7 @@ attribute or the equivalent:
 ```html
 <body ng-app="PubNubAngularApp">
 ```
-    
+
 Where 'PubNubAngularApp' is the name of the Angular module
 containing your app.
 
@@ -63,148 +68,170 @@ We presume the code for your controllers lives in:
 <script src="scripts/controllers/main.js"></script>
 ```
 
-The Angular ```PubNub``` service is injected into the controller as follows:
+The Angular ```Pubnub``` service is injected into the controller as follows:
 
 ```javascript
-.controller('JoinCtrl', function($scope, PubNub) { ... });
+.controller('MainCtrl', function($scope, Pubnub) { ... });
 ```
 
-Initialize PubNub (only once!) as follows:
+## Differences in usage with native JavaScript SDK
+
+To learn about Pubnub JavaScript features refer to native
+[Pubnub JavaScript SDK manual](http://www.pubnub.com/docs/javascript/javascript-sdk.html).
+All methods of this SDK are wrapped with **Pubnub AngularJS Service**.
+
+Native **Pubnub JavaScript SDK** provides instance creation using ```PUBNUB.init()```,
+which returns new instance with given credentials. In **Pubnub Angular SDK** instances
+are hidden inside service and are accessible via instance getter. Methods of default
+instance are mapped directly to Pubnub service just like ```Pubnub.publish({...})```.
+In most use cases usage of the only default Pubnub instance will be enough, but if you
+need multiple instances with different credentials, you should
+use ```Pubnub.getInstance(instanceName)``` getter. In this case publish
+method will looks like ```Pubnub.getInstance(instanceName).publish({})```.
+
+To summarize above let's check out the following 2 examples. Both of them performs the
+same job - creation of  2 Pubnub instances with different credentials.
+Publish method is invoked on the __defaultInstance__ and grant method on __anotherInstance__.
+
+First example shows how to do that using native **Pubnub JavaScript SDK**:
 
 ```javascript
-PubNub.init({
-  publish_key:'your pub key',
-  subscribe_key:'your sub key',
-  uuid:'an_optional_user_uuid'
-})
+var defaultInstance = PUBNUB.init({
+    publish_key: 'your pub key',
+    subscribe_key: 'your sub key'
+});
+
+var anotherInstance = PUBNUB.init({
+    publish_key: 'another pub key',
+    subscribe_key: 'another sub key'
+});
+
+defaultInstance.publish({
+    channel: 'myChannel',
+    message: 'Hello!',
+    callback: function (m) {console.log(m);}
+});
+
+anotherInstance.grant({
+    channel: 'my_channel',
+    auth_key: 'my_authkey',
+    read: true,
+    write: false,
+    callback: function (m) {console.log(m);}
+});
+```
+
+Second example shows how to use **Pubnub AngularJS SDK** for this purposes:
+
+```javascript
+Pubnub.init({
+    publish_key: 'your pub key',
+    subscribe_key: 'your sub key'
+});
+
+Pubnub.getInstance('anotherInstance').init({
+    publish_key: 'another pub key',
+    subscribe_key: 'another sub key'
+});
+
+Pubnub.publish({
+    channel: 'myChannel',
+    message: 'Hello!',
+    callback: function (m) {console.log(m);}
+});
+
+Pubnub.getInstance('anotherInstance').grant({
+    channel: 'my_channel',
+    auth_key: 'my_authkey',
+    read: true,
+    write: false,
+    callback: function (m) {console.log(m);}
+});
 ```
 
 That's it - you're ready to start using the AngularJS PubNub SDK!
 
+## Events
 
-# Here's How to Use It
+Another key feature of this SDK is ability to trigger method events
+in addition to passed in callbacks. By default events will not be triggered.
 
-Publishing to channels is trivial:
+To enable all possible events for certain method, add ```triggerEvents: true```
+option to the method arguments:
 
 ```javascript
-$scope.publish = function() {
-  PubNub.ngPublish({
-    callback : function(info) { console.log(info) },
+Pubnub.pubilsh({
     channel  : $scope.selectedChannel,
-    message  : $scope.newMessage
+    message  : $scope.newMessage,
+    callback : function(info) { console.log(info) },
+    triggerEvents: true
+});
+```
+
+And then you can subscribe to these events using ```Pubnub.getEventNameFor(...)```
+helper from anywhere in your app:
+
+```javascript
+$rootScope.$on(Pubnub.getEventNameFor('publish', 'callback'), function (ngEvent, payload) {
+    $scope.$apply(function () {
+        $scope.statusSentSuccessfully = true;
+    });
+});
+
+$rootScope.$on(Pubnub.getEventNameFor('publish', 'error'), function (ngEvent, payload) {
+    $scope.$apply(function () {
+        $scope.statusSentSuccessfully = false;
+    });
+});
+```
+
+If you don't want to broadcast all events, you can explicitly specify
+array of callback names you want to trigger. All callback names that
+do not exist in native SDK will be ignored:
+
+```javascript
+Pubnub.publish({
+    channel  : $scope.selectedChannel,
+    message  : $scope.newMessage,
+    callback : function(info) { console.log(info) },
+    triggerEvents: ['callback']
   });
 };
 ```
 
-We call the PubNub publish method passing in the selected channel
-and the message to transmit. You can also transmit structured
-data as JSON objects which will be automatically serialized &
-deserialized by the PubNub library.
-
-Subscribing to channels is accomplished by calling the PubNub
-ngSubscribe method. After the channel is subscribed, the app can
-register root scope message events by calling $rootScope.$on with
-the event string returned by PubNub.ngMsgEv(channel).
+For *subscribe* method there are two helpers that provide you handlers
+for specific channel events:
 
 ```javascript
-$scope.subscribe = function() {
-  PubNub.ngSubscribe({ channel: theChannel })
-  
-  $rootScope.$on(PubNub.ngMsgEv(theChannel), function(event, payload) {
-    // payload contains message, channel, env...
-    console.log('got a message event:', payload);    
-  })
-  
-  $rootScope.$on(PubNub.ngPrsEv(theChannel), function(event, payload) {
-    // payload contains message, channel, env...
-    console.log('got a presence event:', payload);
-  })
+Pubnub.subscribe({
+    channel  : $scope.selectedChannel,
+    message  : $scope.newMessage,
+    triggerEvents: ['callback', 'presence']
+  });
+};
+
+$rootScope.$on(Pubnub.getMessageEventNameFor($scope.selectedChannel), function (ngEvent, message, envelope, channel) {
+    $scope.$apply(function () {
+        // add message to the messages list
+        $scope.chatMessages.unshift(message);
+    });
+});
+
+$rootScope.$on(Pubnub.getPresenceEventNameFor($scope.selectedChannel), function (ngEvent, pnEvent, envelope, channel) {
+    $scope.$apply(function () {
+        // apply presence event (join|leave) on users list
+        handlePresenceEvent(pnEvent);
+    });
+});
 ```
 
-Note - if you'd like, you can also provide a callback to receive events
-as part of your ```ngSubscribe``` call as follows:
+Notice, that params order in broadcasted events is the same as in native SDK, except that ngEvent object is prepended as the first param.
 
-```javascript
-    PubNub.ngSubscribe({
-      channel: theChannel,
-      callback: function() { console.log(arguments); }
-    })
-```
+For the required callbacks, for ex. _callback_ callback in subscribe
+method, you should add it using one of the next ways:
 
-Under the hood, the AngularJS SDK will wrap your callback and invoke
-it. Why do we wrap it? So that we can provide all the goodness of the
-Presence API - see the next sections for more info!
-
-This is the core of the PubNub API - allowing clients to subscribe and
-publish to channels, and have those events propagate in real-time to other
-applications connected to the same channels.
-
-
-# Integrating Presence Events
-
-It's also easy to integrate presence events using the Angular API. In
-the example above, we just add an additional couple lines of code to
-call the PubNub.ngHereNow() method (retrieve current users), and register
-for presence events by calling $rootScope.$on with the event string
-returned by PubNub.ngPrsEv(channel).
-
-```javascript
-$scope.subscribe = function() {
-  // subscribe to the channel
-  PubNub.ngSubscribe({ channel: theChannel })
-  // handle message events
-  $rootScope.$on(PubNub.ngMsgEv(theChannel), function(event, payload) { ... })
-  
-  // handle presence events
-  $rootScope.$on(PubNub.ngPrsEv(theChannel), function(event, payload) {
-    // payload contains message, channel, env...
-    console.log('got a presence event:', payload);
-  })
-
-  // obtain the list of current channel subscribers
-  PubNub.ngHereNow { channel: theChannel }
-```
-
-Using the presence event as a trigger, we retrieve the Presence
-list for a channel using the PubNub.ngListPresence() function.
-
-```javascript
-  $rootScope.$on(PubNub.ngPrsEv(theChannel), function(event, payload) {
-    $scope.users = PubNub.ngListPresence(theChannel);
-  })
-```
-
-
-# Retrieving History
-
-It can be super-handy to gather the previous several hundred messages
-from the PubNub channel history. The PubNub Angular API makes this easy
-by bridging the event model of the PubNub JS history API and the AngularJS
-event broadcast model so that historical messages come through the same
-event interface.
-
-```javascript
-  PubNub.ngHistory({channel:theChannel, count:500});
-  // messages will be broadcast via $rootScope...
-```
-
-
-# Listing & Unsubscribing from Channels
-
-The PubNub Angular API takes care of keeping track of currently subscribed
-channels. Call the PubNub.ngListChannels() method to return a list of presently
-subscribed channels.
-
-```javascript
-  $scope.channels = PubNub.ngListChannels()
-```
-
-Unsubscribing is as easy as calling the PubNub.ngUnsubscribe() method. The
-library even takes care of removing the Angular event handlers for you to
-prevent memory leaks!
-
-```javascript
-  PubNub.ngUnsubscribe({channel:theChannel})
-```
+* _callback_ function in method arguments
+* ```triggerEvents: true```
+* ```triggerEvents: ['callback']```
 
 ## Contact support@pubnub.com for all questions

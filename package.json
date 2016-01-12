@@ -1,0 +1,40 @@
+{
+  "name": "pubnub-angular",
+  "version": "2.0.0-beta.2",
+  "description": "Official PubNub AngularJS Package",
+  "main": "dist/pubnub-angular.js",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pubnub/pubnub-angular"
+  },
+  "author": {
+    "name": "Sunny Gleason"
+  },
+  "contributors": [
+    {
+      "name": "Sunny Gleason",
+      "email": "sunny.gleason@gmail.com",
+      "url": "https://github.com/sunnygleason"
+    },
+    {
+      "name": "Alexander Novikov",
+      "email": "alexander.novikoff@gmail.com",
+      "url": "https://github.com/anovikov1984"
+    }
+  ],
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-concat": "^0.5.1",
+    "grunt-contrib-uglify": "^0.9.1",
+    "grunt-karma": "^0.10.1",
+    "karma": "^0.12.31",
+    "karma-chai": "^0.1.0",
+    "karma-chai-plugins": "^0.2.4",
+    "karma-mocha": "^0.1.10",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "karma-sinon-chai": "^0.3.0"
+  }
+}
