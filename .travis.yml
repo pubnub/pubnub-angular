@@ -12,7 +12,7 @@ env:
 install:
   - npm install -g grunt-cli
   - npm install -g bower
-  - npm install --verbose
+  - npm install --info
   - bower install
 
 script:
