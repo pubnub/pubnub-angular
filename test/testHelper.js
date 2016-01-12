@@ -3,20 +3,20 @@ var config = {};
 var expect = chai.expect;
 
 config.demo = {
-    publish_key: 'demo',
-    subscribe_key: 'demo'
+    publish_key: 'ds',
+    subscribe_key: 'ds'
 };
 
 config.admin = {
-    publish_key: 'demo',
-    subscribe_key: 'demo',
-    secret_key: 'demo'
+  publish_key: 'ds',
+  subscribe_key: 'ds',
+  secret_key: 'demo'
 };
 
 config.user = {
-    publish_key: 'demo',
-    subscribe_key: 'demo',
-    secret_key: 'demo'
+  publish_key: 'ds',
+  subscribe_key: 'ds',
+  secret_key: 'demo'
 };
 
 config.fake = {

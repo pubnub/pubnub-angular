@@ -78,7 +78,7 @@ describe("#subscribe()", function () {
 
     describe("presence callback", function () {
         it("should be invoked", function (done) {
-            this.timeout(3000);
+            this.timeout(10000);
 
             inject(function () {
                 var uuid = "blah";
@@ -113,6 +113,8 @@ describe("#subscribe()", function () {
         });
 
         it("should be triggered", function (done) {
+            this.timeout(10000);
+
             inject(function () {
                 var uuid = "blah";
 
