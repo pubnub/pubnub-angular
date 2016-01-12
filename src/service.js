@@ -1,6 +1,6 @@
-var service = {},
-    wrappers = {},
-    i;
+var service = {};
+var wrappers = {};
+var i;
 
 /**
  * Initializer for default instance
@@ -8,7 +8,7 @@ var service = {},
  * @param {Object} initConfig
  */
 service.init = function (initConfig) {
-    return service.getInstance(config.default_instance_name).init(initConfig);
+  return service.getInstance(config.default_instance_name).init(initConfig);
 };
 
 /**
@@ -18,17 +18,17 @@ service.init = function (initConfig) {
  * @returns {Wrapper}
  */
 service.getInstance = function (instanceName) {
-    var instance = wrappers[instanceName];
+  var instance = wrappers[instanceName];
 
-    if (angular.isDefined(instance) && instance instanceof Wrapper) {
-        return instance;
-    } else if (typeof instanceName === 'string' && instanceName.length > 0) {
-        wrappers[instanceName] = new Wrapper(instanceName);
-
-        return wrappers[instanceName];
-    }
-
+  if (angular.isDefined(instance) && instance instanceof Wrapper) {
     return instance;
+  } else if (typeof instanceName === 'string' && instanceName.length > 0) {
+    wrappers[instanceName] = new Wrapper(instanceName);
+
+    return wrappers[instanceName];
+  }
+
+  return instance;
 };
 
 /**
@@ -40,9 +40,9 @@ service.getInstance = function (instanceName) {
  * @returns {string} event name
  */
 service.getEventNameFor = function (methodName, callbackName, instanceName) {
-    if (!instanceName) instanceName = config.default_instance_name;
+  var effectiveInstance = (instanceName === undefined) ? config.default_instance_name : instanceName;
 
-    return [config.pubnub_prefix, instanceName, methodName, callbackName].join(':');
+  return [config.pubnub_prefix, effectiveInstance, methodName, callbackName].join(':');
 };
 
 /**
@@ -53,9 +53,9 @@ service.getEventNameFor = function (methodName, callbackName, instanceName) {
  * @returns {string} event name
  */
 service.getMessageEventNameFor = function (channelName, instanceName) {
-    if (!instanceName) instanceName = config.default_instance_name;
+  var effectiveInstance = (instanceName === undefined) ? config.default_instance_name : instanceName;
 
-    return [config.pubnub_prefix, instanceName, 'subscribe', 'callback', channelName].join(':');
+  return [config.pubnub_prefix, effectiveInstance, 'subscribe', 'callback', channelName].join(':');
 };
 
 /**
@@ -66,9 +66,9 @@ service.getMessageEventNameFor = function (channelName, instanceName) {
  * @returns {string} event name
  */
 service.getPresenceEventNameFor = function (channelName, instanceName) {
-    if (!instanceName) instanceName = config.default_instance_name;
+  var effectiveInstance = (instanceName === undefined) ? config.default_instance_name : instanceName;
 
-    return [config.pubnub_prefix, instanceName, 'subscribe', 'presence', channelName].join(':');
+  return [config.pubnub_prefix, effectiveInstance, 'subscribe', 'presence', channelName].join(':');
 };
 
 /**
@@ -77,5 +77,5 @@ service.getPresenceEventNameFor = function (channelName, instanceName) {
  * @param {object} args
  */
 service.subscribe = function (args) {
-    this.getInstance(config.default_instance_name).subscribe(args);
+  this.getInstance(config.default_instance_name).subscribe(args);
 };

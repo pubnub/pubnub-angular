@@ -1,0 +1,12 @@
+extends: airbnb/legacy
+plugins:
+rules:
+  no-undef: 0
+  max-len: 0
+  new-cap: 0
+  func-names: 0
+  no-unused-vars: 0
+  comma-dangle: 0
+  no-loop-func: 0
+  no-else-return: 0
+  no-param-reassign: 0
