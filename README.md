@@ -160,7 +160,7 @@ To enable all possible events for certain method, add ```triggerEvents: true```
 option to the method arguments:
 
 ```javascript
-Pubnub.pubilsh({
+Pubnub.publish({
     channel  : $scope.selectedChannel,
     message  : $scope.newMessage,
     callback : function(info) { console.log(info) },
