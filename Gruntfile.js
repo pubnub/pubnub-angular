@@ -3,6 +3,7 @@ module.exports = function (grunt) {
 
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-karma');
 
   grunt.initConfig({
@@ -39,6 +40,12 @@ module.exports = function (grunt) {
         dest: 'dist/<%= pkg.name %>.js'
       }
     },
+    copy: {
+      main: {
+        src: 'dist/<%= pkg.name %>.js',
+        dest: 'dist/<%= pkg.name %>-v<%= pkg.version %>.js',
+      },
+    },
     uglify: {
       dist: {
         options: {
@@ -49,13 +56,14 @@ module.exports = function (grunt) {
           }
         },
         files: {
-          'dist/<%= pkg.name %>.min.js': ['<%= concat.dist.dest %>']
+          'dist/<%= pkg.name %>.min.js': ['<%= concat.dist.dest %>'],
+          'dist/<%= pkg.name %>-v<%= pkg.version %>.min.js': ['<%= concat.dist.dest %>'],
         }
       }
     }
   });
 
-  grunt.registerTask('package', ['concat', 'uglify']);
+  grunt.registerTask('package', ['concat', 'copy', 'uglify']);
   grunt.registerTask('default', ['package']);
 
   grunt.registerTask('test', ['karma:unit', 'karma:e2e', 'eslint']);
