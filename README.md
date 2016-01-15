@@ -1,6 +1,6 @@
-## Contact support@pubnub.com for all questions
+# PubNub AngularJS SDK
 
-# PubNub AngularJS SDK 2.0
+[![Build Status](https://travis-ci.org/pubnub/pubnub-angular.svg?branch=master)](https://travis-ci.org/pubnub/pubnub-angular)
 
 Welcome! We're here to get you started quickly with your
 integration between PubNub and AngularJS. PubNub makes it
@@ -18,6 +18,12 @@ option, that will broadcast certain callback as an AngularJS event.
 
 You can still use the native Pubnub JavaScript SDK if you feel this will be
 more suitable for your situation.
+
+## Communication
+
+- If you **need help** or have a **general question**, contact [suport@pubnub.com](support@pubnub.com)
+- If you **found a bug**, please contact [suport@pubnub.com](support@pubnub.com) _with steps to reliably reproduce it_.
+- If you **want to contribute**, please open a pull request.
 
 ## Integrating PubNub Angular SDK into Your App
 
@@ -233,5 +239,3 @@ method, you should add it using one of the next ways:
 * _callback_ function in method arguments
 * ```triggerEvents: true```
 * ```triggerEvents: ['callback']```
-
-## Contact support@pubnub.com for all questions
