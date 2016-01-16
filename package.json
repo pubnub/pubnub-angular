@@ -1,6 +1,6 @@
 {
   "name": "pubnub-angular",
-  "version": "2.0.0-beta.3",
+  "version": "3.0.0",
   "description": "Official PubNub AngularJS Package",
   "main": "dist/pubnub-angular.js",
   "scripts": {

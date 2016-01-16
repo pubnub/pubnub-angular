@@ -25,6 +25,12 @@ more suitable for your situation.
 - If you **found a bug**, please contact [suport@pubnub.com](support@pubnub.com) _with steps to reliably reproduce it_.
 - If you **want to contribute**, please open a pull request.
 
+## Breaking Changes
+
+  * 3.0.0
+    * ng* prefix is removed from all the methods and now matches 1:1 to the parent javascript library.
+
+
 ## Integrating PubNub Angular SDK into Your App
 
 Your HTML page will include 2 key libraries:
