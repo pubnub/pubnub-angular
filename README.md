@@ -1,6 +1,6 @@
 # PubNub AngularJS SDK
 
-[![Build Status](https://travis-ci.org/pubnub/pubnub-angular.svg?branch=master)](https://travis-ci.org/pubnub/pubnub-angular)
+[![Build Status](https://travis-ci.org/pubnub/pubnub-angular.svg)](https://travis-ci.org/pubnub/pubnub-angular)
 
 Welcome! We're here to get you started quickly with your
 integration between PubNub and AngularJS. PubNub makes it
