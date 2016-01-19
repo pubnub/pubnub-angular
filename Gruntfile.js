@@ -2,9 +2,9 @@ module.exports = function (grunt) {
   require('load-grunt-tasks')(grunt);
 
   grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-webpack');
   grunt.loadNpmTasks('grunt-karma');
+  grunt.loadNpmTasks('grunt-webpack');
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -23,27 +23,39 @@ module.exports = function (grunt) {
     eslint: {
       target: ['src/**/*.js']
     },
-    concat: {
-      options: {
-        separator: '\n'
-      },
+    webpack: {
       dist: {
-        src: [
-          'src/pubnub-angular.suffix',
-          'src/validator.js',
-          'src/config.js',
-          'src/service.js',
-          'src/wrapper.js',
-          'src/mocks.js',
-          'src/pubnub-angular.postfix'
-        ],
-        dest: 'dist/<%= pkg.name %>.js'
+        // webpack options
+        entry: './lib/index.js',
+        module: {
+          loaders: [
+            { test: /\.json/,
+              loader: 'json' }
+          ]
+        },
+        output: {
+          path: './dist',
+          filename: '<%= pkg.name %>-<%= pkg.version %>.js'
+        }
       }
     },
-    copy: {
-      main: {
-        src: 'dist/<%= pkg.name %>.js',
-        dest: 'dist/<%= pkg.name %>-<%= pkg.version %>.js'
+    clean: {
+      compiled: {
+        src: ['lib', 'dist']
+      }
+    },
+    babel: {
+      options: {
+        sourceMap: false
+      },
+      dist: {
+        files: [{
+          expand: true,
+          cwd: 'src/',
+          src: ['**/*.js'],
+          dest: 'lib/',
+          ext: '.js'
+        }]
       }
     },
     uglify: {
@@ -56,8 +68,7 @@ module.exports = function (grunt) {
           }
         },
         files: {
-          'dist/<%= pkg.name %>.min.js': ['<%= concat.dist.dest %>'],
-          'dist/<%= pkg.name %>-<%= pkg.version %>.min.js': ['<%= concat.dist.dest %>']
+          'dist/<%= pkg.name %>-<%= pkg.version %>.min.js': ['dist/<%= pkg.name %>-<%= pkg.version %>.js']
         }
       }
     }
@@ -66,5 +77,6 @@ module.exports = function (grunt) {
   grunt.registerTask('package', ['concat', 'copy', 'uglify']);
   grunt.registerTask('default', ['package']);
 
+  grunt.registerTask('compile', ['clean:compiled', 'babel:dist', 'webpack:dist', 'uglify']);
   grunt.registerTask('test', ['karma:unit', 'karma:e2e', 'eslint']);
 };
