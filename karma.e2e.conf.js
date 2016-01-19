@@ -19,7 +19,7 @@ module.exports = function(config) {
       'bower_components/angular/angular.js',
       'bower_components/angular-mocks/angular-mocks.js',
       'bower_components/pubnub/web/pubnub.js',
-      'dist/pubnub-angular.js',
+      'dist/pubnub-angular-3.1.0.js',
       'test/testHelper.js',
       'test/e2e/**/*Spec.js'
     ],
