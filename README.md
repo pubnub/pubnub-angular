@@ -21,8 +21,7 @@ more suitable for your situation.
 
 ## Communication
 
-- If you **need help** or have a **general question**, contact [suport@pubnub.com](support@pubnub.com)
-- If you **found a bug**, please contact [suport@pubnub.com](support@pubnub.com) _with steps to reliably reproduce it_.
+- If you **need help** or have a **general question**, contact <support@pubnub.com>
 - If you **want to contribute**, please open a pull request.
 
 ## Breaking Changes
