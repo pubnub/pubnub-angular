@@ -9,13 +9,8 @@ module.exports = function (grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     karma: {
-      e2e: {
-        configFile: 'karma.e2e.conf.js',
-        singleRun: true,
-        browsers: ['PhantomJS']
-      },
-      unit: {
-        configFile: 'karma.unit.conf.js',
+      suite: {
+        configFile: 'karma.conf.js',
         singleRun: true,
         browsers: ['PhantomJS']
       }
@@ -26,11 +21,11 @@ module.exports = function (grunt) {
     webpack: {
       dist: {
         // webpack options
-        entry: './lib/index.js',
+        entry: './src/index.js',
         module: {
           loaders: [
-            { test: /\.json/,
-              loader: 'json' }
+            { test: /\.json/, loader: 'json' },
+            { test: /\.js$/, exclude: /node_modules/, loader: "babel-loader"}
           ]
         },
         output: {
@@ -41,21 +36,7 @@ module.exports = function (grunt) {
     },
     clean: {
       compiled: {
-        src: ['lib', 'dist']
-      }
-    },
-    babel: {
-      options: {
-        sourceMap: false
-      },
-      dist: {
-        files: [{
-          expand: true,
-          cwd: 'src/',
-          src: ['**/*.js'],
-          dest: 'lib/',
-          ext: '.js'
-        }]
+        src: ['dist']
       }
     },
     uglify: {
@@ -74,9 +55,9 @@ module.exports = function (grunt) {
     }
   });
 
-  grunt.registerTask('package', ['concat', 'copy', 'uglify']);
-  grunt.registerTask('default', ['package']);
+  grunt.registerTask('compile', ['clean:compiled', 'webpack:dist', 'uglify']);
+  grunt.registerTask('test', ['karma:suite', 'eslint']);
 
-  grunt.registerTask('compile', ['clean:compiled', 'babel:dist', 'webpack:dist', 'uglify']);
-  grunt.registerTask('test', ['karma:unit', 'karma:e2e', 'eslint']);
+  grunt.registerTask('default', ['compile']);
+
 };

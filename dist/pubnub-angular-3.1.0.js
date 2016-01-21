@@ -149,7 +149,6 @@
 	  return service;
 	}]);
 
-
 /***/ },
 /* 1 */
 /***/ function(module, exports) {
@@ -276,7 +275,6 @@
 	  return _class;
 	}();
 
-
 /***/ },
 /* 3 */
 /***/ function(module, exports) {
@@ -387,7 +385,6 @@
 
 	  return _class;
 	}();
-
 
 /***/ }
 /******/ ]);
