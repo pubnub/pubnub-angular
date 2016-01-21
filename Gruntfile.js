@@ -10,9 +10,7 @@ module.exports = function (grunt) {
     pkg: grunt.file.readJSON('package.json'),
     karma: {
       suite: {
-        configFile: 'karma.conf.js',
-        singleRun: true,
-        browsers: ['PhantomJS']
+        configFile: 'karma.conf.js'
       }
     },
     eslint: {
@@ -25,7 +23,7 @@ module.exports = function (grunt) {
         module: {
           loaders: [
             { test: /\.json/, loader: 'json' },
-            { test: /\.js$/, exclude: /node_modules/, loader: "babel-loader"}
+            { test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader' }
           ]
         },
         output: {
