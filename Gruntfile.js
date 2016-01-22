@@ -2,48 +2,45 @@ module.exports = function (grunt) {
   require('load-grunt-tasks')(grunt);
 
   grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-webpack');
   grunt.loadNpmTasks('grunt-karma');
+  grunt.loadNpmTasks('grunt-webpack');
+  grunt.loadNpmTasks('grunt-simple-mocha');
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     karma: {
-      e2e: {
-        configFile: 'karma.e2e.conf.js',
-        singleRun: true,
-        browsers: ['PhantomJS']
-      },
-      unit: {
-        configFile: 'karma.unit.conf.js',
-        singleRun: true,
-        browsers: ['PhantomJS']
+      suite: {
+        configFile: 'karma.conf.js'
+      }
+    },
+    simplemocha: {
+      release: {
+        src: ['test/release/**/*.js']
       }
     },
     eslint: {
       target: ['src/**/*.js']
     },
-    concat: {
-      options: {
-        separator: '\n'
-      },
+    webpack: {
       dist: {
-        src: [
-          'src/pubnub-angular.suffix',
-          'src/validator.js',
-          'src/config.js',
-          'src/service.js',
-          'src/wrapper.js',
-          'src/mocks.js',
-          'src/pubnub-angular.postfix'
-        ],
-        dest: 'dist/<%= pkg.name %>.js'
+        // webpack options
+        entry: './src/index.js',
+        module: {
+          loaders: [
+            { test: /\.json/, loader: 'json' },
+            { test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader' }
+          ]
+        },
+        output: {
+          path: './dist',
+          filename: '<%= pkg.name %>-<%= pkg.version %>.js'
+        }
       }
     },
-    copy: {
-      main: {
-        src: 'dist/<%= pkg.name %>.js',
-        dest: 'dist/<%= pkg.name %>-<%= pkg.version %>.js'
+    clean: {
+      compiled: {
+        src: ['dist']
       }
     },
     uglify: {
@@ -56,15 +53,15 @@ module.exports = function (grunt) {
           }
         },
         files: {
-          'dist/<%= pkg.name %>.min.js': ['<%= concat.dist.dest %>'],
-          'dist/<%= pkg.name %>-<%= pkg.version %>.min.js': ['<%= concat.dist.dest %>']
+          'dist/<%= pkg.name %>-<%= pkg.version %>.min.js': ['dist/<%= pkg.name %>-<%= pkg.version %>.js']
         }
       }
     }
   });
 
-  grunt.registerTask('package', ['concat', 'copy', 'uglify']);
-  grunt.registerTask('default', ['package']);
+  grunt.registerTask('compile', ['clean:compiled', 'webpack:dist', 'uglify', 'simplemocha:release']);
+  grunt.registerTask('test', ['karma:suite', 'eslint']);
 
-  grunt.registerTask('test', ['karma:unit', 'karma:e2e', 'eslint']);
+  grunt.registerTask('default', ['compile']);
+
 };

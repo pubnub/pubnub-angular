@@ -1,7 +1,0 @@
-{
-  "globals": {
-    "angular": false,
-    "PUBNUB": false
-  },
-  "mocha": true
-}

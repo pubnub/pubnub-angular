@@ -10,17 +10,19 @@ module.exports = function(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['mocha', 'chai'],
+    frameworks: ['mocha', 'chai', 'sinon-chai'],
 
 
     // list of files / patterns to load in the browser
     files: [
+      'test/polyfills/bind.js',
       'bower_components/angular/angular.js',
       'bower_components/angular-mocks/angular-mocks.js',
       'bower_components/pubnub/web/pubnub.js',
-      'dist/pubnub-angular.js',
+      'dist/pubnub-angular-3.1.0.js',
       'test/testHelper.js',
-      'test/unit/**/*Spec.js'
+      'test/unit/*.test.js',
+      'test/e2e/*.test.js'
     ],
 
 
@@ -31,14 +33,13 @@ module.exports = function(config) {
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-    preprocessors: {
-    },
+    preprocessors: { 'dist/*.js': ['coverage'] },
 
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress'],
+    reporters: ['spec', 'coverage'],
 
 
     // web server port
@@ -65,6 +66,21 @@ module.exports = function(config) {
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
-    singleRun: false
+    singleRun: true,
+
+    browserDisconnectTimeout: 20000,
+    browserNoActivityTimeout: 20000,
+
+    coverageReporter: {
+      // specify a common output directory
+      dir: 'coverage',
+      reporters: [
+        // reporters not supporting the `file` property
+        { type: 'html' },
+        { type: 'text-summary' }
+      ]
+    }
+
+
   });
 };
