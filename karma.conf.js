@@ -21,7 +21,8 @@ module.exports = function(config) {
       'bower_components/pubnub/web/pubnub.js',
       'dist/pubnub-angular-3.1.0.js',
       'test/testHelper.js',
-      'test/**/*.test.js'
+      'test/unit/*.test.js',
+      'test/e2e/*.test.js'
     ],
 
 
@@ -75,7 +76,7 @@ module.exports = function(config) {
       dir: 'coverage',
       reporters: [
         // reporters not supporting the `file` property
-        { type: 'html', subdir: 'report-html' },
+        { type: 'html' },
         { type: 'text-summary' }
       ]
     }

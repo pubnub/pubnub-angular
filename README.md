@@ -1,6 +1,6 @@
 # PubNub AngularJS SDK
 
-[![Build Status](https://travis-ci.org/pubnub/pubnub-angular.svg)](https://travis-ci.org/pubnub/pubnub-angular)
+[![Build Status](https://travis-ci.org/pubnub/pubnub-angular.svg?branch=master)](https://travis-ci.org/pubnub/pubnub-angular)
 
 Welcome! We're here to get you started quickly with your
 integration between PubNub and AngularJS. PubNub makes it
@@ -21,9 +21,7 @@ more suitable for your situation.
 
 ## Communication
 
-- If you **need help** or have a **general question**, contact [suport@pubnub.com](support@pubnub.com)
-- If you **found a bug**, please contact [suport@pubnub.com](support@pubnub.com) _with steps to reliably reproduce it_.
-- If you **want to contribute**, please open a pull request.
+- Contact [suport@pubnub.com](support@pubnub.com) if you **need help** or have a **general question**
 
 ## Breaking Changes
 
@@ -45,8 +43,20 @@ Using [Bower](http://bower.io):
 Or using CDNs:
 
 ```html
-<script src="http://cdn.pubnub.com/pubnub.min.js"></script>
-<script src="http://cdn.pubnub.com/pubnub-angular.min.js"></script>
+<script src="http(s)://cdn.pubnub.com/sdk/pubnub-angular/pubnub-angular-3.1.0.js"></script>
+```
+
+Also available as minified:
+
+```html
+<script src="http(s)://cdn.pubnub.com/sdk/pubnub-angular/pubnub-angular-3.1.0.min.js"></script>
+```
+
+To utilize this wrapper, include the scripts in the following order:
+```html
+  <script src="(angular.js)"></script>
+  <script src="(latest version of pubnub JS SDK from https://github.com/pubnub/javascript)"></script>
+  <script src="(pubnub-angular.js)"></script>
 ```
 
 We presume your app is already Angular-enabled with an ng-app

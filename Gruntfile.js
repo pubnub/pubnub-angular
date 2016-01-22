@@ -5,12 +5,18 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-webpack');
   grunt.loadNpmTasks('grunt-karma');
   grunt.loadNpmTasks('grunt-webpack');
+  grunt.loadNpmTasks('grunt-simple-mocha');
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     karma: {
       suite: {
         configFile: 'karma.conf.js'
+      }
+    },
+    simplemocha: {
+      release: {
+        src: ['test/release/**/*.js']
       }
     },
     eslint: {
@@ -53,7 +59,7 @@ module.exports = function (grunt) {
     }
   });
 
-  grunt.registerTask('compile', ['clean:compiled', 'webpack:dist', 'uglify']);
+  grunt.registerTask('compile', ['clean:compiled', 'webpack:dist', 'uglify', 'simplemocha:release']);
   grunt.registerTask('test', ['karma:suite', 'eslint']);
 
   grunt.registerTask('default', ['compile']);

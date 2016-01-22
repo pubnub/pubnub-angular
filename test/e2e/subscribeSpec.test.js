@@ -15,6 +15,8 @@ describe("#subscribe()", function () {
     }));
 
     afterEach(function (done) {
+        this.timeout(10000);
+
         inject(function (_Pubnub_) {
             _Pubnub_.unsubscribe({
                 channel: channel,
