@@ -20,7 +20,7 @@ You can still use the native Pubnub JavaScript SDK if you feel this will be
 more suitable for your situation.
 
 ## Communication
-- Contact [suport@pubnub.com](support@pubnub.com) if you **need help** or have a **general question**
+- If you **need help** or have a **general question**, contact <support@pubnub.com>
 
 ## Breaking Changes
 
