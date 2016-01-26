@@ -22,6 +22,10 @@ describe('release should be consistent', () => {
     assert.equal(bowerJSON.main, 'dist/pubnub-angular-' + bowerJSON.version + '.min.js');
   });
 
+  it('with npm valid entry point', () => {
+    assert.equal(packageJSON.main, 'dist/pubnub-angular-' + packageJSON.version + '.min.js');
+  });
+
   it('with packaged dist files', () => {
     const fileList = fs.readdirSync(path.resolve(__dirname, '../../dist'));
     assert.deepEqual(fileList, ['pubnub-angular-' + versionFile + '.js',
