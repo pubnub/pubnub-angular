@@ -33,7 +33,8 @@
     "set_heartbeat",
     "get_heartbeat",
     "set_heartbeat_interval",
-    "get_heartbeat_interval"
+    "get_heartbeat_interval",
+    "mobile_gw_provision"
   ],
   "common_callbacks_to_wrap": [
     "callback",
