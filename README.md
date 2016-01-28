@@ -21,6 +21,7 @@ more suitable for your situation.
 
 ## Communication
 - If you **need help** or have a **general question**, contact <support@pubnub.com>
+- If you **want to contribute**, please open a pull request against the `develop` branch.
 
 ## Breaking Changes
 
@@ -254,3 +255,10 @@ method, you should add it using one of the next ways:
 * _callback_ function in method arguments
 * ```triggerEvents: true```
 * ```triggerEvents: ['callback']```
+
+
+## Contributing
+
+To start the development environment  by running `npm install` and `bower install`. 
+ * `grunt compile` to build the new distributable
+ * `grunt test` to execute tests against the distributable
