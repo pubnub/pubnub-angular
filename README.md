@@ -42,13 +42,13 @@ Using [Bower](http://bower.io):
 Or using CDNs:
 
 ```html
-<script src="http(s)://cdn.pubnub.com/sdk/pubnub-angular/pubnub-angular-3.1.0.js"></script>
+<script src="http(s)://cdn.pubnub.com/sdk/pubnub-angular/pubnub-angular-3.1.1.js"></script>
 ```
 
 Also available as minified:
 
 ```html
-<script src="http(s)://cdn.pubnub.com/sdk/pubnub-angular/pubnub-angular-3.1.0.min.js"></script>
+<script src="http(s)://cdn.pubnub.com/sdk/pubnub-angular/pubnub-angular-3.1.1.min.js"></script>
 ```
 
 To utilize this wrapper, include the scripts in the following order:
