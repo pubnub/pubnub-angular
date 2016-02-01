@@ -9,16 +9,15 @@ integration between PubNub and AngularJS. PubNub makes it
 easy to integrate real-time bidirectional communication
 into your app.
 
-**Pubnub** service is a wrapper for Pubnub JavaScript SDK
-that adds a few of extra features to simplify it's usage with AngularJS:
+**Pubnub Angular** service is a wrapper for PubNub JavaScript SDK
+that adds a few of extra features to simplify Angular integrations:
 
-* Multiple instance behaviour. All instances are accessible
+* Multiple instance behavior. All instances are accessible
 throughout application via ```Pubnub``` service.
 
-* Events. For every PubNub method method you can specify ```triggerEvents```
-option, that will broadcast certain callback as an AngularJS event.
+* Events. Delegated methods accept the ```triggerEvents```option which will broadcast certain callback as an AngularJS event.
 
-You can still use the native Pubnub JavaScript SDK if you feel this will be
+You can still use the native PubNub JavaScript SDK if you feel this will be
 more suitable for your situation.
 
 ## Communication
@@ -57,7 +56,7 @@ Also available as minified:
 To utilize this wrapper, include the scripts in the following order:
 ```html
   <script src="(angular.js)"></script>
-  <script src="(latest version of pubnub JS SDK from https://github.com/pubnub/javascript)"></script>
+  <script src="(latest version of PubNub JS SDK from https://github.com/pubnub/javascript)"></script>
   <script src="(pubnub-angular.js)"></script>
 ```
 
@@ -100,22 +99,22 @@ The Angular ```Pubnub``` service is injected into the controller as follows:
 
 ## Differences in usage with native JavaScript SDK
 
-To learn about Pubnub JavaScript features refer to native
-[Pubnub JavaScript SDK manual](http://www.pubnub.com/docs/javascript/javascript-sdk.html).
+To learn about PubNub JavaScript features refer to native
+[PubNub JavaScript SDK manual](http://www.pubnub.com/docs/javascript/javascript-sdk.html).
 All methods of this SDK are wrapped with **Pubnub AngularJS Service**.
 
 Native **Pubnub JavaScript SDK** provides instance creation using ```PUBNUB.init()```,
 which returns new instance with given credentials. In **Pubnub Angular SDK** instances
 are hidden inside service and are accessible via instance getter. Methods of default
-instance are mapped directly to Pubnub service just like ```Pubnub.publish({...})```.
-In most use cases usage of the only default Pubnub instance will be enough, but if you
-need multiple instances with different credentials, you should
-use ```Pubnub.getInstance(instanceName)``` getter. In this case publish
+instance are mapped directly to PubNub service like ```Pubnub.publish({...})```.
+
+In most use cases, usage of the default PubNub instance will be sufficient, but if
+ multiple instances with different credentials are needed, the ```Pubnub.getInstance(instanceName)``` getter needs to be utilized. In this case, the publish
 method will looks like ```Pubnub.getInstance(instanceName).publish({})```.
 
-To summarize above let's check out the following 2 examples. Both of them performs the
-same job - creation of  2 Pubnub instances with different credentials.
-Publish method is invoked on the __defaultInstance__ and grant method on __anotherInstance__.
+The highlighted usage can be previewed in the two examples below. Both examples perform the
+same job - creation of 2 PubNub instances with different credentials.
+Publish method is invoked on the `__defaultInstance__` and grant method on `__anotherInstance__`.
 
 First example shows how to do that using native **Pubnub JavaScript SDK**:
 
@@ -223,8 +222,7 @@ Pubnub.publish({
 };
 ```
 
-For *subscribe* method there are two helpers that provide you handlers
-for specific channel events:
+For *subscribe* method there are two helpers that provide you handlers for specific channel events:
 
 ```javascript
 Pubnub.subscribe({
@@ -260,7 +258,6 @@ method, you should add it using one of the next ways:
 
 
 ## Contributing
-
-To start the development environment  by running `npm install` and `bower install`. 
+To start the development environment  by running `npm install` and `bower install`.
  * `grunt compile` to build the new distributable
  * `grunt test` to execute tests against the distributable
