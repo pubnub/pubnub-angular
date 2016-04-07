@@ -23,20 +23,7 @@ module.exports = function (grunt) {
       target: ['src/**/*.js']
     },
     webpack: {
-      dist: {
-        // webpack options
-        entry: './src/index.js',
-        module: {
-          loaders: [
-            { test: /\.json/, loader: 'json' },
-            { test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader' }
-          ]
-        },
-        output: {
-          path: './dist',
-          filename: '<%= pkg.name %>-<%= pkg.version %>.js'
-        }
-      }
+      dist: require('./webpack.config.js')
     },
     clean: {
       compiled: {
