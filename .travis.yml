@@ -17,3 +17,6 @@ install:
 
 script:
   - grunt test
+
+after_success:
+  - npm run codecov
