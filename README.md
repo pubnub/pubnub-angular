@@ -3,7 +3,7 @@
 ![SDK Logo](http://cl.ly/241N0q2P2q22/Screen%20Shot%202016-02-03%20at%205.32.32%20PM.png)
 
 [![Build Status](https://travis-ci.org/pubnub/pubnub-angular.svg?branch=master)](https://travis-ci.org/pubnub/pubnub-angular)
-[![codecov.io](https://codecov.io/github/pubnub/pubnub-angular/coverage.svg?branch=master)](https://codecov.io/github/pubnub/pubnub-angular?branch=master)
+[![codecov.io](https://codecov.io/github/pubnub/pubnub-angular/coverage.svg?branch=develop)](https://codecov.io/github/pubnub/pubnub-angular?branch=master)
 [![npm](https://img.shields.io/npm/v/pubnub-angular.svg)](https://www.npmjs.com/package/pubnub-angular)
 ![Bower](https://img.shields.io/bower/v/pubnub-angular.svg)
 
