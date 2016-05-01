@@ -21,7 +21,6 @@ module.exports = class {
   subscribe(args) {
     let callbacks = this.mockingInstance.getCallbacksToMock(args, config.subscribe_callbacks_to_wrap);
     this.mockingInstance.mockCallbacks(this.getLabel(), 'subscribe', args, callbacks);
-
     this.getOriginalInstance().subscribe(args);
   }
 
