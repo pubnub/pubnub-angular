@@ -1,4 +1,5 @@
 /* eslint-disable */
+var webpack = require('webpack');
 
 config = {
   // webpack options
@@ -11,8 +12,13 @@ config = {
   },
   output: {
     path: './dist',
-    filename: '<%= pkg.name %>-<%= pkg.version %>.js'
-  }
+    filename: '<%= pkg.name %>.js'
+  },
+  plugins: [
+    new webpack.BannerPlugin(require('./package.json').version, {
+      raw: false, entryOnly: true,
+  }),
+],
 }
 
 module.exports = config;

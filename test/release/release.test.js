@@ -6,7 +6,7 @@ const path = require('path');
 
 const packageJSON = require('../../package.json');
 const bowerJSON = require('../../bower.json');
-const versionFile = fs.readFileSync(path.resolve(__dirname, '../../VERSION'), 'UTF-8');
+const versionFile = fs.readFileSync(path.resolve(__dirname, '../../VERSION'), 'UTF-8').replace(/^\s+|\s+$/g, '');
 const readMe = fs.readFileSync(path.resolve(__dirname, '../../README.md'), 'UTF-8');
 
 describe('release should be consistent', () => {
@@ -19,18 +19,23 @@ describe('release should be consistent', () => {
   });
 
   it('with bower valid entry point', () => {
-    assert.equal(bowerJSON.main, 'dist/pubnub-angular-' + bowerJSON.version + '.min.js');
+    assert.equal(bowerJSON.main, 'dist/pubnub-angular.min.js');
   });
 
   it('with npm valid entry point', () => {
-    assert.equal(packageJSON.main, 'dist/pubnub-angular-' + packageJSON.version + '.min.js');
+    assert.equal(packageJSON.main, 'dist/pubnub-angular.min.js');
   });
 
   it('with packaged dist files', () => {
     const fileList = fs.readdirSync(path.resolve(__dirname, '../../dist'));
-    assert.deepEqual(fileList, ['pubnub-angular-' + versionFile + '.js',
-      'pubnub-angular-' + versionFile + '.min.js',
-      'pubnub-angular-' + versionFile + '.min.js.map']);
+    assert.deepEqual(fileList, [
+      'pubnub-angular-3.1.2.js',
+      'pubnub-angular-3.1.2.min.js',
+      'pubnub-angular-3.1.2.min.js.map',
+      'pubnub-angular.js',
+      'pubnub-angular.min.js',
+      'pubnub-angular.min.js.map',
+    ]);
   });
 
   it('with updated readme', () => {
