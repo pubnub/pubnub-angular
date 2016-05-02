@@ -8,7 +8,11 @@ module.exports = class {
   }
 
   /**
-   * Return allowed and enabled in args callbacks array
+   * Return the list of callbacks names allowed and enabled to be mocked.
+   *
+   * This methods given a list of callbacks names {{initialCallbackNames}} and the argument list
+   * of the function {{argsValue}} will return the list of callbacks names that can be mocked.
+   * This method is usefull for the {{mockCallbacks}} method in order to know which callback functions to mock.
    *
    * @param {Object} argsValue from method call
    * @param {Array} initialCallbackNames from config object
@@ -40,64 +44,86 @@ module.exports = class {
   /**
    * Mock passed in callbacks with callback-wrappers to invoke both original callbacks and angular events
    *
+   * This method is replacing from the list of arguments {{args}} the callbacks functions
+   * allowed and enabled to be mocked provided by the {{callbackList}} by new callbacks functions
+   * including the Angular event broadcasting
+   *
    * @param {string} instanceName
    * @param {string} methodName
-   * @param {Object} object
-   * @param {Array} callbacksList
+   * @param {Object} methodArguments : argument list of the function
+   * @param {Array} callbacksList : list of callbacks functions to be mocked
    */
-  mockCallbacks(instanceName, methodName, object, callbacksList) {
-    let l = callbacksList.length;
-    let originalCallbacks = {};
+  mockCallbacks(instanceName, methodName, methodArguments, callbacksList) {
+    let originalCallback;
     let currentCallbackName;
-    let $rootScope = this.$rootScope;
-    let service = this.service;
+
+    let l = callbacksList.length;
     let i;
 
+    // Replace each callbacks allowed to be mocked.
     for (i = 0; i < l; i++) {
-      currentCallbackName = callbacksList[i];
-
-      if (!angular.isObject(object)) {
+      if (!angular.isObject(methodArguments)) {
         return;
       }
 
-      originalCallbacks[currentCallbackName] = object[currentCallbackName];
+      currentCallbackName = callbacksList[i];
+      originalCallback = methodArguments[currentCallbackName];
 
-      (function (callbackName) {
-        object[currentCallbackName] = function () {
-          $rootScope.$broadcast.bind.apply(
+      // We replace the original callback with a mocked version.
+      methodArguments[currentCallbackName] = this.generateMockedVersionOfCallback(originalCallback, currentCallbackName, methodName, instanceName);
+    }
+  }
+
+
+  /**
+   * Returns a mocked version of the given callback broadcasting the callback through
+   * the AngularJS event broadcasting mechanism.
+   *
+   * @param {function} originalCallback
+   * @param {string} callbackName
+   * @param {string} methodName
+   * @param {string} instanceName
+   * @return {Function} mocked callback function broadcasting angular events on the rootScope
+   */
+
+  generateMockedVersionOfCallback(originalCallback, callbackName, methodName, instanceName) {
+    let $rootScope = this.$rootScope;
+    let service = this.service;
+
+    return function () {
+      // Broadcast through the generic event name
+      $rootScope.$broadcast.bind.apply(
             $rootScope.$broadcast,
             [$rootScope, service.getEventNameFor(methodName, callbackName, instanceName)]
               .concat(Array.prototype.slice.call(arguments))
           )();
 
-          if (callbackName in originalCallbacks && angular.isFunction(originalCallbacks[callbackName])) {
-            originalCallbacks[callbackName].apply(null, arguments);
-          }
+        // Call the original callback
+      if (callbackName && angular.isFunction(originalCallback)) {
+        originalCallback.apply(null, arguments);
+      }
 
-          // REVIEW:
-          if (methodName === 'subscribe') {
-            switch (callbackName) {
-              case 'callback':
-                $rootScope.$broadcast.bind.apply(
+        // Broadcast through the message event or presence event
+      if (methodName === 'subscribe') {
+        switch (callbackName) {
+          case 'callback':
+            $rootScope.$broadcast.bind.apply(
                   $rootScope.$broadcast,
                   [$rootScope, service.getMessageEventNameFor(arguments[2], instanceName)]
                     .concat(Array.prototype.slice.call(arguments))
                 )();
-                break;
-              case 'presence':
-                $rootScope.$broadcast.bind.apply(
+            break;
+          case 'presence':
+            $rootScope.$broadcast.bind.apply(
                   $rootScope.$broadcast,
                   [$rootScope, service.getPresenceEventNameFor(arguments[2], instanceName)]
                     .concat(Array.prototype.slice.call(arguments))
                 )();
-                break;
-              default:
-                break;
-            }
-          }
-        };
-      })(currentCallbackName);
-    }
+            break;
+          default:
+            break;
+        }
+      }
+    };
   }
-
 };
