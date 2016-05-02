@@ -70,7 +70,7 @@ module.exports = class {
       originalCallback = methodArguments[currentCallbackName];
 
       // We replace the original callback with a mocked version.
-      methodArguments[currentCallbackName] = this.generateMockedVersionOfCallback(originalCallback, currentCallbackName, methodName, instanceName);
+      methodArguments[currentCallbackName] = this.generateMockedVersionOfCallback(originalCallback, currentCallbackName, methodName, instanceName, methodArguments);
     }
   }
 
@@ -83,12 +83,14 @@ module.exports = class {
    * @param {string} callbackName
    * @param {string} methodName
    * @param {string} instanceName
+   * @param {string} methodArguments: the arguments of the method that setup the callback
    * @return {Function} mocked callback function broadcasting angular events on the rootScope
    */
 
-  generateMockedVersionOfCallback(originalCallback, callbackName, methodName, instanceName) {
+  generateMockedVersionOfCallback(originalCallback, callbackName, methodName, instanceName, methodArguments) {
     let $rootScope = this.$rootScope;
     let service = this.service;
+    const channelName = methodArguments.channel || methodArguments.channel_group;
 
     return function () {
       // Broadcast through the generic event name
@@ -109,14 +111,14 @@ module.exports = class {
           case 'callback':
             $rootScope.$broadcast.bind.apply(
                   $rootScope.$broadcast,
-                  [$rootScope, service.getMessageEventNameFor(arguments[2], instanceName)]
+                  [$rootScope, service.getMessageEventNameFor(channelName, instanceName)]
                     .concat(Array.prototype.slice.call(arguments))
                 )();
             break;
           case 'presence':
             $rootScope.$broadcast.bind.apply(
                   $rootScope.$broadcast,
-                  [$rootScope, service.getPresenceEventNameFor(arguments[2], instanceName)]
+                  [$rootScope, service.getPresenceEventNameFor(channelName, instanceName)]
                     .concat(Array.prototype.slice.call(arguments))
                 )();
             break;

@@ -407,7 +407,7 @@
 	        originalCallback = methodArguments[currentCallbackName];
 	
 	        // We replace the original callback with a mocked version.
-	        methodArguments[currentCallbackName] = this.generateMockedVersionOfCallback(originalCallback, currentCallbackName, methodName, instanceName);
+	        methodArguments[currentCallbackName] = this.generateMockedVersionOfCallback(originalCallback, currentCallbackName, methodName, instanceName, methodArguments);
 	      }
 	    }
 	
@@ -419,14 +419,16 @@
 	     * @param {string} callbackName
 	     * @param {string} methodName
 	     * @param {string} instanceName
+	     * @param {string} methodArguments: the arguments of the method that setup the callback
 	     * @return {Function} mocked callback function broadcasting angular events on the rootScope
 	     */
 	
 	  }, {
 	    key: 'generateMockedVersionOfCallback',
-	    value: function generateMockedVersionOfCallback(originalCallback, callbackName, methodName, instanceName) {
+	    value: function generateMockedVersionOfCallback(originalCallback, callbackName, methodName, instanceName, methodArguments) {
 	      var $rootScope = this.$rootScope;
 	      var service = this.service;
+	      var channelName = methodArguments.channel || methodArguments.channel_group;
 	
 	      return function () {
 	        // Broadcast through the generic event name
@@ -441,10 +443,10 @@
 	        if (methodName === 'subscribe') {
 	          switch (callbackName) {
 	            case 'callback':
-	              $rootScope.$broadcast.bind.apply($rootScope.$broadcast, [$rootScope, service.getMessageEventNameFor(arguments[2], instanceName)].concat(Array.prototype.slice.call(arguments)))();
+	              $rootScope.$broadcast.bind.apply($rootScope.$broadcast, [$rootScope, service.getMessageEventNameFor(channelName, instanceName)].concat(Array.prototype.slice.call(arguments)))();
 	              break;
 	            case 'presence':
-	              $rootScope.$broadcast.bind.apply($rootScope.$broadcast, [$rootScope, service.getPresenceEventNameFor(arguments[2], instanceName)].concat(Array.prototype.slice.call(arguments)))();
+	              $rootScope.$broadcast.bind.apply($rootScope.$broadcast, [$rootScope, service.getPresenceEventNameFor(channelName, instanceName)].concat(Array.prototype.slice.call(arguments)))();
 	              break;
 	            default:
 	              break;

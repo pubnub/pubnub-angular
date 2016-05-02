@@ -12,9 +12,8 @@ describe("#subscribe()", function () {
         $rootScope = _$rootScope_;
         Pubnub = _Pubnub_;
         channel =  getRandomChannel();
+        Pubnub.init(config.demo);
     }));
-    
-    this.timeout(5000);
 
     afterEach(function (done) {
 
@@ -27,6 +26,8 @@ describe("#subscribe()", function () {
             })
         })
     });
+    
+    this.timeout(10000);
 
     describe("success and connect callback", function () {
         it("should be invoked", function (done) {
@@ -145,7 +146,204 @@ describe("#subscribe()", function () {
                         done();
                     }
                 });
+
             });
+        })
+    });
+
+    describe("Message callback", function () {
+      
+        describe("Subscribing to a regular message channel", function () {
+
+          context('triggerEvents option is not specified', function() {
+      
+              it("The message callback should be invoked as usual", function (done) {
+
+                  Pubnub.subscribe({
+                      channel: channel,
+                      callback: function (event, envelope, ch) {
+                          
+                          expect(event.content).to.be.equal('abcdefg');
+                          done();
+                      },
+                      connect: function(){
+                        Pubnub.publish({
+                            channel: channel,
+                            message: {content: 'abcdefg'}
+                        });
+                      }
+                  });
+              });
+
+          })
+
+          context('triggerEvents option is specified', function() {
+
+
+              it("The original message callback should be invoked", function (done) {
+
+                  Pubnub.subscribe({
+                      channel: channel,
+                      callback: function(m){
+                       expect(m.content).to.be.equal('abcdefg'); 
+                       done();
+                      },
+                      connect: function () {
+                        Pubnub.publish({
+                            channel: channel,
+                            message: {content: 'abcdefg'} 
+                        });
+                      },
+                      triggerEvents: ['callback'],
+                  });
+                  
+                  Pubnub.publish({
+                      channel: channel,
+                      message: {content: 'abcdefg'}
+                  });
+
+              });
+
+
+              it("The message event should be broadcasted on the rootScope", function (done) {
+
+                  Pubnub.subscribe({
+                      channel: channel,
+                      triggerEvents: ['callback'],
+                      connect: function () {
+                        Pubnub.publish({
+                            channel: channel,
+                            message: {content: 'abcdefg'} 
+                        });
+                      }
+                  });
+
+                  $rootScope.$on(Pubnub.getMessageEventNameFor(channel), function (pnEvent, event) {
+                      expect(event.content).to.be.equal('abcdefg');
+                      done();
+                  });
+                  
+                  Pubnub.publish({
+                      channel: channel,
+                      message: {content: 'abcdefg'}
+                  });
+   
+              });
+          })
+          
         });
+        
+        describe("Subscribing to a -pnpres channel", function () {
+
+          context('triggerEvents option is not specified', function() { 
+      
+              it("The message callback should be invoked as usual", function (done) {
+                
+                var uuid = "blah"; 
+                var chan = channel;
+                var presenceChannel = chan + '-pnpres';
+
+                Pubnub.subscribe({
+                    channel: presenceChannel,
+                    connect: function () {
+                      
+                          Pubnub.getInstance("another").init(config.demo);
+                          Pubnub.getInstance("another").set_uuid(uuid);
+
+                          Pubnub.getInstance("another").subscribe({
+                              channel: chan,
+                              callback: function () {}
+                          });
+
+                    },
+                    callback: function (event, envelope, ch) {
+                        
+                        expect(event.action).to.be.equal('join');
+                        expect(ch).to.be.equal(chan);
+                        
+                        if (event.uuid !== Pubnub.get_uuid()) {
+                            expect(event.uuid).to.be.equal(uuid);
+
+                        }
+                        done();
+                    }
+                });
+
+              });
+
+          })
+
+          context('triggerEvents option is specified', function() {
+
+              it("The original message callback should be invoked", function (done) {
+                
+                var uuid = "blah"; 
+                var chan = channel;
+                var presenceChannel = chan + '-pnpres';
+
+                Pubnub.subscribe({
+                    channel: presenceChannel,
+                    connect: function () {
+
+                        Pubnub.getInstance("another").init(config.demo);
+                        Pubnub.getInstance("another").set_uuid(uuid);
+
+                        Pubnub.getInstance("another").subscribe({
+                            channel: chan,
+                            callback: function () {}
+                        });
+
+                    },
+                    callback: function (event, envelope, ch) {
+                        expect(event.action).to.be.equal('join');
+                        expect(ch).to.be.equal(chan);
+
+                        if (event.uuid !== Pubnub.get_uuid()) {
+                            expect(event.uuid).to.be.equal(uuid);
+                            done();
+                        }
+                    },
+                    triggerEvents: ['callback']
+                });
+
+              });
+
+
+              it("The message event should be broadcasted on the rootScope", function (done) {
+                
+                  var uuid = "blah"; 
+                  var presenceChannel = channel + '-pnpres';
+
+                  Pubnub.subscribe({
+                      channel: presenceChannel,
+                      connect: function () {
+
+                          Pubnub.getInstance("another").init(config.demo);
+                          Pubnub.getInstance("another").set_uuid(uuid);
+
+                          Pubnub.getInstance("another").subscribe({
+                              channel: channel,
+                              callback: function () {}
+                          });
+
+                      },
+                      triggerEvents: ['callback']
+                  });
+
+                  $rootScope.$on(Pubnub.getMessageEventNameFor(presenceChannel), function (pnEvent, event) {
+                      expect(event.action).to.be.equal('join');
+
+                      if (event.uuid !== Pubnub.get_uuid()) {
+                          expect(event.uuid).to.be.equal(uuid);
+                          done();
+                      }
+                      
+                  });
+   
+              });
+          })
+            
+          });
+    
     });
 });
