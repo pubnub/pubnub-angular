@@ -11,7 +11,7 @@ module.exports = class {
   }
 
   init(initConfig) {
-    this.pubnubInstance = new PUBNUB.init(initConfig);
+    this.pubnubInstance = new PUBNUB(initConfig);
   }
 
   getLabel() {

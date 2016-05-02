@@ -1,3 +1,4 @@
+/*! 3.1.2 */
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -233,7 +234,7 @@
 	  _createClass(_class, [{
 	    key: 'init',
 	    value: function init(initConfig) {
-	      this.pubnubInstance = new PUBNUB.init(initConfig);
+	      this.pubnubInstance = new PUBNUB(initConfig);
 	    }
 	  }, {
 	    key: 'getLabel',
@@ -304,14 +305,15 @@
 	   * @returns {Array} of callbacks to mock
 	   */
 
+
 	  _createClass(_class, [{
 	    key: 'getCallbacksToMock',
 	    value: function getCallbacksToMock(argsValue, initialCallbackNames) {
 	      var triggerEventsValue = argsValue.triggerEvents;
 	      var result = [];
-	      var length = undefined;
-	      var value = undefined;
-	      var i = undefined;
+	      var length = void 0;
+	      var value = void 0;
+	      var i = void 0;
 
 	      if (triggerEventsValue === true) {
 	        return initialCallbackNames;
@@ -343,10 +345,10 @@
 	    value: function mockCallbacks(instanceName, methodName, object, callbacksList) {
 	      var l = callbacksList.length;
 	      var originalCallbacks = {};
-	      var currentCallbackName = undefined;
+	      var currentCallbackName = void 0;
 	      var $rootScope = this.$rootScope;
 	      var service = this.service;
-	      var i = undefined;
+	      var i = void 0;
 
 	      for (i = 0; i < l; i++) {
 	        currentCallbackName = callbacksList[i];

@@ -30,6 +30,16 @@ module.exports = function (grunt) {
         src: ['dist']
       }
     },
+    copy: {
+      main: {
+        files: [
+          // includes files within path
+          { src: ['dist/<%= pkg.name %>.js'], dest: 'dist/<%= pkg.name %>-<%= pkg.version %>.js' },
+          { src: ['dist/<%= pkg.name %>.min.js'], dest: 'dist/<%= pkg.name %>-<%= pkg.version %>.min.js' },
+          { src: ['dist/<%= pkg.name %>.min.js.map'], dest: 'dist/<%= pkg.name %>-<%= pkg.version %>.min.js.map' },
+        ]
+      }
+    },
     uglify: {
       dist: {
         options: {
@@ -40,13 +50,13 @@ module.exports = function (grunt) {
           }
         },
         files: {
-          'dist/<%= pkg.name %>-<%= pkg.version %>.min.js': ['dist/<%= pkg.name %>-<%= pkg.version %>.js']
+          'dist/<%= pkg.name %>.min.js': ['dist/<%= pkg.name %>.js']
         }
       }
     }
   });
 
-  grunt.registerTask('compile', ['clean:compiled', 'webpack:dist', 'uglify', 'simplemocha:release']);
+  grunt.registerTask('compile', ['clean:compiled', 'webpack:dist', 'uglify', 'copy', 'simplemocha:release']);
   grunt.registerTask('test', ['karma:suite', 'eslint']);
 
   grunt.registerTask('default', ['compile']);
