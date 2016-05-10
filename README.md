@@ -19,7 +19,11 @@ that adds a few of extra features to simplify Angular integrations:
 * Multiple instance behavior. All instances are accessible
 throughout application via ```Pubnub``` service.
 
-* Events. Delegated methods accept the ```triggerEvents```option which will broadcast certain callback as an AngularJS event.
+* Events. Delegated methods accept the ```triggerEvents``` option which will broadcast certain callback as an AngularJS event.
+
+* A ``$pubnubChannel`` object that seamlessly binds a PubNub channel to a scope variable that gets updated with realtime data and allows you to interact with the channel through dedicated methods.
+
+* A  ``$pubnubChannelGroup`` object that provides an easy-to-use interface for channel groups. It stores the incoming messages in containers split by the channel and exposes an interface to directely fetch messages by channel.
 
 You can still use the native PubNub JavaScript SDK if you feel this will be
 more suitable for your situation.
@@ -260,6 +264,136 @@ method, you should add it using one of the next ways:
 * ```triggerEvents: true```
 * ```triggerEvents: ['callback']```
 
+## The $pubnubChannel object
+
+The ``$pubnubChannel`` object allows you to seamlessly bind a PubNub channel to a scope variable, which gets automatically updated when there is new realtime data published in that channel. It also lets you interact directely with the channel by calling dedicated methods available into the $scope variable bound to the ``$pubnubChannel`` object.
+
+
+### Getting started
+
+Init Pubnub:
+
+```javascript
+Pubnub.init({
+    publish_key: 'your pub key',
+    subscribe_key: 'your sub key'
+});
+```
+
+Inject the ``$pubnubChannel`` service in a controller:
+
+```javascript
+.controller('ScoresCtrl', function($scope, $pubnubChannel) { ... });
+```
+
+Bind the ``$pubnubChannel`` object to a scope variable providing a channel name and some optional parameters:
+
+```javascript
+.controller('ScoresCtrl', function($scope, $pubnubChannel) { 
+  
+  $scope.scores = $pubnubChannel('game-scores-channel',{ autoload: 50 })
+
+});
+```
+Instantiating the $pubnubChannel is the only step needed to have a scope variable that reflects the realtine data from a channel.  It subscribes to the channel for you, load initial data if needed and receive new realtime data automatically. 
+
+Display the ``$scope.scores`` variable in your view and you will see the data beeing loaded and updated when new data is received in that channel:
+
+```html
+<body ng-app="app" ng-controller="ScoresCtrl">
+   <ul class="collection">
+     <li ng-repeat="score in scores">{{score.player}}<li>
+   </ul>
+</body>
+```
+
+### Optionnal config parameters:
+
+You can pass in some optionnal parameters in the config hash when instantiating the ``$pubnubChannel``:
+
+```javascript
+$scope.scores = $pubnubChannel('game-scores-channel', config)
+```
+
+*    __autoload: 50__ The number of messages (<100) we want to autoload from history, default: none.
+*    __autosubscribe: true__ Automatically subscribe to the channel, default: true
+*    __presence: false__  If autosubscribe is enabled, subscribe and trigger the presence events, default: false
+*    __autostore: true__ Automatically store the messages received, default: true
+*    __instance: 'deluxeInstance'__  The instance that will be used:  default: {default PubNub instance}
+
+### Available methods
+
+You can interact with the ``$pubnubChannel`` via dedicated methods:
+
+```javascript
+.controller('ScoresCtrl', function($scope, $pubnubChannel) { 
+  
+  $scope.scores = $pubnubChannel('game-scores-channel',{ autoload: 20 })
+  $scope.score.$publish({player: 'John', result: 32}) // Publish a message in the game-scores-channel channel.
+});
+```
+
+Here are some methods you can use:
+
+* __$publish(messages)__   Publish a message into the channel, return a promise which is resolved when the data is published or rejected when there is an error
+* __(numberOfMessages)__ Load a number of messages from history into the array, return a promise resolved when the data is loaded and rejected if there is an error.
+* __$allLoaded()__  Return a boolean to indicate if all the messages from history have been loaded.
+
+### Wraping the ``$pubnubChannel`` object in a Service.
+
+Instead of using the ``$pubnubChannel`` directly in a controller you can wrap it into a Service:
+
+```javascript
+app.factory("Scores", ["$pubnubChannel", function($pubnubChannel) {
+
+    var config = { 
+                    instance: 'myAnotherPubNubInstanceName', // By default, the default PubNub instance
+                    autoload: 50 // Autoload the channel with 50 messages (should be < 100) 
+                 }
+    return $pubnubChannel('game-scores-channel', config);
+  }
+]);
+```
+And use the Scores service in a controller:
+
+```javascript
+app.controller("ChatCtrl", ["$scope", "Scores", function($scope, Scores) {
+  $scope.messages = Scores();
+]);
+```
+
+### Extending the ``$pubnubChannel`` object
+
+You can also extend the ``$pubnubChannel`` object using the ``$extend`` method in order to add or override methods:
+
+```javascript
+angular.module('app')
+.factory('Scores', ['$pubnubChannel',function ScoresService($pubnubChannel) {
+
+    // We create an extended $pubnubChannel channel object that add a additionnal sendScore method
+    // that publish a score with the name of the player preloaded.
+    var Scores = $pubnubChannel.$extend({
+      sendScore: function(score) {
+         return this.$publish({
+                                   player: 'John',
+                                   score: score
+                              })
+         }
+    });
+
+   return Scores('game-scores-channel', {autoload: 30});
+
+}]);
+```
+
+You can then use the Scores service in a controller:
+
+```javascript
+app.controller("ScoresCtrl", ["$scope", "Scores", function($scope, Scores) {
+  $scope.scores = Scores();
+  $scope.scores.sendScore(34);
+]);
+```
 
 ## Contributing
 To start the development environment  by running `npm install` and `bower install`.
