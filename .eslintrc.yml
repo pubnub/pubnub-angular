@@ -9,3 +9,5 @@ rules:
   prefer-const: 0
   prefer-rest-params: 0
   wrap-iife: 0
+  no-underscore-dangle: 0
+  no-restricted-syntax: 0
