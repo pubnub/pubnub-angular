@@ -198,7 +198,7 @@ describe('$pubnubChannel', function () {
             done();        
         });
                    
-        setTimeout($rootScope.$digest,500)           
+        setTimeout($rootScope.$digest, 1200)           
         
       });    
     })
