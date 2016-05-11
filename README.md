@@ -395,6 +395,97 @@ app.controller("ScoresCtrl", ["$scope", "Scores", function($scope, Scores) {
 ]);
 ```
 
+## The $pubnubChannelGroup object
+
+The ``$pubnubChannelGroup`` provides an easy-to-use interface for channel groups. It stores the incoming messages in containers split by the channel and exposes an interface to directely fetch messages by channel using the ``$channel(channelName)`` method.
+
+### Getting started
+
+Init Pubnub:
+
+```javascript
+Pubnub.init({
+    publish_key: 'your pub key',
+    subscribe_key: 'your sub key'
+});
+```
+
+Inject the ``$pubnubChannelGroup`` service in a controller:
+
+```javascript
+.controller('ChatCtrl', function($scope, $pubnubChannelGroup) { ... });
+```
+
+Instantiate a ``$pubnubChannelGroup`` object and assign it to a scope variable providing a channel group name and some optional parameters. 
+
+```javascript
+.controller('ChatCtrl', function($scope, $pubnubChannelGroup) { 
+  
+  $scope.Conversations = $pubnubChannelGroup('conversations-channel-group')
+  // Fetch a $pubnubChannel from the Conversations $pubnubChannelGroup object
+  $scope.currentConversation = $scope.Conversations.$channel('conversation-178')
+  // $scope.messages is a $pubnubChannel, you can use any method available for a $pubnubChannel
+  $scope.messages.$load(20)
+});
+```
+
+### Optionnal config parameters:
+
+You can pass in some optionnal parameters in the config hash when instantiating the ``$pubnubChannelGroup``:
+
+```javascript
+$scope.Conversation = $pubnubChannelGroup('conversations-channel-group', config)
+```
+
+*    __autosubscribe: true__   Automatically subscribe to the channel, default: true
+*    __presence: false__  If autosubscribe is enabled, subscribe and trigger the presence events, default: false
+*    __instance: 'deluxeInstance'__  The instance that will be used:  default: {default PubNub instance}
+*    __channelExtension: {foo: function(){ return "bar"}}__ // Define or override methods for the channels returned when calling $channel on the $channelGroup object.
+
+### Methods available:
+
+* __$channel(channel)__  Return a $pubnubChannel from a the channel group.
+
+### Wraping the ``$pubnubChannelGroup`` object in a Service.
+
+Instead of using the ``$pubnubChannelGroup`` directly in a controller you can wrap it into a Service:
+
+```javascript
+app.factory("Conversations", ["$pubnubChannelGroup", function($pubnubChannelGroup) {
+    return $pubnubChannelGroup('conversations-channel-group');
+  }
+]);
+```
+
+And use the Conversation service in a controller:
+
+```javascript
+app.controller("ChatCtrl", ["$scope", "Conversation", function($scope, Conversation) {
+   $scope.currentConversation = Conversations.$channel('conversation-13345');
+]);
+```
+
+### Extending channels of a $pubnubChannelGroup
+
+When instanciating a ``$pubnubChannelGroup``, you can pass in a ``channelExtension`` parameter that allows you to add or overrides methods for the ``$pubnubChannel`` objects that is returned when calling the ``$channel(channelName)`` method.
+
+```javascript
+app.controller("ChatCtrl", ["$scope","$pubnubChannelGroup", function($scope, $pubnubChannelGroup) {
+   
+   // We add a sendMessage methods that publish a message with an already defined payload.
+   var channelExtension = {
+      sendMessage: function(messageContent) {
+         return this.$publish({ content: messageContent, sender: "Tomomi" })
+      }
+   }
+	$scope.Conversations = $pubnubChannelGroup('channelGroup', {channelExtension: channelExtension});
+	$scope.currentConversation = $scope.Conversations.$channel('conversation-123')
+	// Sending a message via the extra method added to the channel.
+	$scope.currentConversation.sendMessage('Hello!')
+ 
+]);
+```
+
 ## Contributing
 To start the development environment  by running `npm install` and `bower install`.
  * `grunt compile` to build the new distributable
