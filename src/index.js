@@ -1,3 +1,3 @@
-require('./Pubnub.js');
-require('./PubnubChannel.js');
-require('./PubnubChannelGroup.js');
+require('./pubnub.js');
+require('./pubnub_channel.js');
+require('./pubnub_channel_group.js');
