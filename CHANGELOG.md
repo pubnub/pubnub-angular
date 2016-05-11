@@ -1,3 +1,5 @@
+#### 3.2.0 (5/10/2016)
+ * Adding new $pubnubChannel and $pubnubChannelGroup injectables to simplify working with channel and channel groups
 
 #### 3.1.2 (5/2/2016)
  * Adjustments to build package and upgraded dependencies.

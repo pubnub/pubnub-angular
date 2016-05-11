@@ -1,6 +1,6 @@
 {
   "name": "pubnub-angular",
-  "version": "3.1.2",
+  "version": "3.2.0",
   "authors": [
     { "name": "PubNub", "email": "support@pubnub.com" }
   ],

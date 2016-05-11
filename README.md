@@ -52,13 +52,13 @@ Using [Bower](http://bower.io):
 Or using CDNs:
 
 ```html
-<script src="http(s)://cdn.pubnub.com/sdk/pubnub-angular/pubnub-angular-3.1.2.js"></script>
+<script src="http(s)://cdn.pubnub.com/sdk/pubnub-angular/pubnub-angular-3.2.0.js"></script>
 ```
 
 Also available as minified:
 
 ```html
-<script src="http(s)://cdn.pubnub.com/sdk/pubnub-angular/pubnub-angular-3.1.2.min.js"></script>
+<script src="http(s)://cdn.pubnub.com/sdk/pubnub-angular/pubnub-angular-3.2.0.min.js"></script>
 ```
 
 To utilize this wrapper, include the scripts in the following order:
@@ -289,13 +289,13 @@ Inject the ``$pubnubChannel`` service in a controller:
 Bind the ``$pubnubChannel`` object to a scope variable providing a channel name and some optional parameters:
 
 ```javascript
-.controller('ScoresCtrl', function($scope, $pubnubChannel) { 
-  
+.controller('ScoresCtrl', function($scope, $pubnubChannel) {
+
   $scope.scores = $pubnubChannel('game-scores-channel',{ autoload: 50 })
 
 });
 ```
-Instantiating the $pubnubChannel is the only step needed to have a scope variable that reflects the realtine data from a channel.  It subscribes to the channel for you, load initial data if needed and receive new realtime data automatically. 
+Instantiating the $pubnubChannel is the only step needed to have a scope variable that reflects the realtine data from a channel.  It subscribes to the channel for you, load initial data if needed and receive new realtime data automatically.
 
 Display the ``$scope.scores`` variable in your view and you will see the data beeing loaded and updated when new data is received in that channel:
 
@@ -326,8 +326,8 @@ $scope.scores = $pubnubChannel('game-scores-channel', config)
 You can interact with the ``$pubnubChannel`` via dedicated methods:
 
 ```javascript
-.controller('ScoresCtrl', function($scope, $pubnubChannel) { 
-  
+.controller('ScoresCtrl', function($scope, $pubnubChannel) {
+
   $scope.scores = $pubnubChannel('game-scores-channel',{ autoload: 20 })
   $scope.score.$publish({player: 'John', result: 32}) // Publish a message in the game-scores-channel channel.
 });
@@ -346,9 +346,9 @@ Instead of using the ``$pubnubChannel`` directly in a controller you can wrap it
 ```javascript
 app.factory("Scores", ["$pubnubChannel", function($pubnubChannel) {
 
-    var config = { 
+    var config = {
                     instance: 'myAnotherPubNubInstanceName', // By default, the default PubNub instance
-                    autoload: 50 // Autoload the channel with 50 messages (should be < 100) 
+                    autoload: 50 // Autoload the channel with 50 messages (should be < 100)
                  }
     return $pubnubChannel('game-scores-channel', config);
   }
@@ -416,11 +416,11 @@ Inject the ``$pubnubChannelGroup`` service in a controller:
 .controller('ChatCtrl', function($scope, $pubnubChannelGroup) { ... });
 ```
 
-Instantiate a ``$pubnubChannelGroup`` object and assign it to a scope variable providing a channel group name and some optional parameters. 
+Instantiate a ``$pubnubChannelGroup`` object and assign it to a scope variable providing a channel group name and some optional parameters.
 
 ```javascript
-.controller('ChatCtrl', function($scope, $pubnubChannelGroup) { 
-  
+.controller('ChatCtrl', function($scope, $pubnubChannelGroup) {
+
   $scope.Conversations = $pubnubChannelGroup('conversations-channel-group')
   // Fetch a $pubnubChannel from the Conversations $pubnubChannelGroup object
   $scope.currentConversation = $scope.Conversations.$channel('conversation-178')
@@ -471,7 +471,7 @@ When instanciating a ``$pubnubChannelGroup``, you can pass in a ``channelExtensi
 
 ```javascript
 app.controller("ChatCtrl", ["$scope","$pubnubChannelGroup", function($scope, $pubnubChannelGroup) {
-   
+
    // We add a sendMessage methods that publish a message with an already defined payload.
    var channelExtension = {
       sendMessage: function(messageContent) {
@@ -482,7 +482,7 @@ app.controller("ChatCtrl", ["$scope","$pubnubChannelGroup", function($scope, $pu
 	$scope.currentConversation = $scope.Conversations.$channel('conversation-123')
 	// Sending a message via the extra method added to the channel.
 	$scope.currentConversation.sendMessage('Hello!')
- 
+
 ]);
 ```
 
