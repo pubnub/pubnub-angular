@@ -15,7 +15,7 @@ describe('$pubnubChannel', function () {
 
   describe('<constructor>', function () {
     
-    this.timeout(5000);
+    this.timeout(10000);
   
     beforeEach(function() {
       inject(function (_$pubnubChannel_) {
@@ -134,7 +134,26 @@ describe('$pubnubChannel', function () {
           
         });    
       });
-    })  
+      
+      it('it automatically store the new messages', function(done) {
+        
+        Pubnub.getInstance('instance1').init(config.demo)
+        Pubnub.getInstance('instance2').init(config.demo)
+        
+        var chan = $pubnubChannel('myChannel', { instance: 'instance1' })      
+        
+        Pubnub.getInstance('instance2').publish({
+            channel: 'myChannel',
+            message: 'Hello',
+            callback: function(){
+              setTimeout(function(){   
+                expect(chan.length).to.equal(1)
+                done();
+              },3000)
+            }
+        });
+      });    
+    });  
   });
   
   describe('Public API', function(){
@@ -189,12 +208,11 @@ describe('$pubnubChannel', function () {
     })
     
     describe('$publish', function () {  
-      it('is publishing a message and storing the messages', function(done) {
+      it('is publishing a message', function(done) {
         var chan = $pubnubChannel(config.channelWithHistory)
         
         chan.$publish('Hello').then(function(res){
             expect(res[1]).to.be.equal('Sent')
-            expect(chan.length).to.be.equal(1)
             done();        
         });
                    

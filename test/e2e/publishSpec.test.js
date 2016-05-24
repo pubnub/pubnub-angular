@@ -93,19 +93,22 @@ describe("#publish()", function () {
 
     describe("error callback", function () {
         beforeEach(function () {
-            Pubnub.init(config.fake)
+            Pubnub.init({
+                          publish_key: 'ds',
+                          subscribe_key: 'ds',
+                          origin: 'fake'
+                        })
         });
 
         it.skip("should be invoked", function (done) {
             inject(function () {
                 Pubnub.publish({
                     channel: channel,
-                    message: stringMessage,
+                    message: 'hello',
                     callback: function () {
                         done(new Error("Success callback should not be invoked"))
                     },
                     error: function (error) {
-                        expect(error.message).to.equal("Invalid Subscribe Key");
                         done();
                     }
                 });
@@ -115,7 +118,6 @@ describe("#publish()", function () {
         it.skip("should trigger event", function (done) {
             inject(function () {
                 $rootScope.$on(Pubnub.getEventNameFor('publish', 'error'), function (event, error) {
-                    expect(error.message).to.equal("Invalid Subscribe Key");
                     done();
                 });
 
