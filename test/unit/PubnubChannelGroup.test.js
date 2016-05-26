@@ -174,6 +174,30 @@ describe('$pubnubChannel', function () {
           expect(chan_gp.$channel('random').$channel()).to.be.equal('random');
           
         });
+        
+        it('shouldnt extend other channels of channels groups', function() {
+          
+          var channelExtension = {foo: function(){ return "bar"}}        
+          var options = {channelExtension: channelExtension}
+          var extendedChanGp = $pubnubChannelGroup('randomChannelgroup', options)
+          
+          var chanGp2 = $pubnubChannelGroup('randomChannelgroup2')
+          
+          var chan = extendedChanGp.$channel('random')
+          var chan2 = chanGp2.$channel('random2')
+          
+          expect(chan).to.be.instanceof(Array);
+          expect(chan.$publish).to.be.a('function');
+          expect(chan.foo).to.be.a('function');
+          expect(chan.$channel()).to.be.equal('random');
+          
+          expect(chan2).to.be.instanceof(Array);
+          expect(chan2.$publish).to.be.a('function');
+          expect(chan2.foo).to.not.be.a('function');
+          expect(chan2.$channel()).to.be.equal('random2');
+          
+        });
+        
       });
     });
     
