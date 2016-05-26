@@ -309,6 +309,22 @@ describe('$pubnubChannel', function () {
         var chan = ExtendedChannel('myChannel')
         expect(chan.bar).to.be.an('function');
       });
+      
+      it('shouldnt extend prototype of others pubnubChannels', function() {
+        
+        var bar = function(){ return 'bar'; }
+        var ExtendedChannel = $pubnubChannel.$extend({bar: bar});
+        
+        var extendedChannel = new ExtendedChannel('myChannel')
+        var nonExtendedChannel = $pubnubChannel('chan');
+        
+        expect(extendedChannel.bar).to.be.a('function');
+        expect(extendedChannel.bar()).to.be.equal('bar');
+          
+        expect(nonExtendedChannel.bar).to.not.be.a('function');
+        
+      });
+      
     });
   });  
   
