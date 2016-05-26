@@ -1,14 +1,54 @@
-#### 3.2.0 (5/10/2016)
- * Adding new $pubnubChannel and $pubnubChannelGroup injectables to simplify working with channel and channel groups
 
-#### 3.1.2 (5/2/2016)
- * Adjustments to build package and upgraded dependencies.
+## [v3.2.0](https://github.com/pubnub/pubnub-angular/tree/v3.2.0)
+  May-10-2016
 
-#### 3.1.1 (1/27/2016)
-  * [#18](https://github.com/pubnub/pubnub-angular/pull/18) adding `mobile_gw_provision` to the delegated methods ([@kminkler](https://github.com/kminkler))
 
-#### 3.1.0
-  * added eslint, babel and webpack to the compilation process
+  [Full Changelog](https://github.com/pubnub/pubnub-angular/compare/v3.1.2...v3.2.0)
 
-#### 3.0.0
-  * full rewrite : )
+- 🌟Adding new $pubnubChannel and $pubnubChannelGroup injectables to simplify working with channel and channel groups
+
+
+
+
+## [v3.1.2](https://github.com/pubnub/pubnub-angular/tree/v3.1.2)
+  May-02-2016
+
+
+  [Full Changelog](https://github.com/pubnub/pubnub-angular/compare/v3.1.1...v3.1.2)
+
+
+- ⭐Adjustments to build package and upgraded dependencies.
+
+
+
+## [v3.1.1](https://github.com/pubnub/pubnub-angular/tree/v3.1.1)
+  January-27-2016
+
+
+  [Full Changelog](https://github.com/pubnub/pubnub-angular/compare/3.1.2...v3.1.1)
+
+- 🌟[#18](https://github.com/pubnub/pubnub-angular/pull/18) adding `mobile_gw_provision` to the delegated methods ([@kminkler](https://github.com/kminkler))
+
+
+
+
+
+## [3.1.2](https://github.com/pubnub/pubnub-angular/tree/3.1.2)
+
+
+  [Full Changelog](https://github.com/pubnub/pubnub-angular/compare/3.0.0...3.1.2)
+
+
+- ⭐added eslint, babel and webpack to the compilation process
+
+
+
+## [3.0.0](https://github.com/pubnub/pubnub-angular/tree/3.0.0)
+
+
+
+- 🌟full rewrite :)
+
+
+
+

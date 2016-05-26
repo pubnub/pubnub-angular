@@ -96,7 +96,7 @@ describe("#publish()", function () {
             Pubnub.init(config.fake)
         });
 
-        it("should be invoked", function (done) {
+        it.skip("should be invoked", function (done) {
             inject(function () {
                 Pubnub.publish({
                     channel: channel,
@@ -112,7 +112,7 @@ describe("#publish()", function () {
             });
         });
 
-        it("should trigger event", function (done) {
+        it.skip("should trigger event", function (done) {
             inject(function () {
                 $rootScope.$on(Pubnub.getEventNameFor('publish', 'error'), function (event, error) {
                     expect(error.message).to.equal("Invalid Subscribe Key");

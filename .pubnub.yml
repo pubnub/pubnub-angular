@@ -1,0 +1,32 @@
+name: pubnub-angular
+version: 3.2.0
+schema: 1
+scm: github.com/pubnub/pubnub-angular
+changelog:
+  - version: v3.2.0
+    date: 2016-05-10
+    changes:
+      - type: feature
+        text: Adding new $pubnubChannel and $pubnubChannelGroup injectables to simplify working with channel and channel groups
+  - version: v3.1.2
+    date: 2016-05-02
+    changes:
+      - type: improvement
+        text: Adjustments to build package and upgraded dependencies.
+  - version: v3.1.1
+    date: 2016-01-27
+    changes:
+      - type: feature
+        text: |
+          [#18](https://github.com/pubnub/pubnub-angular/pull/18) adding `mobile_gw_provision` to the delegated methods ([@kminkler](https://github.com/kminkler))
+  - version: 3.1.2
+    date:
+    changes:
+      - type: improvement
+        text: added eslint, babel and webpack to the compilation process
+  - version: 3.0.0
+    date:
+    changes:
+      - type: feature
+        text: |
+          full rewrite :)
