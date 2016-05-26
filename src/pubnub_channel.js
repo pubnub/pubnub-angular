@@ -274,10 +274,21 @@ angular.module('pubnub.angular.service')
       * @static
       */
       PubnubChannel.$extend = function (methods) {
-        if (angular.isObject(methods)) {
-          angular.extend(PubnubChannel.prototype, methods);
+        if (!angular.isObject(methods)) {
+          throw new Error('The methods parameter should be an object');
         }
-        return PubnubChannel;
+
+        let ExtendedPubnubChannel = function (channel, config) {
+          if (!(this instanceof PubnubChannel)) {
+            return new ExtendedPubnubChannel(channel, config);
+          }
+          PubnubChannel.apply(this, arguments);
+          return this.$messages;
+        };
+        ExtendedPubnubChannel.prototype = Object.create(PubnubChannel.prototype);
+        angular.extend(ExtendedPubnubChannel.prototype, methods);
+
+        return ExtendedPubnubChannel;
       };
 
       return PubnubChannel;
