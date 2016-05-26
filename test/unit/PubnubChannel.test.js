@@ -15,7 +15,7 @@ describe('$pubnubChannel', function () {
 
   describe('<constructor>', function () {
     
-    this.timeout(5000);
+    this.timeout(10000);
   
     beforeEach(function() {
       inject(function (_$pubnubChannel_) {
