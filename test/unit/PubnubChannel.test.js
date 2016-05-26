@@ -272,6 +272,13 @@ describe('$pubnubChannel', function () {
     });
     
     describe('$extend', function() {
+      
+      it('the methods parameter should be an object', function() {
+        
+        expect(function(){ $pubnubChannel.$extend(56) }).to.throw(null);      
+
+      });
+      
       it('return an array', function() {
         
         var ExtendedPubnubChannel = $pubnubChannel.$extend({})
