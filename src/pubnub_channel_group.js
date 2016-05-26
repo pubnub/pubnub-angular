@@ -56,7 +56,7 @@ angular.module('pubnub.angular.service')
             // Indicates if it should automatically subscribe to the PubNub channel, default: true
             this._autosubscribe = config.autosubscribe == null ? true : config.autosubscribe;
             // Extensions for the channel beeing instanciated
-            this._extendedChannel = $pubnubChannel.$extend(config.channelExtension);
+            this._extendedChannel = config.channelExtension ? $pubnubChannel.$extend(config.channelExtension) : null;
             // The handler that allow to stop listening to new messages
             this._unsubscribeHandler = null;
 
