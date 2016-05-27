@@ -1,8 +1,9 @@
 /* eslint-disable */
 var webpack = require('webpack');
 
-config = {
+var config = {
   // webpack options
+  devtool: 'source-map',
   entry: './src/index.js',
   module: {
     loaders: [
@@ -11,8 +12,7 @@ config = {
     ]
   },
   output: {
-    path: './dist',
-    filename: '<%= pkg.name %>.js'
+    filename: 'pubnub-angular.js'
   },
   plugins: [
     new webpack.BannerPlugin(require('./package.json').version, {

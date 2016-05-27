@@ -488,5 +488,5 @@ app.controller("ChatCtrl", ["$scope","$pubnubChannelGroup", function($scope, $pu
 
 ## Contributing
 To start the development environment  by running `npm install` and `bower install`.
- * `grunt compile` to build the new distributable
- * `grunt test` to execute tests against the distributable
+ * `gulp compile` to build the new distributable
+ * `gulp test` to execute tests against the distributable
