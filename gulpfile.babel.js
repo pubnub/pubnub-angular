@@ -1,4 +1,5 @@
 /* global gulp */
+/* eslint prefer-template: 0 */
 
 import gulp from 'gulp';
 import gulpClean from 'gulp-clean';
@@ -6,6 +7,10 @@ import gulpLint from 'gulp-eslint';
 import gulpWebpack from 'gulp-webpack';
 import gulpUglify from 'gulp-uglify';
 import gulpRename from 'gulp-rename';
+import gulpMocha from 'gulp-mocha';
+import runSequence from 'run-sequence';
+
+import karma from 'karma';
 
 import webpackConfig from './webpack.config';
 
@@ -28,6 +33,10 @@ gulp.task('webpack', ['clean', 'lint'], () => {
     .pipe(gulp.dest('./dist'));
 });
 
+gulp.task('test_release', () => {
+  gulp.src('test/release/**/*.test.js', { read: false })
+    .pipe(gulpMocha({ reporter: 'spec' }));
+});
 
 gulp.task('uglify', ['webpack'], () => {
   gulp.src('/dist/pubnub-angular.js')
@@ -37,3 +46,12 @@ gulp.task('uglify', ['webpack'], () => {
 });
 
 gulp.task('compile', ['clean', 'lint', 'webpack', 'uglify']);
+
+gulp.task('test_client', (done) => {
+  new karma.Server({ configFile: __dirname + '/karma.conf.js' }, done)
+    .start();
+});
+
+gulp.task('test', (done) => {
+  runSequence('test_client', 'test_release', done);
+});
