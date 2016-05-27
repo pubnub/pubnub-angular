@@ -1,3 +1,4 @@
+/* istanbul ignore next */
 // Object.create(proto[, propertiesObject])
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create
 if (typeof Object.create !== 'function') {
