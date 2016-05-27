@@ -48,19 +48,50 @@
 	'use strict';
 
 	__webpack_require__(1);
-	__webpack_require__(5);
+	__webpack_require__(2);
 	__webpack_require__(6);
+	__webpack_require__(7);
 
 /***/ },
 /* 1 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	/* istanbul ignore next */
+	// Object.create(proto[, propertiesObject])
+	// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create
+	if (typeof Object.create !== 'function') {
+	  Object.create = function () {
+	    var Temp = function Temp() {};
+	    return function (prototype) {
+	      if (arguments.length > 1) {
+	        throw new Error('Second argument not supported');
+	      }
+	      if (prototype !== Object(prototype) && prototype !== null) {
+	        throw new TypeError('Argument must be an object or null');
+	      }
+	      if (prototype === null) {
+	        throw Error('null [[Prototype]] not supported');
+	      }
+	      Temp.prototype = prototype;
+	      var result = new Temp();
+	      Temp.prototype = null;
+	      return result;
+	    };
+	  }();
+	}
+
+/***/ },
+/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	/* global angular PUBNUB */
 
-	var config = __webpack_require__(2);
-	var Wrapper = __webpack_require__(3);
+	var config = __webpack_require__(3);
+	var Wrapper = __webpack_require__(4);
 
 	angular.module('pubnub.angular.service', []).factory('Pubnub', ['$rootScope', function ($rootScope) {
 	  if (!angular.isDefined(PUBNUB)) {
@@ -161,7 +192,7 @@
 	}]);
 
 /***/ },
-/* 2 */
+/* 3 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -218,7 +249,7 @@
 	};
 
 /***/ },
-/* 3 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -229,8 +260,8 @@
 
 	/* global angular PUBNUB */
 
-	var config = __webpack_require__(2);
-	var Mocks = __webpack_require__(4);
+	var config = __webpack_require__(3);
+	var Mocks = __webpack_require__(5);
 
 	module.exports = function () {
 	  function _class(label, service, $rootScope) {
@@ -256,7 +287,6 @@
 	    value: function subscribe(args) {
 	      var callbacks = this.mockingInstance.getCallbacksToMock(args, config.subscribe_callbacks_to_wrap);
 	      this.mockingInstance.mockCallbacks(this.getLabel(), 'subscribe', args, callbacks);
-
 	      this.getOriginalInstance().subscribe(args);
 	    }
 	  }, {
@@ -288,7 +318,7 @@
 	}();
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -308,7 +338,11 @@
 	  }
 
 	  /**
-	   * Return allowed and enabled in args callbacks array
+	   * Return the list of callbacks names allowed and enabled to be mocked.
+	   *
+	   * This methods given a list of callbacks names {{initialCallbackNames}} and the argument list
+	   * of the function {{argsValue}} will return the list of callbacks names that can be mocked.
+	   * This method is usefull for the {{mockCallbacks}} method in order to know which callback functions to mock.
 	   *
 	   * @param {Object} argsValue from method call
 	   * @param {Array} initialCallbackNames from config object
@@ -344,55 +378,79 @@
 	    /**
 	     * Mock passed in callbacks with callback-wrappers to invoke both original callbacks and angular events
 	     *
+	     * This method is replacing from the list of arguments {{args}} the callbacks functions
+	     * allowed and enabled to be mocked provided by the {{callbackList}} by new callbacks functions
+	     * including the Angular event broadcasting
+	     *
 	     * @param {string} instanceName
 	     * @param {string} methodName
-	     * @param {Object} object
-	     * @param {Array} callbacksList
+	     * @param {Object} methodArguments : argument list of the function
+	     * @param {Array} callbacksList : list of callbacks functions to be mocked
 	     */
 
 	  }, {
 	    key: 'mockCallbacks',
-	    value: function mockCallbacks(instanceName, methodName, object, callbacksList) {
-	      var l = callbacksList.length;
-	      var originalCallbacks = {};
+	    value: function mockCallbacks(instanceName, methodName, methodArguments, callbacksList) {
+	      var originalCallback = void 0;
 	      var currentCallbackName = void 0;
-	      var $rootScope = this.$rootScope;
-	      var service = this.service;
+
+	      var l = callbacksList.length;
 	      var i = void 0;
 
+	      // Replace each callbacks allowed to be mocked.
 	      for (i = 0; i < l; i++) {
-	        currentCallbackName = callbacksList[i];
-
-	        if (!angular.isObject(object)) {
+	        if (!angular.isObject(methodArguments)) {
 	          return;
 	        }
 
-	        originalCallbacks[currentCallbackName] = object[currentCallbackName];
+	        currentCallbackName = callbacksList[i];
+	        originalCallback = methodArguments[currentCallbackName];
 
-	        (function (callbackName) {
-	          object[currentCallbackName] = function () {
-	            $rootScope.$broadcast.bind.apply($rootScope.$broadcast, [$rootScope, service.getEventNameFor(methodName, callbackName, instanceName)].concat(Array.prototype.slice.call(arguments)))();
-
-	            if (callbackName in originalCallbacks && angular.isFunction(originalCallbacks[callbackName])) {
-	              originalCallbacks[callbackName].apply(null, arguments);
-	            }
-
-	            // REVIEW:
-	            if (methodName === 'subscribe') {
-	              switch (callbackName) {
-	                case 'callback':
-	                  $rootScope.$broadcast.bind.apply($rootScope.$broadcast, [$rootScope, service.getMessageEventNameFor(arguments[2], instanceName)].concat(Array.prototype.slice.call(arguments)))();
-	                  break;
-	                case 'presence':
-	                  $rootScope.$broadcast.bind.apply($rootScope.$broadcast, [$rootScope, service.getPresenceEventNameFor(arguments[2], instanceName)].concat(Array.prototype.slice.call(arguments)))();
-	                  break;
-	                default:
-	                  break;
-	              }
-	            }
-	          };
-	        })(currentCallbackName);
+	        // We replace the original callback with a mocked version.
+	        methodArguments[currentCallbackName] = this.generateMockedVersionOfCallback(originalCallback, currentCallbackName, methodName, instanceName);
 	      }
+	    }
+
+	    /**
+	     * Returns a mocked version of the given callback broadcasting the callback through
+	     * the AngularJS event broadcasting mechanism.
+	     *
+	     * @param {function} originalCallback
+	     * @param {string} callbackName
+	     * @param {string} methodName
+	     * @param {string} instanceName
+	     * @return {Function} mocked callback function broadcasting angular events on the rootScope
+	     */
+
+	  }, {
+	    key: 'generateMockedVersionOfCallback',
+	    value: function generateMockedVersionOfCallback(originalCallback, callbackName, methodName, instanceName) {
+	      var $rootScope = this.$rootScope;
+	      var service = this.service;
+
+	      return function () {
+	        // Broadcast through the generic event name
+	        $rootScope.$broadcast.bind.apply($rootScope.$broadcast, [$rootScope, service.getEventNameFor(methodName, callbackName, instanceName)].concat(Array.prototype.slice.call(arguments)))();
+
+	        // Call the original callback
+	        if (callbackName && angular.isFunction(originalCallback)) {
+	          originalCallback.apply(null, arguments);
+	        }
+
+	        // Broadcast through the message event or presence event
+	        if (methodName === 'subscribe') {
+	          switch (callbackName) {
+	            case 'callback':
+	              $rootScope.$broadcast.bind.apply($rootScope.$broadcast, [$rootScope, service.getMessageEventNameFor(arguments[2], instanceName)].concat(Array.prototype.slice.call(arguments)))();
+	              break;
+	            case 'presence':
+	              $rootScope.$broadcast.bind.apply($rootScope.$broadcast, [$rootScope, service.getPresenceEventNameFor(arguments[2], instanceName)].concat(Array.prototype.slice.call(arguments)))();
+	              break;
+	            default:
+	              break;
+	          }
+	        }
+	      };
 	    }
 	  }]);
 
@@ -400,12 +458,12 @@
 	}();
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var pubnubConfig = __webpack_require__(2);
+	var pubnubConfig = __webpack_require__(3);
 	/* global angular */
 	angular.module('pubnub.angular.service').factory('$pubnubChannel', ['$rootScope', 'Pubnub', '$q', function ($rootScope, Pubnub, $q) {
 	  /**
@@ -691,22 +749,33 @@
 	  * @static
 	  */
 	  PubnubChannel.$extend = function (methods) {
-	    if (angular.isObject(methods)) {
-	      angular.extend(PubnubChannel.prototype, methods);
+	    if (!angular.isObject(methods)) {
+	      throw new Error('The methods parameter should be an object');
 	    }
-	    return PubnubChannel;
+
+	    var ExtendedPubnubChannel = function ExtendedPubnubChannel(channel, config) {
+	      if (!(this instanceof PubnubChannel)) {
+	        return new ExtendedPubnubChannel(channel, config);
+	      }
+	      PubnubChannel.apply(this, arguments);
+	      return this.$messages;
+	    };
+	    ExtendedPubnubChannel.prototype = Object.create(PubnubChannel.prototype);
+	    angular.extend(ExtendedPubnubChannel.prototype, methods);
+
+	    return ExtendedPubnubChannel;
 	  };
 
 	  return PubnubChannel;
 	}]);
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var pubnubConfig = __webpack_require__(2);
+	var pubnubConfig = __webpack_require__(3);
 	/* global angular */
 	angular.module('pubnub.angular.service').factory('$pubnubChannelGroup', ['$rootScope', '$q', 'Pubnub', '$pubnubChannel', function ($rootScope, $q, Pubnub, $pubnubChannel) {
 	  /**
@@ -762,7 +831,7 @@
 	    // Indicates if it should automatically subscribe to the PubNub channel, default: true
 	    this._autosubscribe = config.autosubscribe == null ? true : config.autosubscribe;
 	    // Extensions for the channel beeing instanciated
-	    this._extendedChannel = $pubnubChannel.$extend(config.channelExtension);
+	    this._extendedChannel = config.channelExtension ? $pubnubChannel.$extend(config.channelExtension) : null;
 	    // The handler that allow to stop listening to new messages
 	    this._unsubscribeHandler = null;
 
