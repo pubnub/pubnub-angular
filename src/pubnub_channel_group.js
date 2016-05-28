@@ -1,3 +1,5 @@
+/* @flow */
+
 const pubnubConfig = require('../config.json');
 /* global angular */
 angular.module('pubnub.angular.service')

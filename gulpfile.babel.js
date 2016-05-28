@@ -1,5 +1,5 @@
 /* global gulp */
-/* eslint prefer-template: 0 */
+/* eslint prefer-template: 0, prefer-arrow-callback: 0 */
 
 import gulp from 'gulp';
 import gulpClean from 'gulp-clean';
@@ -14,42 +14,43 @@ import karma from 'karma';
 
 import webpackConfig from './webpack.config';
 
-gulp.task('clean', () =>
-  gulp.src(['dist'], { read: false })
-    .pipe(gulpClean())
-);
+gulp.task('clean', function () {
+  return gulp.src(['dist'], { read: false }).pipe(gulpClean())
+});
 
-gulp.task('lint', () =>
-  gulp.src(['src/**/*.js'])
+gulp.task('lint', function () {
+  return gulp.src(['src/**/*.js'])
     .pipe(gulpLint())
     .pipe(gulpLint.format())
-    .pipe(gulpLint.failAfterError())
-);
+    .pipe(gulpLint.failAfterError());
+});
 
 
-gulp.task('webpack', ['clean', 'lint'], () => {
-  gulp.src('src/index.js')
+gulp.task('webpack', function () {
+  return gulp.src('src/index.js')
     .pipe(gulpWebpack(webpackConfig))
     .pipe(gulp.dest('./dist'));
 });
 
-gulp.task('test_release', () => {
-  gulp.src('test/release/**/*.test.js', { read: false })
-    .pipe(gulpMocha({ reporter: 'spec' }));
-});
-
-gulp.task('uglify', ['webpack'], () => {
-  gulp.src('/dist/pubnub-angular.js')
+gulp.task('uglify', function () {
+  return gulp.src('./dist/pubnub-angular.js')
     .pipe(gulpUglify({ mangle: true, compress: true }))
     .pipe(gulpRename('pubnub-angular.min.js'))
     .pipe(gulp.dest('./dist'));
 });
 
-gulp.task('compile', ['clean', 'lint', 'webpack', 'uglify']);
+gulp.task('test_release', function () {
+  return gulp.src('test/release/**/*.test.js', { read: false })
+    .pipe(gulpMocha({ reporter: 'spec' }));
+});
 
-gulp.task('test_client', (done) => {
+gulp.task('test_client', function (done) {
   new karma.Server({ configFile: __dirname + '/karma.conf.js' }, done)
     .start();
+});
+
+gulp.task('compile', function (done) {
+  runSequence('clean', 'webpack', 'lint', 'uglify', done);
 });
 
 gulp.task('test', (done) => {

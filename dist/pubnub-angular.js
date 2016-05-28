@@ -775,6 +775,8 @@
 
 	'use strict';
 
+	/* @flow */
+
 	var pubnubConfig = __webpack_require__(3);
 	/* global angular */
 	angular.module('pubnub.angular.service').factory('$pubnubChannelGroup', ['$rootScope', '$q', 'Pubnub', '$pubnubChannel', function ($rootScope, $q, Pubnub, $pubnubChannel) {
