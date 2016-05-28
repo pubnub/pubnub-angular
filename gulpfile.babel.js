@@ -4,7 +4,7 @@
 import gulp from 'gulp';
 import gulpClean from 'gulp-clean';
 import gulpLint from 'gulp-eslint';
-import gulpWebpack from 'gulp-webpack';
+import gulpWebpack from 'webpack-stream';
 import gulpUglify from 'gulp-uglify';
 import gulpRename from 'gulp-rename';
 import gulpMocha from 'gulp-mocha';
@@ -15,7 +15,7 @@ import karma from 'karma';
 import webpackConfig from './webpack.config';
 
 gulp.task('clean', function () {
-  return gulp.src(['dist'], { read: false }).pipe(gulpClean())
+  return gulp.src(['dist'], { read: false }).pipe(gulpClean());
 });
 
 gulp.task('lint', function () {
