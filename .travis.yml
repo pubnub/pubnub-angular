@@ -20,7 +20,8 @@ install:
   - bower install
 
 script:
-  - grunt test
+  - gulp test
 
 after_success:
+  - npm install codecov
   - npm run codecov
