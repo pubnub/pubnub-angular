@@ -295,7 +295,7 @@ Bind the ``$pubnubChannel`` object to a scope variable providing a channel name 
 
 });
 ```
-Instantiating the $pubnubChannel is the only step needed to have a scope variable that reflects the realtine data from a channel.  It subscribes to the channel for you, load initial data if needed and receive new realtime data automatically.
+Instantiating the $pubnubChannel is the only step needed to have a scope variable that reflects the realtime data from a channel.  It subscribes to the channel for you, load initial data if needed and receive new realtime data automatically.
 
 Display the ``$scope.scores`` variable in your view and you will see the data beeing loaded and updated when new data is received in that channel:
 
@@ -329,14 +329,14 @@ You can interact with the ``$pubnubChannel`` via dedicated methods:
 .controller('ScoresCtrl', function($scope, $pubnubChannel) {
 
   $scope.scores = $pubnubChannel('game-scores-channel',{ autoload: 20 })
-  $scope.score.$publish({player: 'John', result: 32}) // Publish a message in the game-scores-channel channel.
+  $scope.scores.$publish({player: 'John', result: 32}) // Publish a message in the game-scores-channel channel.
 });
 ```
 
 Here are some methods you can use:
 
 * __$publish(messages)__   Publish a message into the channel, return a promise which is resolved when the data is published or rejected when there is an error
-* __(numberOfMessages)__ Load a number of messages from history into the array, return a promise resolved when the data is loaded and rejected if there is an error.
+* __$load(numberOfMessages)__ Load a number of messages from history into the array, return a promise resolved when the data is loaded and rejected if there is an error.
 * __$allLoaded()__  Return a boolean to indicate if all the messages from history have been loaded.
 
 ### Wraping the ``$pubnubChannel`` object in a Service.
@@ -357,7 +357,7 @@ app.factory("Scores", ["$pubnubChannel", function($pubnubChannel) {
 And use the Scores service in a controller:
 
 ```javascript
-app.controller("ChatCtrl", ["$scope", "Scores", function($scope, Scores) {
+app.controller("ScoresCtrl", ["$scope", "Scores", function($scope, Scores) {
   $scope.messages = Scores();
 ]);
 ```
