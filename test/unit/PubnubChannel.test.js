@@ -142,16 +142,23 @@ describe('$pubnubChannel', function () {
         
         var chan = $pubnubChannel('myChannel', { instance: 'instance1' })      
         
-        Pubnub.getInstance('instance2').publish({
-            channel: 'myChannel',
-            message: 'Hello',
-            callback: function(){
-              setTimeout(function(){   
-                expect(chan.length).to.equal(1)
-                done();
-              },3000)
-            }
-        });
+        setTimeout(function(){
+          
+          Pubnub.getInstance('instance2').publish({
+              channel: 'myChannel',
+              message: 'Hello',
+              callback: function(){
+                setTimeout(function(){
+                     
+                  expect(chan.length).to.equal(1)
+                  done();
+                },3000)
+              }
+          });
+             
+        },3000)
+        
+
       });    
     });  
   });
