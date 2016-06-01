@@ -8,7 +8,6 @@ env:
 addons:
   apt:
     sources:
-      - llvm-toolchain-precise-3.6
       - ubuntu-toolchain-r-test
     packages:
       - clang-3.6
