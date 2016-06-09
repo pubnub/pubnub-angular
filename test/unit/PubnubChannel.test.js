@@ -309,6 +309,21 @@ describe('$pubnubChannel', function () {
         expect(chan.bar()).to.be.equal('bar');
 
       });
+      
+      it('should override existing methods of the pubnubChannel', function() {
+        
+        var overridedChannelMethod = function(){ 
+          this.$messages.push('FakeData');
+          return 'OverridedStoreMethod'; 
+        }
+        var ExtendedChannel = $pubnubChannel.$extend({$$store: overridedChannelMethod});
+        var chan = new ExtendedChannel('myChannel')
+          
+        expect(chan.$$store()).to.be.equal('OverridedStoreMethod');
+        expect(chan.length).to.be.equal(1);
+        expect(chan[0]).to.be.equal('FakeData');
+
+      });
 
       it('should work with the new keyword', function() {
         var bar = function(){ return 'bar'; }
