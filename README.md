@@ -16,14 +16,14 @@ into your app.
 **Pubnub Angular** service is a wrapper for PubNub JavaScript SDK
 that adds a few of extra features to simplify Angular integrations:
 
-* Multiple instance behavior. All instances are accessible
+* [Multiple instance behavior](https://github.com/pubnub/pubnub-angular#differences-in-usage-with-native-javascript-sdk). All instances are accessible
 throughout application via ```Pubnub``` service.
 
-* Events. Delegated methods accept the ```triggerEvents``` option which will broadcast certain callback as an AngularJS event.
+* [Events](https://github.com/pubnub/pubnub-angular#events). Delegated methods accept the ```triggerEvents``` option which will broadcast certain callback as an AngularJS event.
 
-* A ``$pubnubChannel`` object that seamlessly binds a PubNub channel to a scope variable that gets updated with realtime data and allows you to interact with the channel through dedicated methods.
+* A [$pubnubChannel](https://github.com/pubnub/pubnub-angular#the-pubnubchannel-object) object that seamlessly binds a PubNub channel to a scope variable that gets updated with realtime data and allows you to interact with the channel through dedicated methods.
 
-* A  ``$pubnubChannelGroup`` object that provides an easy-to-use interface for channel groups. It stores the incoming messages in containers split by the channel and exposes an interface to directely fetch messages by channel.
+* A  [$pubnubChannelGroup](https://github.com/pubnub/pubnub-angular#the-pubnubchannelgroup-object) object that provides an easy-to-use interface for channel groups. It stores the incoming messages in containers split by the channel and exposes an interface to directely fetch messages by channel.
 
 You can still use the native PubNub JavaScript SDK if you feel this will be
 more suitable for your situation.
