@@ -1,16 +1,17 @@
 name: pubnub-angular
-version: 3.2.0
+version: 3.2.1
 schema: 1
 scm: github.com/pubnub/pubnub-angular
 changelog:
   - version: v3.2.1
     date: 2016-06-13
     changes:
-      - type: fix
-        text: When subscribing directely to a -pnpres channel, the AngularJS events were broadcasted on the channel itself and not on the -pnpres channel as it should have been.
-      - type: fix
-        text: $pubnubChannel.$extend(): Avoid to share extensions accross every $pubnubChannel objects.
-
+      - type: improvement
+        text: |
+          When subscribing directly to a -pnpres channel, the AngularJS events were broadcasted on the channel itself and not on the -pnpres channel as it should have been.
+      - type: improvement
+        text: |
+          $pubnubChannel.$extend(): Avoid to share extensions across every $pubnubChannel objects.
   - version: v3.2.0
     date: 2016-05-10
     changes:

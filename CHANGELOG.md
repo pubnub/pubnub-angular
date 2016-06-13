@@ -1,4 +1,21 @@
 
+## [v3.2.1](https://github.com/pubnub/pubnub-angular/tree/v3.2.1)
+  June-13-2016
+
+
+  [Full Changelog](https://github.com/pubnub/pubnub-angular/compare/v3.2.0...v3.2.1)
+
+
+- ⭐When subscribing directly to a -pnpres channel, the AngularJS events were broadcasted on the channel itself and not on the -pnpres channel as it should have been.
+
+
+
+
+- ⭐$pubnubChannel.$extend(): Avoid to share extensions across every $pubnubChannel objects.
+
+
+
+
 ## [v3.2.0](https://github.com/pubnub/pubnub-angular/tree/v3.2.0)
   May-10-2016
 

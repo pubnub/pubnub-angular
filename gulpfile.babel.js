@@ -1,6 +1,6 @@
 /* global gulp */
 /* eslint prefer-template: 0, prefer-arrow-callback: 0 */
-var version = require('./package.json').version;
+let version = require('./package.json').version;
 
 import gulp from 'gulp';
 import gulpClean from 'gulp-clean';
@@ -31,17 +31,17 @@ gulp.task('webpack', function () {
   return gulp.src('src/index.js')
     .pipe(gulpWebpack(webpackConfig))
     .pipe(gulp.dest('./dist'))
-    .pipe(gulpRename('pubnub-angular.'+ version +'.js'))
+    .pipe(gulpRename('pubnub-angular.' + version + '.js'));
 });
 
 gulp.task('uglify', function () {
   return gulp.src('./dist/pubnub-angular.js')
-    .pipe(gulpRename('pubnub-angular-'+ version +'.js'))
+    .pipe(gulpRename('pubnub-angular-' + version + '.js'))
     .pipe(gulp.dest('./dist'))
     .pipe(gulpUglify({ mangle: true, compress: true }))
     .pipe(gulpRename('pubnub-angular.min.js'))
     .pipe(gulp.dest('./dist'))
-    .pipe(gulpRename('pubnub-angular-'+ version +'.min.js'))
+    .pipe(gulpRename('pubnub-angular-' + version + '.min.js'))
     .pipe(gulp.dest('./dist'));
 });
 
@@ -49,8 +49,8 @@ gulp.task('include-sourcemaps', function () {
   return gulp.src('dist/pubnub-angular.js.map')
     .pipe(gulpRename('pubnub-angular.min.js.map'))
     .pipe(gulp.dest('./dist'))
-    .pipe(gulpRename('pubnub-angular-'+ version +'.min.js.map'))
-    .pipe(gulp.dest('./dist'))
+    .pipe(gulpRename('pubnub-angular-' + version + '.min.js.map'))
+    .pipe(gulp.dest('./dist'));
 });
 
 gulp.task('clean-original-sourcemap', function () {
@@ -68,7 +68,7 @@ gulp.task('test_client', function (done) {
 });
 
 gulp.task('compile', function (done) {
-  runSequence('clean', 'webpack', 'lint', 'uglify','include-sourcemaps', 'clean-original-sourcemap', done);
+  runSequence('clean', 'webpack', 'lint', 'uglify', 'include-sourcemaps', 'clean-original-sourcemap', done);
 });
 
 gulp.task('test', (done) => {
