@@ -318,7 +318,6 @@ $scope.scores = $pubnubChannel('game-scores-channel', config)
 *    __autoload: 50__ The number of messages (<100) we want to autoload from history, default: none.
 *    __autosubscribe: true__ Automatically subscribe to the channel, default: true
 *    __presence: false__  If autosubscribe is enabled, subscribe and trigger the presence events, default: false
-*    __autostore: true__ Automatically store the messages received, default: true
 *    __instance: 'deluxeInstance'__  The instance that will be used:  default: {default PubNub instance}
 
 ### Available methods
@@ -444,7 +443,7 @@ $scope.Conversation = $pubnubChannelGroup('conversations-channel-group', config)
 
 ### Methods available:
 
-* __$channel(channel)__  Return a $pubnubChannel from a the channel group.
+* __$channel(channel)__  Return a $pubnubChannel object which is containing the messages received via the channel group
 
 ### Wrapping the ``$pubnubChannelGroup`` object in a Service.
 
