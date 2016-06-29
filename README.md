@@ -23,7 +23,7 @@ throughout application via ```Pubnub``` service.
 
 * A [$pubnubChannel](https://github.com/pubnub/pubnub-angular#the-pubnubchannel-object) object that seamlessly binds a PubNub channel to a scope variable that gets updated with realtime data and allows you to interact with the channel through dedicated methods.
 
-* A  [$pubnubChannelGroup](https://github.com/pubnub/pubnub-angular#the-pubnubchannelgroup-object) object that provides an easy-to-use interface for channel groups. It stores the incoming messages in containers split by the channel and exposes an interface to directely fetch messages by channel.
+* A  [$pubnubChannelGroup](https://github.com/pubnub/pubnub-angular#the-pubnubchannelgroup-object) object that provides an easy-to-use interface for channel groups. It stores the incoming messages in containers split by the channel and exposes an interface to directly fetch messages by channel.
 
 You can still use the native PubNub JavaScript SDK if you feel this will be
 more suitable for your situation.
@@ -266,7 +266,7 @@ method, you should add it using one of the next ways:
 
 ## The $pubnubChannel object
 
-The ``$pubnubChannel`` object allows you to seamlessly bind a PubNub channel to a scope variable, which gets automatically updated when there is new realtime data published in that channel. It also lets you interact directely with the channel by calling dedicated methods available into the $scope variable bound to the ``$pubnubChannel`` object.
+The ``$pubnubChannel`` object allows you to seamlessly bind a PubNub channel to a scope variable, which gets automatically updated when there is new realtime data published in that channel. It also lets you interact directly with the channel by calling dedicated methods available into the $scope variable bound to the ``$pubnubChannel`` object.
 
 
 ### Getting started
@@ -307,9 +307,9 @@ Display the ``$scope.scores`` variable in your view and you will see the data be
 </body>
 ```
 
-### Optionnal config parameters:
+### Optional config parameters:
 
-You can pass in some optionnal parameters in the config hash when instantiating the ``$pubnubChannel``:
+You can pass in some optional parameters in the config hash when instantiating the ``$pubnubChannel``:
 
 ```javascript
 $scope.scores = $pubnubChannel('game-scores-channel', config)
@@ -339,7 +339,7 @@ Here are some methods you can use:
 * __$load(numberOfMessages)__ Load a number of messages from history into the array, return a promise resolved when the data is loaded and rejected if there is an error.
 * __$allLoaded()__  Return a boolean to indicate if all the messages from history have been loaded.
 
-### Wraping the ``$pubnubChannel`` object in a Service.
+### Wrapping the ``$pubnubChannel`` object in a Service.
 
 Instead of using the ``$pubnubChannel`` directly in a controller you can wrap it into a Service:
 
@@ -397,7 +397,7 @@ app.controller("ScoresCtrl", ["$scope", "Scores", function($scope, Scores) {
 
 ## The $pubnubChannelGroup object
 
-The ``$pubnubChannelGroup`` provides an easy-to-use interface for channel groups. It stores the incoming messages in containers split by the channel and exposes an interface to directely fetch messages by channel using the ``$channel(channelName)`` method.
+The ``$pubnubChannelGroup`` provides an easy-to-use interface for channel groups. It stores the incoming messages in containers split by the channel and exposes an interface to directly fetch messages by channel using the ``$channel(channelName)`` method.
 
 ### Getting started
 
@@ -425,13 +425,13 @@ Instantiate a ``$pubnubChannelGroup`` object and assign it to a scope variable p
   // Fetch a $pubnubChannel from the Conversations $pubnubChannelGroup object
   $scope.currentConversation = $scope.Conversations.$channel('conversation-178')
   // $scope.messages is a $pubnubChannel, you can use any method available for a $pubnubChannel
-  $scope.messages.$load(20)
+  $scope.currentConversation.$load(20)
 });
 ```
 
-### Optionnal config parameters:
+### Optional config parameters:
 
-You can pass in some optionnal parameters in the config hash when instantiating the ``$pubnubChannelGroup``:
+You can pass in some optional parameters in the config hash when instantiating the ``$pubnubChannelGroup``:
 
 ```javascript
 $scope.Conversation = $pubnubChannelGroup('conversations-channel-group', config)
@@ -446,7 +446,7 @@ $scope.Conversation = $pubnubChannelGroup('conversations-channel-group', config)
 
 * __$channel(channel)__  Return a $pubnubChannel from a the channel group.
 
-### Wraping the ``$pubnubChannelGroup`` object in a Service.
+### Wrapping the ``$pubnubChannelGroup`` object in a Service.
 
 Instead of using the ``$pubnubChannelGroup`` directly in a controller you can wrap it into a Service:
 
