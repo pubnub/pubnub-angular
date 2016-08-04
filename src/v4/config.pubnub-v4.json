@@ -1,0 +1,30 @@
+{
+  "methods_to_delegate": [
+    "setUUID",
+    "getUUID",
+    "setAuthKey",
+    "addListener",
+    "unsubscribe",
+    "time",
+    "stop",
+    "push",
+    "channelGroups"
+  ],
+  "methods_to_wrap": [
+    "publish",
+    "hereNow",
+    "whereNow",
+    "setState",
+    "getState",
+    "grant",
+    "history"
+  ],
+  "common_callbacks_to_wrap": [
+    "callback"
+  ],
+  "subscribe_listener_events_to_broadcast": [
+    "message",
+    "presence",
+    "status"
+  ]
+}

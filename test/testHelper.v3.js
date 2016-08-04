@@ -2,20 +2,22 @@ var config = {};
 
 var expect = chai.expect;
 
+config.version = 3;
+
 config.demo = {
-    publish_key: 'ds',
-    subscribe_key: 'ds'
+  publish_key: 'demo-36',
+  subscribe_key: 'demo-36'
 };
 
 config.admin = {
-  publish_key: 'ds',
-  subscribe_key: 'ds',
+  publish_key: 'demo-36',
+  subscribe_key: 'demo-36',
   secret_key: 'demo'
 };
 
 config.user = {
-  publish_key: 'ds',
-  subscribe_key: 'ds',
+  publish_key: 'demo-36',
+  subscribe_key: 'demo-36',
   secret_key: 'demo'
 };
 

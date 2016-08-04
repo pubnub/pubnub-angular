@@ -55,20 +55,28 @@ describe('$pubnubChannel', function () {
       
       context('The presence parameter is provided', function(){
         it('triggers presence events', function(done) {
-          var chan = $pubnubChannel('channel', {presence: true})
+          
+          var channelName = "channel-" + getRandom(10000).toString();
+          var chan = $pubnubChannel(channelName, {presence: true})
           
           Pubnub.init(config.demo);
           
-          Pubnub.getInstance('another').init(config.demo);
-          Pubnub.getInstance("another").set_uuid(getRandom());
+          var uuid = "uuid" + getRandom(10000).toString();
           
-          $rootScope.$on(Pubnub.getPresenceEventNameFor('channel'), function (pnEvent, event) {
+          Pubnub.getInstance('another2').init(config.demo);
+          if(config.version === 3){
+              Pubnub.getInstance("another2").set_uuid(uuid);
+          } else {
+             Pubnub.getInstance("another2").setUUID(uuid);
+          }
+          
+          $rootScope.$on(Pubnub.getPresenceEventNameFor(channelName), function (pnEvent, event) {
             expect(event.action).to.be.equal('join');
             done();
           });
           
-          Pubnub.getInstance('another').subscribe({
-            channel: 'channel',
+          Pubnub.getInstance('another2').subscribe({
+            channel: channelName,
             callback: function(){}
           });
           
@@ -137,26 +145,42 @@ describe('$pubnubChannel', function () {
       
       it('it automatically store the new messages', function(done) {
         
-        Pubnub.getInstance('instance1').init(config.demo)
-        Pubnub.getInstance('instance2').init(config.demo)
+        Pubnub.getInstance('deluxeInstance1').init(config.demo)
+        Pubnub.getInstance('deluxeInstance2').init(config.demo)
         
-        var chan = $pubnubChannel('myChannel', { instance: 'instance1' })      
+        var channelName = "channel-" + getRandom(10000).toString();
+        var chan = $pubnubChannel(channelName, { instance: 'deluxeInstance1' })      
         
         setTimeout(function(){
           
-          Pubnub.getInstance('instance2').publish({
-              channel: 'myChannel',
-              message: 'Hello',
-              callback: function(){
-                setTimeout(function(){
-                     
+          if(config.version === 3){
+            Pubnub.getInstance('deluxeInstance2').publish({
+                channel: channelName,
+                message: 'Hello',
+                callback: function(){
+                  setTimeout(function(){
+                       
+                    expect(chan.length).to.equal(1)
+                    done();
+                  },3000)
+                }
+            });
+          } else {
+            
+            Pubnub.getInstance('deluxeInstance1').addListener({
+                message: function(event){
                   expect(chan.length).to.equal(1)
-                  done();
-                },3000)
-              }
-          });
+                  done()
+                }
+              });
+                  
+            Pubnub.getInstance('deluxeInstance2').publish({
+                channel: channelName,
+                message: 'Hello'
+            });
+          }
              
-        },3000)
+        },5000)
         
 
       });    
@@ -190,7 +214,13 @@ describe('$pubnubChannel', function () {
         chan.$load(20).then(function(res){
             
               expect(chan.length).to.equal(20)
-              expect(res[0].length).to.equal(20);
+              
+              if(config.version === 3){
+                  expect(res[0].length).to.equal(20);
+              } else {
+                 expect(res.messages.length).to.equal(20);
+              }
+              
               done();
           
         })
@@ -202,10 +232,14 @@ describe('$pubnubChannel', function () {
                 
         chan.$load(5).then(function(res){    
           chan.$load(5).then(function(res){
-              
-                expect(chan.length).to.equal(10)
+            
+            expect(chan.length).to.equal(10)
+            if(config.version === 3){
                 expect(res[0].length).to.equal(5);
-                done();
+            } else {
+               expect(res.messages.length).to.equal(5);
+            }
+            done();
             
           })
         })
@@ -219,7 +253,12 @@ describe('$pubnubChannel', function () {
         var chan = $pubnubChannel(config.channelWithHistory)
         
         chan.$publish('Hello').then(function(res){
-            expect(res[1]).to.be.equal('Sent')
+            
+          if(config.version === 3){
+              expect(res[1]).to.be.equal('Sent')
+          } else {
+             expect(res.timetoken).not.to.equal(null);
+          }
             done();        
         });
                    

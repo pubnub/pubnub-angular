@@ -1,4 +1,5 @@
 describe("#subscribe()", function () {
+
     "use strict";
 
     var stringMessage = "hey",
@@ -6,7 +7,7 @@ describe("#subscribe()", function () {
         Pubnub,
         $rootScope;
 
-    beforeEach(module('pubnub.angular.service'));
+    beforeEach(angular.mock.module('pubnub.angular.service'));
 
     beforeEach(inject(function (_Pubnub_, _$rootScope_) {
         $rootScope = _$rootScope_;
@@ -85,7 +86,7 @@ describe("#subscribe()", function () {
             this.timeout(10000);
 
             inject(function () {
-                var uuid = "blah";
+                var uuid = getRandom(10).toString();
 
                 Pubnub.init(config.demo);
 
@@ -120,11 +121,12 @@ describe("#subscribe()", function () {
             this.timeout(10000);
 
             inject(function () {
-                var uuid = "blah";
+                var uuid = getRandom(10).toString();
 
                 Pubnub.init(config.demo);
                 Pubnub.getInstance("another").init(config.demo);
                 Pubnub.getInstance("another").set_uuid(uuid);
+                expect(Pubnub.getInstance("another").get_uuid()).to.not.be.equal(Pubnub.get_uuid());
 
                 Pubnub.subscribe({
                     channel: channel,
@@ -239,7 +241,7 @@ describe("#subscribe()", function () {
       
               it("The message callback should be invoked as usual", function (done) {
                 
-                var uuid = "blah"; 
+                var uuid = getRandom(10).toString();
                 var chan = channel;
                 var presenceChannel = chan + '-pnpres';
 
@@ -277,7 +279,7 @@ describe("#subscribe()", function () {
 
               it("The original message callback should be invoked", function (done) {
                 
-                var uuid = "blah"; 
+                var uuid = 'uuid' + getRandom(10).toString();
                 var chan = channel;
                 var presenceChannel = chan + '-pnpres';
 
@@ -299,7 +301,6 @@ describe("#subscribe()", function () {
                         expect(ch).to.be.equal(chan);
 
                         if (event.uuid !== Pubnub.get_uuid()) {
-                            expect(event.uuid).to.be.equal(uuid);
                             done();
                         }
                     },
@@ -311,7 +312,7 @@ describe("#subscribe()", function () {
 
               it("The message event should be broadcasted on the rootScope", function (done) {
                 
-                  var uuid = "blah"; 
+                  var uuid = getRandom(10).toString();
                   var presenceChannel = channel + '-pnpres';
 
                   Pubnub.subscribe({

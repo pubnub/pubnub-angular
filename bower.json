@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "angular-mocks": "^1.2.0",
-    "pubnub": "^3.7.10"
+    "pubnub-v3": "pubnub#3",
+    "pubnub-v4": "pubnub#4"
   }
 }

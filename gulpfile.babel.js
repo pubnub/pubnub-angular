@@ -62,9 +62,18 @@ gulp.task('test_release', function () {
     .pipe(gulpMocha({ reporter: 'spec' }));
 });
 
-gulp.task('test_client', function (done) {
-  new karma.Server({ configFile: __dirname + '/karma.conf.js' }, done)
+gulp.task('test_client-pubnub-v3', function (done) {
+  new karma.Server({ configFile: __dirname + '/karma.conf.pubnub-v3.js' }, done)
     .start();
+});
+
+gulp.task('test_client-pubnub-v4', function (done) {
+  new karma.Server({ configFile: __dirname + '/karma.conf.pubnub-v4.js' }, done)
+    .start();
+});
+
+gulp.task('test_client', function (done) {
+  runSequence('test_client-pubnub-v3', 'test_client-pubnub-v4', done);
 });
 
 gulp.task('compile', function (done) {

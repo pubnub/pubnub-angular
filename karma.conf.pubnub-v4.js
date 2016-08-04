@@ -18,11 +18,11 @@ module.exports = function(config) {
       'test/polyfills/bind.js',
       'bower_components/angular/angular.js',
       'bower_components/angular-mocks/angular-mocks.js',
-      'bower_components/pubnub/web/pubnub.js',
+      'bower_components/pubnub-v4/dist/web/pubnub.js',
       'dist/pubnub-angular.js',
-      'test/testHelper.js',
+      'test/testHelper.v4.js',
       'test/unit/*.test.js',
-      'test/e2e/*.test.js'
+      'test/e2e/v4/*.test.js'
     ],
 
 
@@ -33,7 +33,10 @@ module.exports = function(config) {
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-    preprocessors: { 'dist/*.js': ['coverage'] },
+    preprocessors: {
+      'dist/*.js': ['coverage'],
+      'test/e2e/v4/*.test.js': ['webpack']
+    },
 
 
     // test results reporter to use
