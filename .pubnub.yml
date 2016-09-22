@@ -28,7 +28,7 @@ changelog:
       - type: feature
         text: |
           [#18](https://github.com/pubnub/pubnub-angular/pull/18) adding `mobile_gw_provision` to the delegated methods ([@kminkler](https://github.com/kminkler))
-  - version: 3.1.2
+  - version: 3.1.0
     date:
     changes:
       - type: improvement
