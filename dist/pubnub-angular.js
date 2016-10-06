@@ -1,4 +1,4 @@
-/*! 3.2.1 */
+/*! 4.0.0 */
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -390,7 +390,7 @@
 	  function _class(label, service, $rootScope) {
 	    _classCallCheck(this, _class);
 	
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(_class).call(this, label, service, $rootScope, configPubNubV3));
+	    var _this = _possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).call(this, label, service, $rootScope, configPubNubV3));
 	
 	    _this.mockingInstance = new MockV3(label, service, $rootScope);
 	    return _this;
@@ -454,7 +454,7 @@
 	  function _class() {
 	    _classCallCheck(this, _class);
 	
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(_class).apply(this, arguments));
+	    return _possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).apply(this, arguments));
 	  }
 	
 	  _createClass(_class, [{
@@ -691,7 +691,7 @@
 	  function _class(label, service, $rootScope) {
 	    _classCallCheck(this, _class);
 	
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(_class).call(this, label, service, $rootScope, configPubNubV4));
+	    var _this = _possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).call(this, label, service, $rootScope, configPubNubV4));
 	
 	    _this.mockingInstance = new MockV4(label, service, $rootScope);
 	    _this.subscribeEventsBroadcaster = new SubscribeEventsBroadcaster(label, service, $rootScope, _this);
@@ -760,7 +760,7 @@
 	  function _class() {
 	    _classCallCheck(this, _class);
 	
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(_class).apply(this, arguments));
+	    return _possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).apply(this, arguments));
 	  }
 	
 	  _createClass(_class, [{

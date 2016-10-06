@@ -13,7 +13,7 @@ integration between PubNub and AngularJS. PubNub makes it
 easy to integrate real-time bidirectional communication
 into your app.
 
-**Pubnub Angular** service is a wrapper for **PubNub JavaScript SDK** [version 4](https://www.pubnub.com/docs/javascript/pubnub-javascript-sdk-v4) and [version 3](https://www.pubnub.com/docs/web-javascript/pubnub-javascript-sdk) 
+**Pubnub Angular** service is a wrapper for **PubNub JavaScript SDK** [version 4](https://www.pubnub.com/docs/javascript/pubnub-javascript-sdk-v4) and [version 3](https://www.pubnub.com/docs/web-javascript/pubnub-javascript-sdk)
 that adds a few of extra features to simplify Angular integrations:
 
 * [Multiple instance behavior](https://github.com/pubnub/pubnub-angular#differences-in-usage-with-native-javascript-sdk). All instances are accessible
@@ -43,7 +43,7 @@ more suitable for your situation.
 Your HTML page will include 2 key libraries:
 
 * PubNub JavaScript SDK ( [version 4](https://www.pubnub.com/docs/javascript/pubnub-javascript-sdk-v4) or [version 3](https://www.pubnub.com/docs/web-javascript/pubnub-javascript-sdk) )
-* PubNub AngularJS SDK 
+* PubNub AngularJS SDK
 
 **1. To install the PubNub AngularJS SDK:**
 
@@ -58,13 +58,13 @@ Your HTML page will include 2 key libraries:
 - Or using CDNs:
 
 ```html
-<script src="http(s)://cdn.pubnub.com/sdk/pubnub-angular/pubnub-angular-3.2.1.js"></script>
+<script src="http(s)://cdn.pubnub.com/sdk/pubnub-angular/pubnub-angular-4.0.0.js"></script>
 ```
 
 - Also available as minified:
 
 ```html
-<script src="http(s)://cdn.pubnub.com/sdk/pubnub-angular/pubnub-angular-3.2.1.min.js"></script>
+<script src="http(s)://cdn.pubnub.com/sdk/pubnub-angular/pubnub-angular-4.0.0.min.js"></script>
 ```
 
 To utilize this wrapper, include the scripts in the following order:
@@ -148,7 +148,7 @@ are hidden inside service and are accessible via instance getter.
 	publish_key: 'your pub key',
 	subscribe_key: 'your sub key'
 });</code></pre>
-	</td>	
+	</td>
 </tr>
 </table>
 
@@ -169,7 +169,7 @@ In most use cases, usage of the default PubNub instance will be sufficient, but 
 	publishKey: 'your pub key',
 	subscribeKey: 'your sub key'
 });</code></pre>
-	</td>	
+	</td>
 	<td><pre><code>Pubnub.getInstance("another").init({
 	publish_key: 'your pub key',
 	subscribe_key: 'your sub key'
@@ -190,7 +190,7 @@ To learn about PubNub JavaScript features and methods available refer to the API
 * [JavaScript V4 API Reference](https://www.pubnub.com/docs/javascript/api-reference-sdk-v4)
 * [JavaScript V3 API Reference](https://https://www.pubnub.com/docs/web-javascript/api-reference)
 
-**Examples:** 
+**Examples:**
 
 <table>
 <tr><td></td>
@@ -214,7 +214,7 @@ To learn about PubNub JavaScript features and methods available refer to the API
     callback: function (m) {console.log(m);},
     error: function (err) {console.log(err);}
 });</code></pre>
-	</td>	
+	</td>
 </tr>
 <tr>
 	<td>With an other instance</td>
@@ -232,7 +232,7 @@ To learn about PubNub JavaScript features and methods available refer to the API
     message: 'Hello!',
     callback: function (m) {console.log(m);}
 });</code></pre>
-	</td>	
+	</td>
 </tr>
 </table>
 
@@ -382,7 +382,7 @@ method, you should add it using one of the following ways:
     callback: function (m) {console.log(m);},
     error: function(err) {console.log(err);}
 });</code></pre>
-	</td>	
+	</td>
 </tr>
 <tr>
 	<td>Method with events triggered</td>
@@ -399,7 +399,7 @@ method, you should add it using one of the following ways:
     message: 'Hello!',
     triggerEvents: ['callback', 'error']
 });</code></pre>
-	</td>	
+	</td>
 </tr>
 </table>
 
@@ -414,7 +414,7 @@ Params order in broadcasted events is the same as in native SDK methods, except 
 With JS V4 the *callback* event will be triggered for both successful and unsuccesfull response:
 
 ```javascript
-$rootScope.$on(Pubnub.getEventNameFor('publish', 'callback'), 
+$rootScope.$on(Pubnub.getEventNameFor('publish', 'callback'),
   function (ngEvent, status, response) {
     $scope.$apply(function () {
 	    if (status.error){
@@ -473,7 +473,7 @@ Init Pubnub:
 	publish_key: 'your pub key',
 	subscribe_key: 'your sub key'
 });</code></pre>
-	</td>	
+	</td>
 </tr>
 </table>
 
@@ -614,7 +614,7 @@ Init Pubnub:
 	publish_key: 'your pub key',
 	subscribe_key: 'your sub key'
 });</code></pre>
-	</td>	
+	</td>
 </tr>
 </table>
 

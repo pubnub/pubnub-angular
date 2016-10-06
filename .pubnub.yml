@@ -1,8 +1,14 @@
 name: pubnub-angular
-version: 3.2.1
+version: 4.0.0
 schema: 1
 scm: github.com/pubnub/pubnub-angular
 changelog:
+  - version: v4.0.0
+    date: 2016-10-06
+    changes:
+      - type: feature
+        text: V4 support.
+  - version: v3.1.2
   - version: v3.2.1
     date: 2016-06-13
     changes:

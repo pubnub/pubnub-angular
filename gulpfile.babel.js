@@ -36,12 +36,10 @@ gulp.task('webpack', function () {
 
 gulp.task('uglify', function () {
   return gulp.src('./dist/pubnub-angular.js')
-    .pipe(gulpRename('pubnub-angular-' + version + '.js'))
     .pipe(gulp.dest('./dist'))
     .pipe(gulpUglify({ mangle: true, compress: true }))
     .pipe(gulpRename('pubnub-angular.min.js'))
     .pipe(gulp.dest('./dist'))
-    .pipe(gulpRename('pubnub-angular-' + version + '.min.js'))
     .pipe(gulp.dest('./dist'));
 });
 
@@ -49,7 +47,6 @@ gulp.task('include-sourcemaps', function () {
   return gulp.src('dist/pubnub-angular.js.map')
     .pipe(gulpRename('pubnub-angular.min.js.map'))
     .pipe(gulp.dest('./dist'))
-    .pipe(gulpRename('pubnub-angular-' + version + '.min.js.map'))
     .pipe(gulp.dest('./dist'));
 });
 
