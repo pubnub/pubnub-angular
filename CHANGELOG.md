@@ -1,4 +1,21 @@
 
+## [v4.0.0](https://github.com/pubnub/pubnub-angular/tree/v4.0.0)
+  October-06-2016
+
+
+  [Full Changelog](https://github.com/pubnub/pubnub-angular/compare/v3.1.2...v4.0.0)
+
+- 🌟V4 support.
+
+
+
+
+## [v3.1.2](https://github.com/pubnub/pubnub-angular/tree/v3.1.2)
+
+
+  [Full Changelog](https://github.com/pubnub/pubnub-angular/compare/v3.2.1...v3.1.2)
+
+
 ## [v3.2.1](https://github.com/pubnub/pubnub-angular/tree/v3.2.1)
   June-13-2016
 

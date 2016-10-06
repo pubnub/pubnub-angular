@@ -13,7 +13,7 @@ integration between PubNub and AngularJS. PubNub makes it
 easy to integrate real-time bidirectional communication
 into your app.
 
-**Pubnub Angular** service is a wrapper for PubNub JavaScript SDK
+**Pubnub Angular** service is a wrapper for **PubNub JavaScript SDK** [version 4](https://www.pubnub.com/docs/javascript/pubnub-javascript-sdk-v4) and [version 3](https://www.pubnub.com/docs/web-javascript/pubnub-javascript-sdk)
 that adds a few of extra features to simplify Angular integrations:
 
 * [Multiple instance behavior](https://github.com/pubnub/pubnub-angular#differences-in-usage-with-native-javascript-sdk). All instances are accessible
@@ -32,33 +32,39 @@ more suitable for your situation.
 - If you **need help** or have a **general question**, contact <support@pubnub.com>
 - If you **want to contribute**, please open a pull request against the `develop` branch.
 
-## Breaking Changes
+## Breaking changes
+  * **4.0.0** The AngularJS SDK is compatible with both PubNub JavaScript SDK version 4 and 3. If you want to switch the PubNub Javascript SDK used in your AngularJS application, please take in consideration that the methods, arguments and AngularJS events arguments match those used by the Javascript SDK.
 
-  * 3.0.0
-    * ng* prefix is removed from all the methods and now matches 1:1 to the parent javascript library.
+  * **3.0.0** ng* prefix is removed from all the methods and now matches 1:1 to the parent javascript library.
 
 
-## Integrating PubNub Angular SDK into Your App
+## Integrating PubNub AngularJS SDK into Your App
 
 Your HTML page will include 2 key libraries:
 
-* PubNub JavaScript SDK
-* PubNub JavaScript SDK Angular Service
+* PubNub JavaScript SDK ( [version 4](https://www.pubnub.com/docs/javascript/pubnub-javascript-sdk-v4) or [version 3](https://www.pubnub.com/docs/web-javascript/pubnub-javascript-sdk) )
+* PubNub AngularJS SDK
 
-Using [Bower](http://bower.io):
+**1. To install the PubNub AngularJS SDK:**
+
+- Using [Bower](http://bower.io):
 
 ```bower install --save pubnub pubnub-angular```
 
-Or using CDNs:
+- Using [npm](https://www.npmjs.com/):
+
+```npm install --save pubnub pubnub-angular```
+
+- Or using CDNs:
 
 ```html
-<script src="http(s)://cdn.pubnub.com/sdk/pubnub-angular/pubnub-angular-3.2.1.js"></script>
+<script src="http(s)://cdn.pubnub.com/sdk/pubnub-angular/pubnub-angular-4.0.0.js"></script>
 ```
 
-Also available as minified:
+- Also available as minified:
 
 ```html
-<script src="http(s)://cdn.pubnub.com/sdk/pubnub-angular/pubnub-angular-3.2.1.min.js"></script>
+<script src="http(s)://cdn.pubnub.com/sdk/pubnub-angular/pubnub-angular-4.0.0.min.js"></script>
 ```
 
 To utilize this wrapper, include the scripts in the following order:
@@ -107,162 +113,341 @@ The Angular ```Pubnub``` service is injected into the controller as follows:
 
 ## Differences in usage with native JavaScript SDK
 
-To learn about PubNub JavaScript features refer to native
-[PubNub JavaScript SDK manual](http://www.pubnub.com/docs/javascript/javascript-sdk.html).
-All methods of this SDK are wrapped with **Pubnub AngularJS Service**.
+In **Pubnub AngularJS SDK** instances
+are hidden inside service and are accessible via instance getter.
 
-Native **Pubnub JavaScript SDK** provides instance creation using ```PUBNUB.init()```,
-which returns new instance with given credentials. In **Pubnub Angular SDK** instances
-are hidden inside service and are accessible via instance getter. Methods of default
-instance are mapped directly to PubNub service like ```Pubnub.publish({...})```.
+
+### Creating a default instance
+
+<table>
+<tr><td></td>
+    <td>PubNub AngularJS SDK with JS <b>V4</b></td>
+	 <td>PubNub AngularJS SDK with JS <b>V3</b></td>
+</tr>
+<tr>
+	<td>Javascript SDK</td>
+	<td><pre><code>var defaultInstance = new PubNub({
+    publishKey: 'your pub key',
+    subscribeKey: 'your sub key'
+});</code></pre>
+	</td>
+	<td><pre><code>var defaultInstance = PUBNUB.init({
+    publish_key: 'your pub key',
+    subscribe_key: 'your sub key'
+});</code></pre>
+	</td>
+</tr>
+<tr>
+	<td>PubNub AngularJS SDK</td>
+	<td><pre><code>Pubnub.init({
+	publishKey: 'your pub key',
+	subscribeKey: 'your sub key'
+});</code></pre>
+	</td>
+	<td><pre><code>Pubnub.init({
+	publish_key: 'your pub key',
+	subscribe_key: 'your sub key'
+});</code></pre>
+	</td>
+</tr>
+</table>
+
+### Creating an other instance
 
 In most use cases, usage of the default PubNub instance will be sufficient, but if
- multiple instances with different credentials are needed, the ```Pubnub.getInstance(instanceName)``` getter needs to be utilized. In this case, the publish
-method will looks like ```Pubnub.getInstance(instanceName).publish({})```.
+ multiple instances with different credentials are needed, the ```Pubnub.getInstance(instanceName)``` getter needs to be utilized.
 
-The highlighted usage can be previewed in the two examples below. Both examples perform the
-same job - creation of 2 PubNub instances with different credentials.
-Publish method is invoked on the `__defaultInstance__` and grant method on `__anotherInstance__`.
 
-First example shows how to do that using native **Pubnub JavaScript SDK**:
+<table>
+<tr><td></td>
+    <td>PubNub AngularJS SDK with JS <b>V4</b></td>
+	 <td>PubNub AngularJS SDK with JS <b>V3</b></td>
+</tr>
+<tr>
+	<td>PubNub AngularJS SDK</td>
+	<td><pre><code>Pubnub.getInstance("another").init({
+	publishKey: 'your pub key',
+	subscribeKey: 'your sub key'
+});</code></pre>
+	</td>
+	<td><pre><code>Pubnub.getInstance("another").init({
+	publish_key: 'your pub key',
+	subscribe_key: 'your sub key'
+});</code></pre>
+	</td>
+</tr>
+</table>
 
-```javascript
-var defaultInstance = PUBNUB.init({
-    publish_key: 'your pub key',
-    subscribe_key: 'your sub key'
-});
+### Accessing methods
 
-var anotherInstance = PUBNUB.init({
-    publish_key: 'another pub key',
-    subscribe_key: 'another sub key'
-});
+All methods of the Native Javascript SDKs are wrapped within the **Pubnub AngularJS Service**.
 
-defaultInstance.publish({
+- Methods of default instance are mapped directly to PubNub service like ```Pubnub.publish({...})```.
+- Methods of the other instances are available via the instance getter like ```Pubnub.getInstance(instanceName).publish()```.
+
+To learn about PubNub JavaScript features and methods available refer to the API Reference of the Javascript SDK that you are using:
+
+* [JavaScript V4 API Reference](https://www.pubnub.com/docs/javascript/api-reference-sdk-v4)
+* [JavaScript V3 API Reference](https://https://www.pubnub.com/docs/web-javascript/api-reference)
+
+**Examples:**
+
+<table>
+<tr><td></td>
+    <td>PubNub AngularJS SDK with JS <b>V4</b></td>
+	 <td>PubNub AngularJS SDK with JS <b>V3</b></td>
+</tr>
+<tr>
+	<td>With the default instance</td>
+	</td>
+	<td><pre><code>Pubnub.publish({
+    channel: 'myChannel',
+    message: 'Hello!'
+  }, function(status, response){
+       console.log(response);
+});</code></pre>
+	</td>
+	</td>
+	<td><pre><code>Pubnub.publish({
+    channel: 'myChannel',
+    message: 'Hello!',
+    callback: function (m) {console.log(m);},
+    error: function (err) {console.log(err);}
+});</code></pre>
+	</td>
+</tr>
+<tr>
+	<td>With an other instance</td>
+</td>
+	<td><pre><code>Pubnub.getInstance("another").publish({
+    channel: 'myChannel',
+    message: 'Hello!'
+  }, function(status, response){
+       console.log(response);
+});</code></pre>
+	</td>
+	</td>
+	<td><pre><code>Pubnub.getInstance("another").publish({
     channel: 'myChannel',
     message: 'Hello!',
     callback: function (m) {console.log(m);}
-});
-
-anotherInstance.grant({
-    channel: 'my_channel',
-    auth_key: 'my_authkey',
-    read: true,
-    write: false,
-    callback: function (m) {console.log(m);}
-});
-```
-
-Second example shows how to use **Pubnub AngularJS SDK** for this purposes:
-
-```javascript
-Pubnub.init({
-    publish_key: 'your pub key',
-    subscribe_key: 'your sub key'
-});
-
-Pubnub.getInstance('anotherInstance').init({
-    publish_key: 'another pub key',
-    subscribe_key: 'another sub key'
-});
-
-Pubnub.publish({
-    channel: 'myChannel',
-    message: 'Hello!',
-    callback: function (m) {console.log(m);}
-});
-
-Pubnub.getInstance('anotherInstance').grant({
-    channel: 'my_channel',
-    auth_key: 'my_authkey',
-    read: true,
-    write: false,
-    callback: function (m) {console.log(m);}
-});
-```
+});</code></pre>
+	</td>
+</tr>
+</table>
 
 That's it - you're ready to start using the AngularJS PubNub SDK!
 
 ## Events
 
-Another key feature of this SDK is ability to trigger method events
+Another key feature of this SDK is the ability to trigger method events
 in addition to passed in callbacks. By default events will not be triggered.
 
 To enable all possible events for certain method, add ```triggerEvents: true```
-option to the method arguments:
+option to the method arguments.
+
+
+### Triggering and listening to events for the subscribe method
+
+* **With PubNub Javascript V4**
+
+With Javascript V4, you can trigger 3 different events (**message**, **presence** and **status**)
+
+**Triggering the events:**
 
 ```javascript
-Pubnub.publish({
-    channel  : $scope.selectedChannel,
-    message  : $scope.newMessage,
-    callback : function(info) { console.log(info) },
-    triggerEvents: true
+Pubnub.subscribe({
+    channels  : [$scope.selectedChannel],
+    channelGroups: [$scope.selectedChannelGroup],
+    withPresence: true,
+    triggerEvents: ['message', 'presence', 'status']
+  });
+};
+```
+*You can also enable all possible events using* ```triggerEvents: true```
+
+**Listening to a message event of a specific channel or channel group:**
+
+```javascript
+$rootScope.$on(Pubnub.getMessageEventNameFor($scope.selectedChannel), function (ngEvent, envelope) {
+    $scope.$apply(function () {
+        // add message to the messages list
+        $scope.chatMessages.unshift(envelope.message);
+    });
 });
 ```
 
-And then you can subscribe to these events using ```Pubnub.getEventNameFor(...)```
-helper from anywhere in your app:
+**Listening to a presence event of a specific channel or channel group:**
+
 
 ```javascript
-$rootScope.$on(Pubnub.getEventNameFor('publish', 'callback'), function (ngEvent, payload) {
+$rootScope.$on(Pubnub.getPresenceEventNameFor($scope.selectedChannel), function (ngEvent, pnEvent) {
+        // apply presence event (join|leave) on users list
+        handlePresenceEvent(pnEvent);
+});
+```
+
+**Listening to the global status events:**
+
+Via the status listener, you can receive different events such as when the network is online (PNNetworkUpCategory), when the SDK is connected to a set of channels (PNConnectedCategory), etc... See the list of events available in the [API Reference](https://www.pubnub.com/docs/javascript/api-reference-sdk-v4#listeners-categories)
+
+```javascript
+$rootScope.$on(Pubnub.getEventNameFor('subscribe', 'status'), function (ngEvent, status, response) {
+    if (status.category == 'PNConnectedCategory'){
+        console.log('successfully connected to channels', response);
+    }
+});
+```
+
+* **With PubNub Javascript V3**
+
+With PubNub Javascript V3, you can trigger 6 different events (**callback**, **connect**, **reconnect**,**disconnect**, **error**, **presence**)
+
+**Triggering the events:**
+
+```javascript
+Pubnub.subscribe({
+    channel  : $scope.selectedChannel,
+    channel_group: $scope.selectedChannelGroup,
+    triggerEvents: ['callback', 'presence', 'connect', 'reconnect', 'disconnect', 'error']
+  });
+};
+```
+*You can also enable all possible events using* ```triggerEvents: true```
+
+**Listening to a message event of a specific channel or channel group:**
+
+```javascript
+$rootScope.$on(Pubnub.getMessageEventNameFor($scope.selectedChannel), function (ngEvent, message, envelope, channel) {
+        // add message to the messages list
+        $scope.chatMessages.unshift(message);
+});
+```
+
+**Listening to a presence event of a specific channel or channel group:**
+
+
+```javascript
+$rootScope.$on(Pubnub.getPresenceEventNameFor($scope.selectedChannel), function (ngEvent, pnEvent, envelope, channel) {
+     // apply presence event (join|leave) on users list
+     handlePresenceEvent(pnEvent);
+});
+```
+
+**Listening to the other events** (**connect**, **reconnect**, **disconnect** and **error**)
+
+
+```javascript
+$rootScope.$on(Pubnub.getEventNameFor('subscribe', 'connect'), function (ngEvent, payload) {
+        $scope.statusSentSuccessfully = true;
+});
+```
+
+And so on for the **connect**, **reconnect**, **disconnect** and **error** event.
+
+
+### Triggering and listening to events for the methods with callbacks
+
+You have the possibility to trigger events for the methods with callbacks.
+
+For the required callbacks, for ex. the _callback_ called callback in the publish
+method, you should add it using one of the following ways:
+
+* _callback_ function in method arguments
+* ```triggerEvents: ['callback']```
+* ```triggerEvents: true``` (will trigger all the events of the method)
+
+
+**Triggering the events:**
+
+<table>
+<tr><td></td>
+    <td>PubNub AngularJS SDK with JS <b>v4</b></td>
+	 <td>PubNub AngularJS SDK with JS <b>v3</b></td>
+</tr>
+<tr>
+	<td>Method with callbacks as argument</td>
+	</td>
+	<td><pre><code>Pubnub.publish({
+    channel: 'myChannel',
+    message: 'Hello!'
+  }, function(status, response){
+       console.log(response);
+});</code></pre>
+	</td>
+	</td>
+	<td><pre><code>Pubnub.publish({
+    channel: 'myChannel',
+    message: 'Hello!',
+    callback: function (m) {console.log(m);},
+    error: function(err) {console.log(err);}
+});</code></pre>
+	</td>
+</tr>
+<tr>
+	<td>Method with events triggered</td>
+	</td>
+	<td><pre><code>Pubnub.publish({
+    channel: 'myChannel',
+    message: 'Hello!',
+    triggerEvents: ['callback']
+  }</code></pre>
+	</td>
+	</td>
+	<td><pre><code>Pubnub.publish({
+    channel: 'myChannel',
+    message: 'Hello!',
+    triggerEvents: ['callback', 'error']
+});</code></pre>
+	</td>
+</tr>
+</table>
+
+**Listening to the events:**
+
+You can listen to the events that have been triggered using the ```Pubnub.getEventNameFor(...)```
+helper from anywhere in your app.
+Params order in broadcasted events is the same as in native SDK methods, except that ngEvent object is prepended as the first param.
+
+* **With JS V4**
+
+With JS V4 the *callback* event will be triggered for both successful and unsuccesfull response:
+
+```javascript
+$rootScope.$on(Pubnub.getEventNameFor('publish', 'callback'),
+  function (ngEvent, status, response) {
+    $scope.$apply(function () {
+	    if (status.error){
+	       $scope.statusSentSuccessfully = false;
+	    } else {
+	       $scope.statusSentSuccessfully = true;
+	    }
+	 })
+});
+```
+
+* **With JS V3**
+
+With JS V3 you will get the successful and unsuccessful responses as two separate events (*callback* and *error*):
+
+```javascript
+$rootScope.$on(Pubnub.getEventNameFor('publish', 'callback'),
+  function (ngEvent, payload) {
     $scope.$apply(function () {
         $scope.statusSentSuccessfully = true;
     });
 });
+```
 
-$rootScope.$on(Pubnub.getEventNameFor('publish', 'error'), function (ngEvent, payload) {
+```javascript
+$rootScope.$on(Pubnub.getEventNameFor('publish', 'error'),
+  function (ngEvent, payload) {
     $scope.$apply(function () {
         $scope.statusSentSuccessfully = false;
     });
 });
 ```
 
-If you don't want to broadcast all events, you can explicitly specify
-array of callback names you want to trigger. All callback names that
-do not exist in native SDK will be ignored:
-
-```javascript
-Pubnub.publish({
-    channel  : $scope.selectedChannel,
-    message  : $scope.newMessage,
-    callback : function(info) { console.log(info) },
-    triggerEvents: ['callback']
-  });
-};
-```
-
-For *subscribe* method there are two helpers that provide you handlers for specific channel events:
-
-```javascript
-Pubnub.subscribe({
-    channel  : $scope.selectedChannel,
-    message  : $scope.newMessage,
-    triggerEvents: ['callback', 'presence']
-  });
-};
-
-$rootScope.$on(Pubnub.getMessageEventNameFor($scope.selectedChannel), function (ngEvent, message, envelope, channel) {
-    $scope.$apply(function () {
-        // add message to the messages list
-        $scope.chatMessages.unshift(message);
-    });
-});
-
-$rootScope.$on(Pubnub.getPresenceEventNameFor($scope.selectedChannel), function (ngEvent, pnEvent, envelope, channel) {
-    $scope.$apply(function () {
-        // apply presence event (join|leave) on users list
-        handlePresenceEvent(pnEvent);
-    });
-});
-```
-
-Notice, that params order in broadcasted events is the same as in native SDK, except that ngEvent object is prepended as the first param.
-
-For the required callbacks, for ex. _callback_ callback in subscribe
-method, you should add it using one of the next ways:
-
-* _callback_ function in method arguments
-* ```triggerEvents: true```
-* ```triggerEvents: ['callback']```
 
 ## The $pubnubChannel object
 
@@ -273,12 +458,24 @@ The ``$pubnubChannel`` object allows you to seamlessly bind a PubNub channel to 
 
 Init Pubnub:
 
-```javascript
-Pubnub.init({
-    publish_key: 'your pub key',
-    subscribe_key: 'your sub key'
-});
-```
+<table>
+<tr>
+    <td>With JS <b>V4</b></td>
+	 <td>With JS <b>V3</b></td>
+</tr>
+<tr>
+	<td><pre><code>Pubnub.init({
+	publishKey: 'your pub key',
+	subscribeKey: 'your sub key'
+});</code></pre>
+	</td>
+	<td><pre><code>Pubnub.init({
+	publish_key: 'your pub key',
+	subscribe_key: 'your sub key'
+});</code></pre>
+	</td>
+</tr>
+</table>
 
 Inject the ``$pubnubChannel`` service in a controller:
 
@@ -402,12 +599,24 @@ The ``$pubnubChannelGroup`` provides an easy-to-use interface for channel groups
 
 Init Pubnub:
 
-```javascript
-Pubnub.init({
-    publish_key: 'your pub key',
-    subscribe_key: 'your sub key'
-});
-```
+<table>
+<tr>
+    <td>With JS <b>V4</b></td>
+	 <td>With JS <b>V3</b></td>
+</tr>
+<tr>
+	<td><pre><code>Pubnub.init({
+	publishKey: 'your pub key',
+	subscribeKey: 'your sub key'
+});</code></pre>
+	</td>
+	<td><pre><code>Pubnub.init({
+	publish_key: 'your pub key',
+	subscribe_key: 'your sub key'
+});</code></pre>
+	</td>
+</tr>
+</table>
 
 Inject the ``$pubnubChannelGroup`` service in a controller:
 

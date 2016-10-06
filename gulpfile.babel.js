@@ -36,12 +36,10 @@ gulp.task('webpack', function () {
 
 gulp.task('uglify', function () {
   return gulp.src('./dist/pubnub-angular.js')
-    .pipe(gulpRename('pubnub-angular-' + version + '.js'))
     .pipe(gulp.dest('./dist'))
     .pipe(gulpUglify({ mangle: true, compress: true }))
     .pipe(gulpRename('pubnub-angular.min.js'))
     .pipe(gulp.dest('./dist'))
-    .pipe(gulpRename('pubnub-angular-' + version + '.min.js'))
     .pipe(gulp.dest('./dist'));
 });
 
@@ -49,7 +47,6 @@ gulp.task('include-sourcemaps', function () {
   return gulp.src('dist/pubnub-angular.js.map')
     .pipe(gulpRename('pubnub-angular.min.js.map'))
     .pipe(gulp.dest('./dist'))
-    .pipe(gulpRename('pubnub-angular-' + version + '.min.js.map'))
     .pipe(gulp.dest('./dist'));
 });
 
@@ -62,9 +59,18 @@ gulp.task('test_release', function () {
     .pipe(gulpMocha({ reporter: 'spec' }));
 });
 
-gulp.task('test_client', function (done) {
-  new karma.Server({ configFile: __dirname + '/karma.conf.js' }, done)
+gulp.task('test_client-pubnub-v3', function (done) {
+  new karma.Server({ configFile: __dirname + '/karma.conf.pubnub-v3.js' }, done)
     .start();
+});
+
+gulp.task('test_client-pubnub-v4', function (done) {
+  new karma.Server({ configFile: __dirname + '/karma.conf.pubnub-v4.js' }, done)
+    .start();
+});
+
+gulp.task('test_client', function (done) {
+  runSequence('test_client-pubnub-v3', 'test_client-pubnub-v4', done);
 });
 
 gulp.task('compile', function (done) {

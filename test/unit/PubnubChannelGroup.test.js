@@ -96,16 +96,30 @@ describe('$pubnubChannel', function () {
       
       setTimeout(function(){ 
         
-        Pubnub.getInstance('instanceWithChannelGroup').publish({
-          channel: 'kitty3',
-          message: {foo: 'bar'},
-          callback: function(){    
+        if(config.version === 3){
+          Pubnub.getInstance('instanceWithChannelGroup').publish({
+            channel: 'kitty3',
+            message: {foo: 'bar'},
+            callback: function(){    
+              setTimeout(function(){
+                expect(chan_gp.$channel('kitty3').length).to.equal(1)
+                done();
+              },1000)
+            }
+          });
+        } else {
+          Pubnub.getInstance('instanceWithChannelGroup').publish({
+            channel: 'kitty3',
+            message: {foo: 'bar'},
+          }, function(status,response){
             setTimeout(function(){
               expect(chan_gp.$channel('kitty3').length).to.equal(1)
               done();
             },1000)
-          }
-        })
+          });
+        }
+        
+        
       },1000)    
     });
   }) 

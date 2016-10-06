@@ -1,4 +1,4 @@
-const pubnubConfig = require('../config.json');
+const pubnubConfig = require('../config.common.json');
 /* global angular */
 angular.module('pubnub.angular.service')
     .factory('$pubnubChannel', ['$rootScope', 'Pubnub', '$q',
@@ -77,18 +77,30 @@ angular.module('pubnub.angular.service')
         if (this._autoload !== 0) {
           this.$load(this._autoload);
         }
-
-        let eventsToTrigger = ['callback', 'connect', 'reconnect', 'disconnect', 'error', 'idle'];
+        let eventsToTrigger = null;
+        if (Pubnub.getPubNubVersion() === '3') {
+          eventsToTrigger = ['callback', 'connect', 'reconnect', 'disconnect', 'error', 'idle'];
+        } else {
+          eventsToTrigger = ['status', 'message'];
+        }
         // Trigger the presence event?
         if (this._presence) {
           eventsToTrigger.push('presence');
         }
         // Automatically subscribe to the channel
         if (this._autosubscribe) {
-          this._pubnubInstance.subscribe({
-            channel: this._channel,
-            triggerEvents: eventsToTrigger
-          });
+          // Automatically subscribe to the channel
+          let args = { triggerEvents: eventsToTrigger };
+          if (Pubnub.getPubNubVersion() === '3') {
+            args.channel = this._channel;
+            args.noheresync = true;
+          } else {
+            args.channels = [this._channel];
+            if (this._presence) {
+              args.withPresence = true;
+            }
+          }
+          this._pubnubInstance.subscribe(args);
         }
 
         // Automatically store the messages
@@ -118,8 +130,12 @@ angular.module('pubnub.angular.service')
           let args = {
             channel: self._channel,
             count: numberOfMessages,
-            reverse: false,
-            callback(m) {
+            reverse: false
+          };
+          let callback = null;
+
+          if (Pubnub.getPubNubVersion() === '3') {
+            args.callback = function (m) {
               // Update the timetoken of the first message
               self._timeTokenFirstMessage = m[1];
 
@@ -132,18 +148,35 @@ angular.module('pubnub.angular.service')
 
               deferred.resolve(m);
               $rootScope.$digest();
-            },
-            error(err) {
+            };
+            args.error = function (err) {
               deferred.reject(err);
-            }
-          };
+            };
+          } else {
+            callback = function (status, response) {
+              if (status.error) {
+                deferred.reject(response);
+              } else {
+                // Update the timetoken of the first message
+                self._timeTokenFirstMessage = response.startTimeToken;
 
+                self.$$storeBatch(response.messages.map((item) => item.entry));
+
+                // Updates the indicator that all messages have been fetched.
+                if (response.messages.length < numberOfMessages) {
+                  self._messagesAllFetched = true;
+                }
+
+                deferred.resolve(response);
+                $rootScope.$digest();
+              }
+            };
+          }
           // If there is already messages in the array and consequently a first message timetoken
           if (self._timeTokenFirstMessage) {
             args.start = self._timeTokenFirstMessage;
           }
-
-          self._pubnubInstance.history(args);
+          self._pubnubInstance.history(args, callback);
           return deferred.promise;
         },
 
@@ -155,14 +188,24 @@ angular.module('pubnub.angular.service')
         $publish(_message) {
           let self = this;
           let deferred = $q.defer();
-          self._pubnubInstance.publish({
+          let options = {
             channel: self._channel,
-            message: _message,
-            callback(m) { deferred.resolve(m); },
-            error(err) { deferred.reject(err); }
-
-          });
-
+            message: _message
+          };
+          let callback = null;
+          if (Pubnub.getPubNubVersion() === '3') {
+            options.callback = (m) => { deferred.resolve(m); };
+            options.error = (err) => { deferred.reject(err); };
+          } else {
+            callback = (status, response) => {
+              if (status.error) {
+                deferred.reject(response);
+              } else {
+                deferred.resolve(response);
+              }
+            };
+          }
+          self._pubnubInstance.publish(options, callback);
           return deferred.promise;
         },
 
@@ -206,7 +249,11 @@ angular.module('pubnub.angular.service')
         * @protected
         */
         $$newMessage(ngEvent, m) {
-          this.$$store(m);
+          if (Pubnub.getPubNubVersion() === '3') {
+            this.$$store(m);
+          } else {
+            this.$$store(m.message);
+          }
           $rootScope.$digest();
         },
 

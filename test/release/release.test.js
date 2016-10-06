@@ -29,9 +29,6 @@ describe('release should be consistent', () => {
   it('with packaged dist files', () => {
     const fileList = fs.readdirSync(path.resolve(__dirname, '../../dist'));
     assert.deepEqual(fileList, [
-      'pubnub-angular-3.2.1.js',
-      'pubnub-angular-3.2.1.min.js',
-      'pubnub-angular-3.2.1.min.js.map',
       'pubnub-angular.js',
       'pubnub-angular.min.js',
       'pubnub-angular.min.js.map',

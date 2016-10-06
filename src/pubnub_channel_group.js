@@ -1,6 +1,6 @@
 /* @flow */
 
-const pubnubConfig = require('../config.json');
+const pubnubConfig = require('../config.common.json');
 /* global angular */
 angular.module('pubnub.angular.service')
     .factory('$pubnubChannelGroup', ['$rootScope', '$q', 'Pubnub', '$pubnubChannel',
@@ -62,17 +62,26 @@ angular.module('pubnub.angular.service')
             // The handler that allow to stop listening to new messages
             this._unsubscribeHandler = null;
 
-            let eventsToTrigger = ['callback', 'connect', 'reconnect', 'disconnect', 'error', 'idle'];
+            let eventsToTrigger = null;
+            if (Pubnub.getPubNubVersion() === '3') {
+              eventsToTrigger = ['callback', 'connect', 'reconnect', 'disconnect', 'error', 'idle'];
+            } else {
+              eventsToTrigger = ['status', 'message'];
+            }
             // Trigger the presence event?
             if (this._presence) {
               eventsToTrigger.push('presence');
             }
             // Automatically subscribe to the channel
             if (this._autosubscribe) {
-              this._pubnubInstance.subscribe({
-                channel_group: this._channelGroup,
-                triggerEvents: eventsToTrigger
-              });
+              // Automatically subscribe to the channel
+              let args = { triggerEvents: eventsToTrigger };
+              if (Pubnub.getPubNubVersion() === '3') {
+                args.channel_group = this._channelGroup;
+              } else {
+                args.channelGroups = [this._channelGroup];
+              }
+              this._pubnubInstance.subscribe(args);
             }
 
             // Allow to unsubscribe to the channel group
@@ -139,7 +148,12 @@ angular.module('pubnub.angular.service')
              * @protected
              */
             $$newMessage(ngEvent, message, env) {
-              let channel = env[3];
+              let channel = null;
+              if (Pubnub.getPubNubVersion() === '3') {
+                channel = env[3];
+              } else {
+                channel = message.channel;
+              }
               this.$channel(channel).$$newMessage(ngEvent, message, env);
             }
           };

@@ -1,16 +1,28 @@
 /* global angular PUBNUB */
+/* global angular PubNub */
 
-const config = require('../config.json');
+const commonConfig = require('../config.common.json');
+
 let Wrapper = require('./wrapper.js');
+let WrapperPubNubV3 = require('./v3/wrapper_pubnub_v3.js');
+let WrapperPubNubV4 = require('./v4/wrapper_pubnub_v4.js');
 
 angular.module('pubnub.angular.service', [])
   .factory('Pubnub', ['$rootScope', function ($rootScope) {
-    if (!angular.isDefined(PUBNUB)) {
+    if (typeof PUBNUB === 'undefined' && typeof PubNub === 'undefined') {
       throw new Error('PUBNUB is not in global scope. Ensure that pubnub.js file is included before pubnub-angular.js');
     }
 
     let service = {};
-    let wrappers = {};
+    let instances = {};
+    /**
+     * Return the version of PubNub used by the PubNub service.
+     *
+     * @param {Object} initConfig
+     */
+    service.getPubNubVersion = function () {
+      return (typeof PUBNUB === 'undefined') ? '4' : '3';
+    };
 
     /**
      * Initializer for default instance
@@ -18,7 +30,7 @@ angular.module('pubnub.angular.service', [])
      * @param {Object} initConfig
      */
     service.init = function (initConfig) {
-      return service.getInstance(config.default_instance_name).init(initConfig);
+      return service.getInstance(commonConfig.default_instance_name).init(initConfig);
     };
 
     /**
@@ -28,23 +40,18 @@ angular.module('pubnub.angular.service', [])
      * @returns {Wrapper}
      */
     service.getInstance = function (instanceName) {
-      let instance = wrappers[instanceName];
+      let instance = instances[instanceName];
 
       if (angular.isDefined(instance) && instance instanceof Wrapper) {
         return instance;
       } else if (typeof instanceName === 'string' && instanceName.length > 0) {
-        wrappers[instanceName] = new Wrapper(instanceName, service, $rootScope);
+        if (this.getPubNubVersion() === '3') {
+          instances[instanceName] = new WrapperPubNubV3(instanceName, service, $rootScope);
+        } else if (this.getPubNubVersion() === '4') {
+          instances[instanceName] = new WrapperPubNubV4(instanceName, service, $rootScope);
+        }
 
-        // register the methods in the new wrapper
-        config.methods_to_delegate.forEach(method => {
-          wrappers[instanceName].wrapMethod(method);
-
-          service[method] = function (args) {
-            return this.getInstance(config.default_instance_name)[method](args);
-          };
-        });
-
-        return wrappers[instanceName];
+        return instances[instanceName];
       }
 
       return instance;
@@ -59,9 +66,9 @@ angular.module('pubnub.angular.service', [])
      * @returns {string} event name
      */
     service.getEventNameFor = function (methodName, callbackName, instanceName) {
-      if (!instanceName) instanceName = config.default_instance_name;
+      if (!instanceName) instanceName = commonConfig.default_instance_name;
 
-      return [config.pubnub_prefix, instanceName, methodName, callbackName].join(':');
+      return [commonConfig.pubnub_prefix, instanceName, methodName, callbackName].join(':');
     };
 
     /**
@@ -72,9 +79,9 @@ angular.module('pubnub.angular.service', [])
      * @returns {string} event name
      */
     service.getMessageEventNameFor = function (channelName, instanceName) {
-      if (!instanceName) instanceName = config.default_instance_name;
+      if (!instanceName) instanceName = commonConfig.default_instance_name;
 
-      return [config.pubnub_prefix, instanceName, 'subscribe', 'callback', channelName].join(':');
+      return [commonConfig.pubnub_prefix, instanceName, 'subscribe', 'callback', channelName].join(':');
     };
 
     /**
@@ -85,9 +92,9 @@ angular.module('pubnub.angular.service', [])
      * @returns {string} event name
      */
     service.getPresenceEventNameFor = function (channelName, instanceName) {
-      if (!instanceName) instanceName = config.default_instance_name;
+      if (!instanceName) instanceName = commonConfig.default_instance_name;
 
-      return [config.pubnub_prefix, instanceName, 'subscribe', 'presence', channelName].join(':');
+      return [commonConfig.pubnub_prefix, instanceName, 'subscribe', 'presence', channelName].join(':');
     };
 
     /**
@@ -96,7 +103,7 @@ angular.module('pubnub.angular.service', [])
      * @param {object} args
      */
     service.subscribe = function (args) {
-      this.getInstance(config.default_instance_name).subscribe(args);
+      this.getInstance(commonConfig.default_instance_name).subscribe(args);
     };
 
     return service;
