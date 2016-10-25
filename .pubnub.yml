@@ -8,7 +8,6 @@ changelog:
     changes:
       - type: feature
         text: V4 support.
-  - version: v3.1.2
   - version: v3.2.1
     date: 2016-06-13
     changes:
