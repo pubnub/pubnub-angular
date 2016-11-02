@@ -76,7 +76,7 @@ module.exports = class extends Mock {
     let i;
 
     // Replace each callbacks allowed to be mocked.
-    for (i = 0; i < l; i++) {
+    for (i = 0; i < l; i += 1) {
       if (!angular.isObject(methodArguments)) {
         return;
       }

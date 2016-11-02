@@ -30,7 +30,7 @@ module.exports = class {
     } else if (angular.isObject(triggerEventsValue)) {
       length = triggerEventsValue.length;
 
-      for (i = 0; i < length; i++) {
+      for (i = 0; i < length; i += 1) {
         value = triggerEventsValue[i];
         if (initialCallbackNames.indexOf(value) >= 0) result.push(value);
       }
