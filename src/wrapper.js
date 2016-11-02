@@ -18,7 +18,7 @@ module.exports = class {
     this.pubnubInstance = null;
 
     // Register the methods in the wrapper and replace callbacks by mocked callbacks if needed
-    wrapperConfig.methods_to_wrap.forEach(method => {
+    wrapperConfig.methods_to_wrap.forEach((method) => {
       this.wrapMethod(method);
 
       // Add the wrapped method to the service
@@ -28,8 +28,8 @@ module.exports = class {
     });
 
     // Just delegate the methods to the wrapper
-    wrapperConfig.methods_to_delegate.forEach(method => {
-      this[method] = (args) => this.getOriginalInstance()[method](args);
+    wrapperConfig.methods_to_delegate.forEach((method) => {
+      this[method] = args => this.getOriginalInstance()[method](args);
       // Add the delegated method to the service
       service[method] = function (args) {
         return this.getInstance(config.default_instance_name)[method](args);

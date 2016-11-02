@@ -448,6 +448,7 @@
 	
 	/* global angular */
 	var Mock = __webpack_require__(7);
+	
 	module.exports = function (_Mock) {
 	  _inherits(_class, _Mock);
 	
@@ -984,13 +985,13 @@
 	  * @returns {Array}
 	  * @constructor
 	  */
-	  function PubnubChannel(channel, config) {
+	  function PubnubChannel(channel) {
+	    var config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	
 	    // Instanciate the PubnubChannel and return it
 	    if (!(this instanceof PubnubChannel)) {
 	      return new PubnubChannel(channel, config);
 	    }
-	
-	    config = config || {};
 	
 	    if (!channel) {
 	      throw new Error('The channel name is required');
@@ -1041,16 +1042,20 @@
 	    if (this._autoload !== 0) {
 	      this.$load(this._autoload);
 	    }
+	
 	    var eventsToTrigger = null;
+	
 	    if (Pubnub.getPubNubVersion() === '3') {
 	      eventsToTrigger = ['callback', 'connect', 'reconnect', 'disconnect', 'error', 'idle'];
 	    } else {
 	      eventsToTrigger = ['status', 'message'];
 	    }
+	
 	    // Trigger the presence event?
 	    if (this._presence) {
 	      eventsToTrigger.push('presence');
 	    }
+	
 	    // Automatically subscribe to the channel
 	    if (this._autosubscribe) {
 	      // Automatically subscribe to the channel
@@ -1064,6 +1069,7 @@
 	          args.withPresence = true;
 	        }
 	      }
+	
 	      this._pubnubInstance.subscribe(args);
 	    }
 	
@@ -1077,7 +1083,6 @@
 	  }
 	
 	  PubnubChannel.prototype = {
-	
 	    /**
 	    *   Fetch and load the previous messages in the $messages array
 	    *   @param {Integer} numberOfMessages : number of messages we want to load.
@@ -1096,6 +1101,7 @@
 	        count: numberOfMessages,
 	        reverse: false
 	      };
+	
 	      var callback = null;
 	
 	      if (Pubnub.getPubNubVersion() === '3') {
@@ -1138,10 +1144,12 @@
 	          }
 	        };
 	      }
+	
 	      // If there is already messages in the array and consequently a first message timetoken
 	      if (self._timeTokenFirstMessage) {
 	        args.start = self._timeTokenFirstMessage;
 	      }
+	
 	      self._pubnubInstance.history(args, callback);
 	      return deferred.promise;
 	    },
@@ -1159,7 +1167,9 @@
 	        channel: self._channel,
 	        message: _message
 	      };
+	
 	      var callback = null;
+	
 	      if (Pubnub.getPubNubVersion() === '3') {
 	        options.callback = function (m) {
 	          deferred.resolve(m);
@@ -1176,6 +1186,7 @@
 	          }
 	        };
 	      }
+	
 	      self._pubnubInstance.publish(options, callback);
 	      return deferred.promise;
 	    },
@@ -1310,6 +1321,7 @@
 	      PubnubChannel.apply(this, arguments);
 	      return this.$messages;
 	    };
+	
 	    ExtendedPubnubChannel.prototype = Object.create(PubnubChannel.prototype);
 	    angular.extend(ExtendedPubnubChannel.prototype, methods);
 	

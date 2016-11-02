@@ -1,5 +1,6 @@
 /* global angular */
-let Mock = require('../mock.js');
+let Mock = require('../mock');
+
 module.exports = class extends Mock {
 
   /**
