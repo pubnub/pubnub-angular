@@ -28,7 +28,6 @@ gulp.task('lint', function () {
     .pipe(gulpLint.failAfterError());
 });
 
-
 gulp.task('webpack', function () {
   return gulp.src('src/index.js')
     .pipe(gulpWebpack(webpackConfig))
@@ -38,10 +37,8 @@ gulp.task('webpack', function () {
 
 gulp.task('uglify', function () {
   return gulp.src('./dist/pubnub-angular.js')
-    .pipe(gulp.dest('./dist'))
     .pipe(gulpUglify({ mangle: true, compress: true }))
     .pipe(gulpRename('pubnub-angular.min.js'))
-    .pipe(gulp.dest('./dist'))
     .pipe(gulp.dest('./dist'));
 });
 
