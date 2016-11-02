@@ -1,6 +1,5 @@
 /* global gulp */
-/* eslint prefer-template: 0, prefer-arrow-callback: 0 */
-let version = require('./package.json').version;
+/* eslint prefer-template: 0, prefer-arrow-callback: 0 import/no-extraneous-dependencies: 0 */
 
 import gulp from 'gulp';
 import gulpClean from 'gulp-clean';
@@ -11,11 +10,13 @@ import gulpRename from 'gulp-rename';
 import gulpMocha from 'gulp-mocha';
 import runSequence from 'run-sequence';
 import gzip from 'gulp-gzip';
-import packageJSON from './package.json';
-
+import path from 'path';
 import karma from 'karma';
 
 import webpackConfig from './webpack.config';
+import packageJSON from './package.json';
+
+let version = require('./package.json').version;
 
 gulp.task('clean', function () {
   return gulp.src(['dist', 'upload'], { read: false }).pipe(gulpClean());
@@ -37,8 +38,10 @@ gulp.task('webpack', function () {
 
 gulp.task('uglify', function () {
   return gulp.src('./dist/pubnub-angular.js')
+    .pipe(gulp.dest('./dist'))
     .pipe(gulpUglify({ mangle: true, compress: true }))
     .pipe(gulpRename('pubnub-angular.min.js'))
+    .pipe(gulp.dest('./dist'))
     .pipe(gulp.dest('./dist'));
 });
 
@@ -59,11 +62,11 @@ gulp.task('test_release', function () {
 });
 
 gulp.task('test_client-pubnub-v3', function (done) {
-  new karma.Server({ configFile: __dirname + '/karma.conf.pubnub-v3.js' }, done)
+  new karma.Server({ configFile: path.join(__dirname, '/karma.conf.pubnub-v3.js') }, done)
     .start();
 });
 
-gulp.task('create_version', () => {
+gulp.task('create_version', function () {
   return gulp.src('dist/pubnub-angular.js')
     .pipe(gulpRename('pubnub-angular-' + packageJSON.version + '.js'))
     .pipe(gulp.dest('upload/normal'));
@@ -71,7 +74,7 @@ gulp.task('create_version', () => {
 
 gulp.task('create_version_min', function () {
   return gulp.src('dist/pubnub-angular.min.js')
-    .pipe(gulpRename('pubnub-angular-' + packageJSON.version + 'min.js'))
+    .pipe(gulpRename('pubnub-angular-' + packageJSON.version + '.min.js'))
     .pipe(gulp.dest('upload/normal'));
 });
 
@@ -82,7 +85,7 @@ gulp.task('create_version_gzip', function () {
 });
 
 gulp.task('test_client-pubnub-v4', function (done) {
-  new karma.Server({ configFile: __dirname + '/karma.conf.pubnub-v4.js' }, done)
+  new karma.Server({ configFile: path.join(__dirname, '/karma.conf.pubnub-v4.js') }, done)
     .start();
 });
 
@@ -92,12 +95,12 @@ gulp.task('test_client', function (done) {
 
 gulp.task('prepare_upload', function (done) {
   runSequence('create_version', 'create_version_min', 'create_version_gzip', done);
-})
+});
 
 gulp.task('compile', function (done) {
-  runSequence('clean', 'webpack', 'lint', 'uglify', 'include-sourcemaps', 'clean-original-sourcemap', 'prepare_upload', done);
+  runSequence('clean', 'webpack', 'uglify', 'include-sourcemaps', 'clean-original-sourcemap', 'prepare_upload', done);
 });
 
 gulp.task('test', (done) => {
-  runSequence('test_client', 'test_release', done);
+  runSequence('test_client', 'test_release', 'lint', done);
 });
