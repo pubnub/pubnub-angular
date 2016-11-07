@@ -1,5 +1,5 @@
 /* global angular */
-
+/* eslint no-param-reassign: 0 */
 const config = require('../config.common.json');
 
 module.exports = class {

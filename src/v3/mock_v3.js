@@ -1,4 +1,5 @@
 /* global angular */
+/* eslint no-param-reassign: 0 */
 let Mock = require('../mock');
 
 module.exports = class extends Mock {
@@ -22,33 +23,27 @@ module.exports = class extends Mock {
 
     return function () {
       // Broadcast through the generic event name
-      $rootScope.$broadcast.bind.apply(
-            $rootScope.$broadcast,
-            [$rootScope, service.getEventNameFor(methodName, callbackName, instanceName)]
-              .concat(Array.prototype.slice.call(arguments))
-          )();
+      $rootScope.$broadcast.bind(...[$rootScope, service.getEventNameFor(methodName, callbackName, instanceName)]
+                                    .concat(Array.prototype.slice.call(arguments))
+                                )();
 
         // Call the original callback
       if (callbackName && angular.isFunction(originalCallback)) {
-        originalCallback.apply(null, arguments);
+        originalCallback(...arguments);
       }
 
         // Broadcast through the message event or presence event
       if (methodName === 'subscribe') {
         switch (callbackName) {
           case 'callback':
-            $rootScope.$broadcast.bind.apply(
-                  $rootScope.$broadcast,
-                  [$rootScope, service.getMessageEventNameFor(channelName, instanceName)]
-                    .concat(Array.prototype.slice.call(arguments))
-                )();
+            $rootScope.$broadcast.bind(...[$rootScope, service.getMessageEventNameFor(channelName, instanceName)]
+                                          .concat(Array.prototype.slice.call(arguments))
+                                      )();
             break;
           case 'presence':
-            $rootScope.$broadcast.bind.apply(
-                  $rootScope.$broadcast,
-                  [$rootScope, service.getPresenceEventNameFor(channelName, instanceName)]
-                    .concat(Array.prototype.slice.call(arguments))
-                )();
+            $rootScope.$broadcast.bind(...[$rootScope, service.getPresenceEventNameFor(channelName, instanceName)]
+                                          .concat(Array.prototype.slice.call(arguments))
+                                       )();
             break;
           default:
             break;

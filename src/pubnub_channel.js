@@ -306,12 +306,12 @@ angular.module('pubnub.angular.service').factory('$pubnubChannel', ['$rootScope'
       let proto = angular.isFunction(this) && angular.isObject(this.prototype) ?
           this.prototype : Object.getPrototypeOf(this);
       while (proto && proto !== objProto) {
-        for (let key in proto) {
-          if (proto.hasOwnProperty(key) && !methods.hasOwnProperty(key)) {
+        Object.keys(proto).forEach((key) => {
+          if ({}.hasOwnProperty.call(proto, key) && !{}.hasOwnProperty.call(methods, key)) {
             methods[key] = true;
             iterator.call(context, proto[key], key, proto);
           }
-        }
+        });
         proto = Object.getPrototypeOf(proto);
       }
     }

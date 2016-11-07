@@ -134,12 +134,11 @@ angular.module('pubnub.angular.service')
            */
           $destroy() {
             this._unsubscribeHandler();
-
-            for (let channel in this.$channels) {
-              if (this.$channels.hasOwnProperty(channel)) {
+            Object.keys(this.$channels).forEach((channel) => {
+              if ({}.hasOwnProperty.call(this.$channels, channel)) {
                 delete this.$channels[channel];
               }
-            }
+            });
           },
 
           /**

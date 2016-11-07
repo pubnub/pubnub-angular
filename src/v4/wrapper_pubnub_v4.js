@@ -1,4 +1,5 @@
 /* global angular PubNub */
+/* eslint no-param-reassign: 0 */
 
 let Wrapper = require('../wrapper.js');
 let MockV4 = require('./mock_v4.js');

@@ -227,8 +227,8 @@
 	   * @param {string} instanceName
 	   * @returns {string} event name
 	   */
-	  service.getEventNameFor = function (methodName, callbackName, instanceName) {
-	    if (!instanceName) instanceName = commonConfig.default_instance_name;
+	  service.getEventNameFor = function (methodName, callbackName) {
+	    var instanceName = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : commonConfig.default_instance_name;
 	
 	    return [commonConfig.pubnub_prefix, instanceName, methodName, callbackName].join(':');
 	  };
@@ -240,8 +240,8 @@
 	   * @param {string} instanceName
 	   * @returns {string} event name
 	   */
-	  service.getMessageEventNameFor = function (channelName, instanceName) {
-	    if (!instanceName) instanceName = commonConfig.default_instance_name;
+	  service.getMessageEventNameFor = function (channelName) {
+	    var instanceName = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : commonConfig.default_instance_name;
 	
 	    return [commonConfig.pubnub_prefix, instanceName, 'subscribe', 'callback', channelName].join(':');
 	  };
@@ -253,8 +253,8 @@
 	   * @param {string} instanceName
 	   * @returns {string} event name
 	   */
-	  service.getPresenceEventNameFor = function (channelName, instanceName) {
-	    if (!instanceName) instanceName = commonConfig.default_instance_name;
+	  service.getPresenceEventNameFor = function (channelName) {
+	    var instanceName = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : commonConfig.default_instance_name;
 	
 	    return [commonConfig.pubnub_prefix, instanceName, 'subscribe', 'presence', channelName].join(':');
 	  };
@@ -291,7 +291,7 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	/* global angular */
-	
+	/* eslint no-param-reassign: 0 */
 	var config = __webpack_require__(3);
 	
 	module.exports = function () {
@@ -440,6 +440,8 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -447,6 +449,7 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
 	/* global angular */
+	/* eslint no-param-reassign: 0 */
 	var Mock = __webpack_require__(7);
 	
 	module.exports = function (_Mock) {
@@ -480,22 +483,24 @@
 	      var channelName = methodArguments.channel || methodArguments.channel_group;
 	
 	      return function () {
+	        var _$rootScope$$broadcas, _$rootScope$$broadcas2, _$rootScope$$broadcas3;
+	
 	        // Broadcast through the generic event name
-	        $rootScope.$broadcast.bind.apply($rootScope.$broadcast, [$rootScope, service.getEventNameFor(methodName, callbackName, instanceName)].concat(Array.prototype.slice.call(arguments)))();
+	        (_$rootScope$$broadcas = $rootScope.$broadcast).bind.apply(_$rootScope$$broadcas, _toConsumableArray([$rootScope, service.getEventNameFor(methodName, callbackName, instanceName)].concat(Array.prototype.slice.call(arguments))))();
 	
 	        // Call the original callback
 	        if (callbackName && angular.isFunction(originalCallback)) {
-	          originalCallback.apply(null, arguments);
+	          originalCallback.apply(undefined, arguments);
 	        }
 	
 	        // Broadcast through the message event or presence event
 	        if (methodName === 'subscribe') {
 	          switch (callbackName) {
 	            case 'callback':
-	              $rootScope.$broadcast.bind.apply($rootScope.$broadcast, [$rootScope, service.getMessageEventNameFor(channelName, instanceName)].concat(Array.prototype.slice.call(arguments)))();
+	              (_$rootScope$$broadcas2 = $rootScope.$broadcast).bind.apply(_$rootScope$$broadcas2, _toConsumableArray([$rootScope, service.getMessageEventNameFor(channelName, instanceName)].concat(Array.prototype.slice.call(arguments))))();
 	              break;
 	            case 'presence':
-	              $rootScope.$broadcast.bind.apply($rootScope.$broadcast, [$rootScope, service.getPresenceEventNameFor(channelName, instanceName)].concat(Array.prototype.slice.call(arguments)))();
+	              (_$rootScope$$broadcas3 = $rootScope.$broadcast).bind.apply(_$rootScope$$broadcas3, _toConsumableArray([$rootScope, service.getPresenceEventNameFor(channelName, instanceName)].concat(Array.prototype.slice.call(arguments))))();
 	              break;
 	            default:
 	              break;
@@ -680,6 +685,7 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
 	/* global angular PubNub */
+	/* eslint no-param-reassign: 0 */
 	
 	var Wrapper = __webpack_require__(4);
 	var MockV4 = __webpack_require__(10);
@@ -747,6 +753,8 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -755,6 +763,7 @@
 	
 	/* global angular */
 	var Mock = __webpack_require__(7);
+	
 	module.exports = function (_Mock) {
 	  _inherits(_class, _Mock);
 	
@@ -784,12 +793,14 @@
 	      var service = this.service;
 	
 	      return function () {
+	        var _$rootScope$$broadcas;
+	
 	        // Broadcast through the generic event name
-	        $rootScope.$broadcast.bind.apply($rootScope.$broadcast, [$rootScope, service.getEventNameFor(methodName, callbackName, instanceName)].concat(Array.prototype.slice.call(arguments)))();
+	        (_$rootScope$$broadcas = $rootScope.$broadcast).bind.apply(_$rootScope$$broadcas, _toConsumableArray([$rootScope, service.getEventNameFor(methodName, callbackName, instanceName)].concat(Array.prototype.slice.call(arguments))))();
 	
 	        // Call the original callback
 	        if (callbackName && angular.isFunction(originalCallback)) {
-	          originalCallback.apply(null, arguments);
+	          originalCallback.apply(undefined, arguments);
 	        }
 	      };
 	    }
@@ -809,6 +820,8 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	/* global angular */
+	/* eslint prefer-spread: 0 */
+	
 	module.exports = function () {
 	  function _class(label, service, $rootScope, wrapper) {
 	    _classCallCheck(this, _class);
@@ -1290,12 +1303,12 @@
 	      var objProto = Object.getPrototypeOf({});
 	      var proto = angular.isFunction(this) && angular.isObject(this.prototype) ? this.prototype : Object.getPrototypeOf(this);
 	      while (proto && proto !== objProto) {
-	        for (var key in proto) {
-	          if (proto.hasOwnProperty(key) && !methods.hasOwnProperty(key)) {
+	        Object.keys(proto).forEach(function (key) {
+	          if ({}.hasOwnProperty.call(proto, key) && !{}.hasOwnProperty.call(methods, key)) {
 	            methods[key] = true;
 	            iterator.call(context, proto[key], key, proto);
 	          }
-	        }
+	        });
 	        proto = Object.getPrototypeOf(proto);
 	      }
 	    }
@@ -1473,13 +1486,14 @@
 	     * and and clears memory being used by this array
 	     */
 	    $destroy: function $destroy() {
-	      this._unsubscribeHandler();
+	      var _this = this;
 	
-	      for (var channel in this.$channels) {
-	        if (this.$channels.hasOwnProperty(channel)) {
-	          delete this.$channels[channel];
+	      this._unsubscribeHandler();
+	      Object.keys(this.$channels).forEach(function (channel) {
+	        if ({}.hasOwnProperty.call(_this.$channels, channel)) {
+	          delete _this.$channels[channel];
 	        }
-	      }
+	      });
 	    },
 	
 	

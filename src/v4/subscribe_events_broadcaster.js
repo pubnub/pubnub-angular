@@ -1,4 +1,6 @@
 /* global angular */
+/* eslint prefer-spread: 0 */
+
 module.exports = class {
 
   constructor(label, service, $rootScope, wrapper) {
