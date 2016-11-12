@@ -5,19 +5,10 @@ const fs = require('fs');
 const path = require('path');
 
 const packageJSON = require('../../package.json');
-const bowerJSON = require('../../bower.json');
 
 const readMe = fs.readFileSync(path.resolve(__dirname, '../../README.md'), 'UTF-8');
 
 describe('release should be consistent', () => {
-  it('with a matching bower and npm module', () => {
-    assert.equal(packageJSON.version, bowerJSON.version);
-  });
-
-  it('with bower valid entry point', () => {
-    assert.equal(bowerJSON.main, 'dist/pubnub-angular.min.js');
-  });
-
   it('with npm valid entry point', () => {
     assert.equal(packageJSON.main, 'dist/pubnub-angular.min.js');
   });
