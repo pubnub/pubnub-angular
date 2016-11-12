@@ -312,15 +312,28 @@
 	    this.label = label;
 	    this.mockingInstance = null;
 	    this.pubnubInstance = null;
-	
 	    // Register the methods in the wrapper and replace callbacks by mocked callbacks if needed
 	    wrapperConfig.methods_to_wrap.forEach(function (method) {
-	      _this.wrapMethod(method);
-	
-	      // Add the wrapped method to the service
-	      service[method] = function (args, callbackFunction) {
-	        return this.getInstance(config.default_instance_name)[method](args, callbackFunction);
-	      };
+	      if (angular.isObject(method)) {
+	        (function () {
+	          var methodGroup = Object.keys(method)[0];
+	          var methodList = method[methodGroup];
+	          _this[methodGroup] = {};
+	          service[methodGroup] = {};
+	          methodList.forEach(function (m) {
+	            _this.wrapMethod(m, methodGroup);
+	            service[methodGroup][m] = function (args, callbackFunction) {
+	              return service.getInstance(config.default_instance_name)[methodGroup][m](args, callbackFunction);
+	            };
+	          });
+	        })();
+	      } else {
+	        _this.wrapMethod(method);
+	        // Add the wrapped method to the service
+	        service[method] = function (args, callbackFunction) {
+	          return service.getInstance(config.default_instance_name)[method](args, callbackFunction);
+	        };
+	      }
 	    });
 	
 	    // Just delegate the methods to the wrapper
@@ -644,6 +657,7 @@
 			"here_now",
 			"history",
 			"publish",
+			"fire",
 			"here_now",
 			"where_now",
 			"state",
@@ -725,20 +739,33 @@
 	
 	  }, {
 	    key: 'wrapMethod',
-	    value: function wrapMethod(methodName) {
+	    value: function wrapMethod(methodName, methodGroup) {
 	      var _this2 = this;
 	
-	      this[methodName] = function (args, callbackFunction) {
-	        if (angular.isObject(args)) {
-	          var callbacks = _this2.mockingInstance.getCallbacksToMock(args, configPubNubV4.common_callbacks_to_wrap);
-	          // Mock the callback to trigger events
-	          if (callbacks.length > 0) {
-	            callbackFunction = _this2.mockingInstance.generateMockedVersionOfCallback(callbackFunction, 'callback', methodName, _this2.getLabel());
+	      if (methodGroup !== undefined) {
+	        this[methodGroup][methodName] = function (args, callbackFunction) {
+	          if (angular.isObject(args)) {
+	            var callbacks = _this2.mockingInstance.getCallbacksToMock(args, configPubNubV4.common_callbacks_to_wrap);
+	            // Mock the callback to trigger events
+	            if (callbacks.length > 0) {
+	              var eventName = methodGroup + '.' + methodName;
+	              callbackFunction = _this2.mockingInstance.generateMockedVersionOfCallback(callbackFunction, 'callback', eventName, _this2.getLabel());
+	            }
 	          }
-	        }
-	
-	        return _this2.getOriginalInstance()[methodName](args, callbackFunction);
-	      };
+	          return _this2.getOriginalInstance()[methodGroup][methodName](args, callbackFunction);
+	        };
+	      } else {
+	        this[methodName] = function (args, callbackFunction) {
+	          if (angular.isObject(args)) {
+	            var callbacks = _this2.mockingInstance.getCallbacksToMock(args, configPubNubV4.common_callbacks_to_wrap);
+	            // Mock the callback to trigger events
+	            if (callbacks.length > 0) {
+	              callbackFunction = _this2.mockingInstance.generateMockedVersionOfCallback(callbackFunction, 'callback', methodName, _this2.getLabel());
+	            }
+	          }
+	          return _this2.getOriginalInstance()[methodName](args, callbackFunction);
+	        };
+	      }
 	    }
 	  }]);
 	
@@ -947,20 +974,40 @@
 			"getUUID",
 			"setAuthKey",
 			"addListener",
+			"removeListener",
 			"unsubscribe",
+			"unsubscribeAll",
 			"time",
 			"stop",
-			"push",
-			"channelGroups"
+			"encrypt",
+			"decrypt"
 		],
 		"methods_to_wrap": [
 			"publish",
+			"fire",
 			"hereNow",
 			"whereNow",
 			"setState",
 			"getState",
 			"grant",
-			"history"
+			"history",
+			{
+				"push": [
+					"addChannels",
+					"deleteDevice",
+					"listChannels",
+					"removeChannels"
+				]
+			},
+			{
+				"channelGroups": [
+					"addChannels",
+					"deleteGroup",
+					"listChannels",
+					"listGroups",
+					"removeChannels"
+				]
+			}
 		],
 		"common_callbacks_to_wrap": [
 			"callback"
