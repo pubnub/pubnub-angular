@@ -1,8 +1,13 @@
 name: pubnub-angular
-version: 4.0.0
+version: 4.0.1
 schema: 1
 scm: github.com/pubnub/pubnub-angular
 changelog:
+  - version: v4.0.1
+    date: 2016-11-11
+    changes:
+      - type: fix
+        text: Add missing delegated methods (v3 : fire, v4: removeListener, push, unsubscribeAll, decrypt, encrypt, fire )
   - version: v4.0.0
     date: 2016-10-06
     changes:

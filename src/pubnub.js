@@ -65,9 +65,7 @@ angular.module('pubnub.angular.service', [])
      * @param {string} instanceName
      * @returns {string} event name
      */
-    service.getEventNameFor = function (methodName, callbackName, instanceName) {
-      if (!instanceName) instanceName = commonConfig.default_instance_name;
-
+    service.getEventNameFor = function (methodName, callbackName, instanceName = commonConfig.default_instance_name) {
       return [commonConfig.pubnub_prefix, instanceName, methodName, callbackName].join(':');
     };
 
@@ -78,9 +76,7 @@ angular.module('pubnub.angular.service', [])
      * @param {string} instanceName
      * @returns {string} event name
      */
-    service.getMessageEventNameFor = function (channelName, instanceName) {
-      if (!instanceName) instanceName = commonConfig.default_instance_name;
-
+    service.getMessageEventNameFor = function (channelName, instanceName = commonConfig.default_instance_name) {
       return [commonConfig.pubnub_prefix, instanceName, 'subscribe', 'callback', channelName].join(':');
     };
 
@@ -91,9 +87,7 @@ angular.module('pubnub.angular.service', [])
      * @param {string} instanceName
      * @returns {string} event name
      */
-    service.getPresenceEventNameFor = function (channelName, instanceName) {
-      if (!instanceName) instanceName = commonConfig.default_instance_name;
-
+    service.getPresenceEventNameFor = function (channelName, instanceName = commonConfig.default_instance_name) {
       return [commonConfig.pubnub_prefix, instanceName, 'subscribe', 'presence', channelName].join(':');
     };
 

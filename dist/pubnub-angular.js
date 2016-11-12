@@ -1,4 +1,4 @@
-/*! 4.0.0 */
+/*! 4.0.1 */
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -227,8 +227,8 @@
 	   * @param {string} instanceName
 	   * @returns {string} event name
 	   */
-	  service.getEventNameFor = function (methodName, callbackName, instanceName) {
-	    if (!instanceName) instanceName = commonConfig.default_instance_name;
+	  service.getEventNameFor = function (methodName, callbackName) {
+	    var instanceName = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : commonConfig.default_instance_name;
 	
 	    return [commonConfig.pubnub_prefix, instanceName, methodName, callbackName].join(':');
 	  };
@@ -240,8 +240,8 @@
 	   * @param {string} instanceName
 	   * @returns {string} event name
 	   */
-	  service.getMessageEventNameFor = function (channelName, instanceName) {
-	    if (!instanceName) instanceName = commonConfig.default_instance_name;
+	  service.getMessageEventNameFor = function (channelName) {
+	    var instanceName = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : commonConfig.default_instance_name;
 	
 	    return [commonConfig.pubnub_prefix, instanceName, 'subscribe', 'callback', channelName].join(':');
 	  };
@@ -253,8 +253,8 @@
 	   * @param {string} instanceName
 	   * @returns {string} event name
 	   */
-	  service.getPresenceEventNameFor = function (channelName, instanceName) {
-	    if (!instanceName) instanceName = commonConfig.default_instance_name;
+	  service.getPresenceEventNameFor = function (channelName) {
+	    var instanceName = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : commonConfig.default_instance_name;
 	
 	    return [commonConfig.pubnub_prefix, instanceName, 'subscribe', 'presence', channelName].join(':');
 	  };
@@ -291,7 +291,7 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	/* global angular */
-	
+	/* eslint no-param-reassign: 0 */
 	var config = __webpack_require__(3);
 	
 	module.exports = function () {
@@ -312,15 +312,28 @@
 	    this.label = label;
 	    this.mockingInstance = null;
 	    this.pubnubInstance = null;
-	
 	    // Register the methods in the wrapper and replace callbacks by mocked callbacks if needed
 	    wrapperConfig.methods_to_wrap.forEach(function (method) {
-	      _this.wrapMethod(method);
-	
-	      // Add the wrapped method to the service
-	      service[method] = function (args, callbackFunction) {
-	        return this.getInstance(config.default_instance_name)[method](args, callbackFunction);
-	      };
+	      if (angular.isObject(method)) {
+	        (function () {
+	          var methodGroup = Object.keys(method)[0];
+	          var methodList = method[methodGroup];
+	          _this[methodGroup] = {};
+	          service[methodGroup] = {};
+	          methodList.forEach(function (m) {
+	            _this.wrapMethod(m, methodGroup);
+	            service[methodGroup][m] = function (args, callbackFunction) {
+	              return service.getInstance(config.default_instance_name)[methodGroup][m](args, callbackFunction);
+	            };
+	          });
+	        })();
+	      } else {
+	        _this.wrapMethod(method);
+	        // Add the wrapped method to the service
+	        service[method] = function (args, callbackFunction) {
+	          return service.getInstance(config.default_instance_name)[method](args, callbackFunction);
+	        };
+	      }
 	    });
 	
 	    // Just delegate the methods to the wrapper
@@ -440,6 +453,8 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -447,7 +462,9 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
 	/* global angular */
+	/* eslint no-param-reassign: 0 */
 	var Mock = __webpack_require__(7);
+	
 	module.exports = function (_Mock) {
 	  _inherits(_class, _Mock);
 	
@@ -479,22 +496,24 @@
 	      var channelName = methodArguments.channel || methodArguments.channel_group;
 	
 	      return function () {
+	        var _$rootScope$$broadcas, _$rootScope$$broadcas2, _$rootScope$$broadcas3;
+	
 	        // Broadcast through the generic event name
-	        $rootScope.$broadcast.bind.apply($rootScope.$broadcast, [$rootScope, service.getEventNameFor(methodName, callbackName, instanceName)].concat(Array.prototype.slice.call(arguments)))();
+	        (_$rootScope$$broadcas = $rootScope.$broadcast).bind.apply(_$rootScope$$broadcas, _toConsumableArray([$rootScope, service.getEventNameFor(methodName, callbackName, instanceName)].concat(Array.prototype.slice.call(arguments))))();
 	
 	        // Call the original callback
 	        if (callbackName && angular.isFunction(originalCallback)) {
-	          originalCallback.apply(null, arguments);
+	          originalCallback.apply(undefined, arguments);
 	        }
 	
 	        // Broadcast through the message event or presence event
 	        if (methodName === 'subscribe') {
 	          switch (callbackName) {
 	            case 'callback':
-	              $rootScope.$broadcast.bind.apply($rootScope.$broadcast, [$rootScope, service.getMessageEventNameFor(channelName, instanceName)].concat(Array.prototype.slice.call(arguments)))();
+	              (_$rootScope$$broadcas2 = $rootScope.$broadcast).bind.apply(_$rootScope$$broadcas2, _toConsumableArray([$rootScope, service.getMessageEventNameFor(channelName, instanceName)].concat(Array.prototype.slice.call(arguments))))();
 	              break;
 	            case 'presence':
-	              $rootScope.$broadcast.bind.apply($rootScope.$broadcast, [$rootScope, service.getPresenceEventNameFor(channelName, instanceName)].concat(Array.prototype.slice.call(arguments)))();
+	              (_$rootScope$$broadcas3 = $rootScope.$broadcast).bind.apply(_$rootScope$$broadcas3, _toConsumableArray([$rootScope, service.getPresenceEventNameFor(channelName, instanceName)].concat(Array.prototype.slice.call(arguments))))();
 	              break;
 	            default:
 	              break;
@@ -526,7 +545,7 @@
 	      var i = void 0;
 	
 	      // Replace each callbacks allowed to be mocked.
-	      for (i = 0; i < l; i++) {
+	      for (i = 0; i < l; i += 1) {
 	        if (!angular.isObject(methodArguments)) {
 	          return;
 	        }
@@ -590,7 +609,7 @@
 	      } else if (angular.isObject(triggerEventsValue)) {
 	        length = triggerEventsValue.length;
 	
-	        for (i = 0; i < length; i++) {
+	        for (i = 0; i < length; i += 1) {
 	          value = triggerEventsValue[i];
 	          if (initialCallbackNames.indexOf(value) >= 0) result.push(value);
 	        }
@@ -638,6 +657,7 @@
 			"here_now",
 			"history",
 			"publish",
+			"fire",
 			"here_now",
 			"where_now",
 			"state",
@@ -679,6 +699,7 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
 	/* global angular PubNub */
+	/* eslint no-param-reassign: 0 */
 	
 	var Wrapper = __webpack_require__(4);
 	var MockV4 = __webpack_require__(10);
@@ -718,20 +739,33 @@
 	
 	  }, {
 	    key: 'wrapMethod',
-	    value: function wrapMethod(methodName) {
+	    value: function wrapMethod(methodName, methodGroup) {
 	      var _this2 = this;
 	
-	      this[methodName] = function (args, callbackFunction) {
-	        if (angular.isObject(args)) {
-	          var callbacks = _this2.mockingInstance.getCallbacksToMock(args, configPubNubV4.common_callbacks_to_wrap);
-	          // Mock the callback to trigger events
-	          if (callbacks.length > 0) {
-	            callbackFunction = _this2.mockingInstance.generateMockedVersionOfCallback(callbackFunction, 'callback', methodName, _this2.getLabel());
+	      if (methodGroup !== undefined) {
+	        this[methodGroup][methodName] = function (args, callbackFunction) {
+	          if (angular.isObject(args)) {
+	            var callbacks = _this2.mockingInstance.getCallbacksToMock(args, configPubNubV4.common_callbacks_to_wrap);
+	            // Mock the callback to trigger events
+	            if (callbacks.length > 0) {
+	              var eventName = methodGroup + '.' + methodName;
+	              callbackFunction = _this2.mockingInstance.generateMockedVersionOfCallback(callbackFunction, 'callback', eventName, _this2.getLabel());
+	            }
 	          }
-	        }
-	
-	        return _this2.getOriginalInstance()[methodName](args, callbackFunction);
-	      };
+	          return _this2.getOriginalInstance()[methodGroup][methodName](args, callbackFunction);
+	        };
+	      } else {
+	        this[methodName] = function (args, callbackFunction) {
+	          if (angular.isObject(args)) {
+	            var callbacks = _this2.mockingInstance.getCallbacksToMock(args, configPubNubV4.common_callbacks_to_wrap);
+	            // Mock the callback to trigger events
+	            if (callbacks.length > 0) {
+	              callbackFunction = _this2.mockingInstance.generateMockedVersionOfCallback(callbackFunction, 'callback', methodName, _this2.getLabel());
+	            }
+	          }
+	          return _this2.getOriginalInstance()[methodName](args, callbackFunction);
+	        };
+	      }
 	    }
 	  }]);
 	
@@ -746,6 +780,8 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -754,6 +790,7 @@
 	
 	/* global angular */
 	var Mock = __webpack_require__(7);
+	
 	module.exports = function (_Mock) {
 	  _inherits(_class, _Mock);
 	
@@ -783,12 +820,14 @@
 	      var service = this.service;
 	
 	      return function () {
+	        var _$rootScope$$broadcas;
+	
 	        // Broadcast through the generic event name
-	        $rootScope.$broadcast.bind.apply($rootScope.$broadcast, [$rootScope, service.getEventNameFor(methodName, callbackName, instanceName)].concat(Array.prototype.slice.call(arguments)))();
+	        (_$rootScope$$broadcas = $rootScope.$broadcast).bind.apply(_$rootScope$$broadcas, _toConsumableArray([$rootScope, service.getEventNameFor(methodName, callbackName, instanceName)].concat(Array.prototype.slice.call(arguments))))();
 	
 	        // Call the original callback
 	        if (callbackName && angular.isFunction(originalCallback)) {
-	          originalCallback.apply(null, arguments);
+	          originalCallback.apply(undefined, arguments);
 	        }
 	      };
 	    }
@@ -808,6 +847,8 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	/* global angular */
+	/* eslint prefer-spread: 0 */
+	
 	module.exports = function () {
 	  function _class(label, service, $rootScope, wrapper) {
 	    _classCallCheck(this, _class);
@@ -933,20 +974,40 @@
 			"getUUID",
 			"setAuthKey",
 			"addListener",
+			"removeListener",
 			"unsubscribe",
+			"unsubscribeAll",
 			"time",
 			"stop",
-			"push",
-			"channelGroups"
+			"encrypt",
+			"decrypt"
 		],
 		"methods_to_wrap": [
 			"publish",
+			"fire",
 			"hereNow",
 			"whereNow",
 			"setState",
 			"getState",
 			"grant",
-			"history"
+			"history",
+			{
+				"push": [
+					"addChannels",
+					"deleteDevice",
+					"listChannels",
+					"removeChannels"
+				]
+			},
+			{
+				"channelGroups": [
+					"addChannels",
+					"deleteGroup",
+					"listChannels",
+					"listGroups",
+					"removeChannels"
+				]
+			}
 		],
 		"common_callbacks_to_wrap": [
 			"callback"
@@ -984,13 +1045,13 @@
 	  * @returns {Array}
 	  * @constructor
 	  */
-	  function PubnubChannel(channel, config) {
+	  function PubnubChannel(channel) {
+	    var config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	
 	    // Instanciate the PubnubChannel and return it
 	    if (!(this instanceof PubnubChannel)) {
 	      return new PubnubChannel(channel, config);
 	    }
-	
-	    config = config || {};
 	
 	    if (!channel) {
 	      throw new Error('The channel name is required');
@@ -1041,16 +1102,20 @@
 	    if (this._autoload !== 0) {
 	      this.$load(this._autoload);
 	    }
+	
 	    var eventsToTrigger = null;
+	
 	    if (Pubnub.getPubNubVersion() === '3') {
 	      eventsToTrigger = ['callback', 'connect', 'reconnect', 'disconnect', 'error', 'idle'];
 	    } else {
 	      eventsToTrigger = ['status', 'message'];
 	    }
+	
 	    // Trigger the presence event?
 	    if (this._presence) {
 	      eventsToTrigger.push('presence');
 	    }
+	
 	    // Automatically subscribe to the channel
 	    if (this._autosubscribe) {
 	      // Automatically subscribe to the channel
@@ -1064,6 +1129,7 @@
 	          args.withPresence = true;
 	        }
 	      }
+	
 	      this._pubnubInstance.subscribe(args);
 	    }
 	
@@ -1077,7 +1143,6 @@
 	  }
 	
 	  PubnubChannel.prototype = {
-	
 	    /**
 	    *   Fetch and load the previous messages in the $messages array
 	    *   @param {Integer} numberOfMessages : number of messages we want to load.
@@ -1096,6 +1161,7 @@
 	        count: numberOfMessages,
 	        reverse: false
 	      };
+	
 	      var callback = null;
 	
 	      if (Pubnub.getPubNubVersion() === '3') {
@@ -1138,10 +1204,12 @@
 	          }
 	        };
 	      }
+	
 	      // If there is already messages in the array and consequently a first message timetoken
 	      if (self._timeTokenFirstMessage) {
 	        args.start = self._timeTokenFirstMessage;
 	      }
+	
 	      self._pubnubInstance.history(args, callback);
 	      return deferred.promise;
 	    },
@@ -1159,7 +1227,9 @@
 	        channel: self._channel,
 	        message: _message
 	      };
+	
 	      var callback = null;
+	
 	      if (Pubnub.getPubNubVersion() === '3') {
 	        options.callback = function (m) {
 	          deferred.resolve(m);
@@ -1176,6 +1246,7 @@
 	          }
 	        };
 	      }
+	
 	      self._pubnubInstance.publish(options, callback);
 	      return deferred.promise;
 	    },
@@ -1279,12 +1350,12 @@
 	      var objProto = Object.getPrototypeOf({});
 	      var proto = angular.isFunction(this) && angular.isObject(this.prototype) ? this.prototype : Object.getPrototypeOf(this);
 	      while (proto && proto !== objProto) {
-	        for (var key in proto) {
-	          if (proto.hasOwnProperty(key) && !methods.hasOwnProperty(key)) {
+	        Object.keys(proto).forEach(function (key) {
+	          if ({}.hasOwnProperty.call(proto, key) && !{}.hasOwnProperty.call(methods, key)) {
 	            methods[key] = true;
 	            iterator.call(context, proto[key], key, proto);
 	          }
-	        }
+	        });
 	        proto = Object.getPrototypeOf(proto);
 	      }
 	    }
@@ -1310,6 +1381,7 @@
 	      PubnubChannel.apply(this, arguments);
 	      return this.$messages;
 	    };
+	
 	    ExtendedPubnubChannel.prototype = Object.create(PubnubChannel.prototype);
 	    angular.extend(ExtendedPubnubChannel.prototype, methods);
 	
@@ -1461,13 +1533,14 @@
 	     * and and clears memory being used by this array
 	     */
 	    $destroy: function $destroy() {
-	      this._unsubscribeHandler();
+	      var _this = this;
 	
-	      for (var channel in this.$channels) {
-	        if (this.$channels.hasOwnProperty(channel)) {
-	          delete this.$channels[channel];
+	      this._unsubscribeHandler();
+	      Object.keys(this.$channels).forEach(function (channel) {
+	        if ({}.hasOwnProperty.call(_this.$channels, channel)) {
+	          delete _this.$channels[channel];
 	        }
-	      }
+	      });
 	    },
 	
 	

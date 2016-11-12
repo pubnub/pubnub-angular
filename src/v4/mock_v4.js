@@ -1,5 +1,6 @@
 /* global angular */
 let Mock = require('../mock.js');
+
 module.exports = class extends Mock {
 
   /**
@@ -19,15 +20,13 @@ module.exports = class extends Mock {
 
     return function () {
       // Broadcast through the generic event name
-      $rootScope.$broadcast.bind.apply(
-            $rootScope.$broadcast,
-            [$rootScope, service.getEventNameFor(methodName, callbackName, instanceName)]
-              .concat(Array.prototype.slice.call(arguments))
-          )();
+      $rootScope.$broadcast.bind(...[$rootScope, service.getEventNameFor(methodName, callbackName, instanceName)]
+                                    .concat(Array.prototype.slice.call(arguments))
+                                 )();
 
-        // Call the original callback
+      // Call the original callback
       if (callbackName && angular.isFunction(originalCallback)) {
-        originalCallback.apply(null, arguments);
+        originalCallback(...arguments);
       }
     };
   }

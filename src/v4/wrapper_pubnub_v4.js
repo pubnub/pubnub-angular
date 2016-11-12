@@ -1,4 +1,5 @@
 /* global angular PubNub */
+/* eslint no-param-reassign: 0 */
 
 let Wrapper = require('../wrapper.js');
 let MockV4 = require('./mock_v4.js');
@@ -28,18 +29,31 @@ module.exports = class extends Wrapper {
   /**
   * This method add to the Wrapper the original PubNub method overrided with event broadcast if needed.
   **/
-  wrapMethod(methodName) {
-    this[methodName] = (args, callbackFunction) => {
-      if (angular.isObject(args)) {
-        let callbacks = this.mockingInstance.getCallbacksToMock(args, configPubNubV4.common_callbacks_to_wrap);
-        // Mock the callback to trigger events
-        if (callbacks.length > 0) {
-          callbackFunction = this.mockingInstance.generateMockedVersionOfCallback(callbackFunction, 'callback', methodName, this.getLabel());
+  wrapMethod(methodName, methodGroup) {
+    if (methodGroup !== undefined) {
+      this[methodGroup][methodName] = (args, callbackFunction) => {
+        if (angular.isObject(args)) {
+          let callbacks = this.mockingInstance.getCallbacksToMock(args, configPubNubV4.common_callbacks_to_wrap);
+          // Mock the callback to trigger events
+          if (callbacks.length > 0) {
+            let eventName = `${methodGroup}.${methodName}`;
+            callbackFunction = this.mockingInstance.generateMockedVersionOfCallback(callbackFunction, 'callback', eventName, this.getLabel());
+          }
         }
-      }
-
-      return this.getOriginalInstance()[methodName](args, callbackFunction);
-    };
+        return this.getOriginalInstance()[methodGroup][methodName](args, callbackFunction);
+      };
+    } else {
+      this[methodName] = (args, callbackFunction) => {
+        if (angular.isObject(args)) {
+          let callbacks = this.mockingInstance.getCallbacksToMock(args, configPubNubV4.common_callbacks_to_wrap);
+          // Mock the callback to trigger events
+          if (callbacks.length > 0) {
+            callbackFunction = this.mockingInstance.generateMockedVersionOfCallback(callbackFunction, 'callback', methodName, this.getLabel());
+          }
+        }
+        return this.getOriginalInstance()[methodName](args, callbackFunction);
+      };
+    }
   }
 
 };

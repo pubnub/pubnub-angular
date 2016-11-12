@@ -1,4 +1,6 @@
 /* global angular */
+/* eslint prefer-spread: 0 */
+
 module.exports = class {
 
   constructor(label, service, $rootScope, wrapper) {
@@ -84,10 +86,10 @@ module.exports = class {
         // Adds the presence channels of the current channels
         if (args.withPresence) {
           if (args.channels && args.channels.length > 0) {
-            args.channels.forEach((channel) => (this.broadcastedPresenceChannels[channel] = true));
+            args.channels.forEach(channel => (this.broadcastedPresenceChannels[channel] = true));
           }
           if (args.channelGroups && args.channelGroups) {
-            args.channelGroups.forEach((channelGroup) => (this.broadcastedPresenceChannels[channelGroup] = true));
+            args.channelGroups.forEach(channelGroup => (this.broadcastedPresenceChannels[channelGroup] = true));
           }
         // Add the presence channels that have been subscribed directely
         } else {
