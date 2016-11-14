@@ -1,8 +1,13 @@
 name: pubnub-angular
-version: 4.0.1
+version: 4.0.2
 schema: 1
 scm: github.com/pubnub/pubnub-angular
 changelog:
+    - version: v4.0.2
+      date: 2016-11-14
+      changes:
+        - type: fix
+          text: Add delegated method setFilterExpression for v4 wrapper 
   - version: v4.0.1
     date: 2016-11-11
     changes:

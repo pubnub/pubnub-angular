@@ -980,7 +980,8 @@
 			"time",
 			"stop",
 			"encrypt",
-			"decrypt"
+			"decrypt",
+			"setFilterExpression"
 		],
 		"methods_to_wrap": [
 			"publish",

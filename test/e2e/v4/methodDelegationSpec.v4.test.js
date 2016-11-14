@@ -106,4 +106,12 @@ describe("methodDelegation", function () {
             });
         });
     });
+    describe("setFilterExpression", function () {
+        it("should be delegated", function () {
+          inject(function () {      
+                  Pubnub.init(config.demo);
+                  expect(Pubnub.setFilterExpression).to.be.a('function');          
+          })
+        });
+    });
 });
