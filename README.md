@@ -311,7 +311,6 @@ Pubnub.subscribe({
     channel_group: $scope.selectedChannelGroup,
     triggerEvents: ['callback', 'presence', 'connect', 'reconnect', 'disconnect', 'error']
   });
-};
 ```
 *You can also enable all possible events using* ```triggerEvents: true```
 
