@@ -1,8 +1,13 @@
 name: pubnub-angular
-version: 4.0.2
+version: 4.0.3
 schema: 1
 scm: github.com/pubnub/pubnub-angular
 changelog:
+  - version: v4.0.3
+    date: 2017-09-21
+    changes:
+      - type: feature
+        text: Add delegated method setHeartbeatInterval for v4 wrapper
   - version: v4.0.2
     date: 2016-11-14
     changes:

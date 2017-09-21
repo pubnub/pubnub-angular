@@ -1,4 +1,4 @@
-/*! 4.0.2 */
+/*! 4.0.3 */
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -43,7 +43,7 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
@@ -52,9 +52,9 @@
 	__webpack_require__(13);
 	__webpack_require__(14);
 
-/***/ },
+/***/ }),
 /* 1 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 	
@@ -155,9 +155,9 @@
 	  };
 	}
 
-/***/ },
+/***/ }),
 /* 2 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
@@ -271,18 +271,15 @@
 	  return service;
 	}]);
 
-/***/ },
+/***/ }),
 /* 3 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
-	module.exports = {
-		"pubnub_prefix": "pubnub",
-		"default_instance_name": "default"
-	};
+	module.exports = {"pubnub_prefix":"pubnub","default_instance_name":"default"}
 
-/***/ },
+/***/ }),
 /* 4 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
@@ -315,18 +312,16 @@
 	    // Register the methods in the wrapper and replace callbacks by mocked callbacks if needed
 	    wrapperConfig.methods_to_wrap.forEach(function (method) {
 	      if (angular.isObject(method)) {
-	        (function () {
-	          var methodGroup = Object.keys(method)[0];
-	          var methodList = method[methodGroup];
-	          _this[methodGroup] = {};
-	          service[methodGroup] = {};
-	          methodList.forEach(function (m) {
-	            _this.wrapMethod(m, methodGroup);
-	            service[methodGroup][m] = function (args, callbackFunction) {
-	              return service.getInstance(config.default_instance_name)[methodGroup][m](args, callbackFunction);
-	            };
-	          });
-	        })();
+	        var methodGroup = Object.keys(method)[0];
+	        var methodList = method[methodGroup];
+	        _this[methodGroup] = {};
+	        service[methodGroup] = {};
+	        methodList.forEach(function (m) {
+	          _this.wrapMethod(m, methodGroup);
+	          service[methodGroup][m] = function (args, callbackFunction) {
+	            return service.getInstance(config.default_instance_name)[methodGroup][m](args, callbackFunction);
+	          };
+	        });
 	      } else {
 	        _this.wrapMethod(method);
 	        // Add the wrapped method to the service
@@ -377,9 +372,9 @@
 	  return _class;
 	}();
 
-/***/ },
+/***/ }),
 /* 5 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
@@ -445,9 +440,9 @@
 	  return _class;
 	}(Wrapper);
 
-/***/ },
+/***/ }),
 /* 6 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
@@ -562,9 +557,9 @@
 	  return _class;
 	}(Mock);
 
-/***/ },
+/***/ }),
 /* 7 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 	
@@ -624,69 +619,15 @@
 	  return _class;
 	}();
 
-/***/ },
+/***/ }),
 /* 8 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
-	module.exports = {
-		"methods_to_delegate": [
-			"replay",
-			"unsubscribe",
-			"revoke",
-			"audit",
-			"time",
-			"channel_group",
-			"channel_group_list_groups",
-			"channel_group_list_namespaces",
-			"channel_group_remove_namespace",
-			"channel_group_cloak",
-			"get_subscribed_channels",
-			"set_uuid",
-			"get_uuid",
-			"auth",
-			"set_cipher_key",
-			"get_cipher_key",
-			"raw_encrypt",
-			"raw_decrypt",
-			"set_heartbeat",
-			"get_heartbeat",
-			"set_heartbeat_interval",
-			"get_heartbeat_interval"
-		],
-		"methods_to_wrap": [
-			"here_now",
-			"history",
-			"publish",
-			"fire",
-			"here_now",
-			"where_now",
-			"state",
-			"grant",
-			"revoke",
-			"channel_group_add_channel",
-			"channel_group_list_channels",
-			"channel_group_remove_channel",
-			"channel_group_remove_group",
-			"mobile_gw_provision"
-		],
-		"subscribe_callbacks_to_wrap": [
-			"callback",
-			"connect",
-			"reconnect",
-			"disconnect",
-			"error",
-			"idle",
-			"presence"
-		],
-		"common_callbacks_to_wrap": [
-			"callback",
-			"error"
-		]
-	};
+	module.exports = {"methods_to_delegate":["replay","unsubscribe","revoke","audit","time","channel_group","channel_group_list_groups","channel_group_list_namespaces","channel_group_remove_namespace","channel_group_cloak","get_subscribed_channels","set_uuid","get_uuid","auth","set_cipher_key","get_cipher_key","raw_encrypt","raw_decrypt","set_heartbeat","get_heartbeat","set_heartbeat_interval","get_heartbeat_interval"],"methods_to_wrap":["here_now","history","publish","fire","here_now","where_now","state","grant","revoke","channel_group_add_channel","channel_group_list_channels","channel_group_remove_channel","channel_group_remove_group","mobile_gw_provision"],"subscribe_callbacks_to_wrap":["callback","connect","reconnect","disconnect","error","idle","presence"],"common_callbacks_to_wrap":["callback","error"]}
 
-/***/ },
+/***/ }),
 /* 9 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
@@ -772,9 +713,9 @@
 	  return _class;
 	}(Wrapper);
 
-/***/ },
+/***/ }),
 /* 10 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
@@ -836,9 +777,9 @@
 	  return _class;
 	}(Mock);
 
-/***/ },
+/***/ }),
 /* 11 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 	
@@ -964,65 +905,15 @@
 	  return _class;
 	}();
 
-/***/ },
+/***/ }),
 /* 12 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
-	module.exports = {
-		"methods_to_delegate": [
-			"setUUID",
-			"getUUID",
-			"setAuthKey",
-			"addListener",
-			"removeListener",
-			"unsubscribe",
-			"unsubscribeAll",
-			"time",
-			"stop",
-			"encrypt",
-			"decrypt",
-			"setFilterExpression"
-		],
-		"methods_to_wrap": [
-			"publish",
-			"fire",
-			"hereNow",
-			"whereNow",
-			"setState",
-			"getState",
-			"grant",
-			"history",
-			{
-				"push": [
-					"addChannels",
-					"deleteDevice",
-					"listChannels",
-					"removeChannels"
-				]
-			},
-			{
-				"channelGroups": [
-					"addChannels",
-					"deleteGroup",
-					"listChannels",
-					"listGroups",
-					"removeChannels"
-				]
-			}
-		],
-		"common_callbacks_to_wrap": [
-			"callback"
-		],
-		"subscribe_listener_events_to_broadcast": [
-			"message",
-			"presence",
-			"status"
-		]
-	};
+	module.exports = {"methods_to_delegate":["setUUID","getUUID","setAuthKey","addListener","removeListener","unsubscribe","unsubscribeAll","time","stop","encrypt","decrypt","setFilterExpression","setHeartbeatInterval"],"methods_to_wrap":["publish","fire","hereNow","whereNow","setState","getState","grant","history",{"push":["addChannels","deleteDevice","listChannels","removeChannels"]},{"channelGroups":["addChannels","deleteGroup","listChannels","listGroups","removeChannels"]}],"common_callbacks_to_wrap":["callback"],"subscribe_listener_events_to_broadcast":["message","presence","status"]}
 
-/***/ },
+/***/ }),
 /* 13 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
@@ -1392,9 +1283,9 @@
 	  return PubnubChannel;
 	}]);
 
-/***/ },
+/***/ }),
 /* 14 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
@@ -1564,6 +1455,6 @@
 	  return PubnubChannelGroup;
 	}]);
 
-/***/ }
+/***/ })
 /******/ ]);
 //# sourceMappingURL=pubnub-angular.js.map

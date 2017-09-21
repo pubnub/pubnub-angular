@@ -11,7 +11,8 @@
 		"stop",
     "encrypt",
     "decrypt",
-    "setFilterExpression"
+    "setFilterExpression",
+		"setHeartbeatInterval"
 	],
 	"methods_to_wrap": [
 		"publish",
@@ -28,7 +29,7 @@
 				"listChannels",
 				"removeChannels"
 			]
-		}, { 
+		}, {
 			"channelGroups": [
 				"addChannels",
 				"deleteGroup",
