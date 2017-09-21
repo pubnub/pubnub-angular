@@ -1,4 +1,15 @@
 
+## [v4.0.3](https://github.com/pubnub/pubnub-angular/tree/v4.0.3)
+  September-21-2017
+
+
+  [Full Changelog](https://github.com/pubnub/pubnub-angular/compare/v4.0.2...v4.0.3)
+
+- 🌟Add delegated method setHeartbeatInterval for v4 wrapper
+
+
+
+
 ## [v4.0.2](https://github.com/pubnub/pubnub-angular/tree/v4.0.2)
   November-14-2016
 
@@ -38,7 +49,6 @@
 
 
 - ⭐When subscribing directly to a -pnpres channel, the AngularJS events were broadcasted on the channel itself and not on the -pnpres channel as it should have been.
-
 
 
 
