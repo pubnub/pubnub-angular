@@ -119,8 +119,11 @@ module.exports = class {
         }
       }
     });
+
     if (this.subscribeListener === null) {
       this.initializeSubscribeListener();
     }
+
+    return true;
   }
 };
