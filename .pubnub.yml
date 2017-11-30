@@ -1,8 +1,15 @@
 name: pubnub-angular
-version: 4.0.3
+version: 4.1.0
 schema: 1
 scm: github.com/pubnub/pubnub-angular
 changelog:
+  - version: v4.1.0
+    date: 2017-10-30
+    changes:
+      - type: feature
+        text: Add deleteMessages and fetchMessages for v4 wrapper
+      - type: fix
+        text: Active events broadcaster only with the param triggerEvent
   - version: v4.0.3
     date: 2017-09-21
     changes:

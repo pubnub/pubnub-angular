@@ -1,4 +1,16 @@
 
+## [v4.1.0](https://github.com/pubnub/pubnub-angular/tree/v4.1.0)
+  November-30-2017
+
+
+  [Full Changelog](https://github.com/pubnub/pubnub-angular/compare/v4.0.3...v4.1.0)
+
+- 🌟Add deleteMessages and fetchMessages for v4 wrapper
+- 🐛Active events broadcaster only with the param triggerEvent
+
+
+
+
 ## [v4.0.3](https://github.com/pubnub/pubnub-angular/tree/v4.0.3)
   September-21-2017
 
