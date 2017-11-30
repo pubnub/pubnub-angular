@@ -60,11 +60,20 @@ module.exports = class {
   }
 
   enableEventsBroadcast(eventsToBroadcast, args) {
+    let triggers = [];
+    if (!args.triggerEvents) {
+      return false;
+    } else if (args.triggerEvents === true) {
+      triggers = ['status', 'message', 'presence'];
+    } else {
+      triggers = args.triggerEvents;
+    }
+
     eventsToBroadcast.forEach((eventToBroadcast) => {
-      if (eventToBroadcast === 'status') {
+      if (eventToBroadcast === 'status' && triggers.includes('status')) {
         this.broadcastStatus = true;
       }
-      if (eventToBroadcast === 'message') {
+      if (eventToBroadcast === 'message' && triggers.includes('message')) {
         // Adds any message channel which are not presence channels
         if (args.channels && args.channels.length > 0) {
           args.channels.forEach((channel) => {
@@ -82,7 +91,7 @@ module.exports = class {
           });
         }
       }
-      if (eventToBroadcast === 'presence') {
+      if (eventToBroadcast === 'presence' && triggers.includes('presence')) {
         // Adds the presence channels of the current channels
         if (args.withPresence) {
           if (args.channels && args.channels.length > 0) {
@@ -110,8 +119,11 @@ module.exports = class {
         }
       }
     });
+
     if (this.subscribeListener === null) {
       this.initializeSubscribeListener();
     }
+
+    return true;
   }
 };
