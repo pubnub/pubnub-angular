@@ -8,10 +8,11 @@ install:
   - npm install -g bower
   - npm install --info
   - bower install
-
 script:
   - gulp test
-
+  - npm install -g bower
 after_success:
   - npm install codecov
   - npm run codecov
+addons:
+  srcclr: true
