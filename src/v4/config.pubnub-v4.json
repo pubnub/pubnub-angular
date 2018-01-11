@@ -4,18 +4,21 @@
 		"getUUID",
 		"setAuthKey",
 		"addListener",
-    "removeListener",
+    	"removeListener",
 		"unsubscribe",
-    "unsubscribeAll",
+    	"unsubscribeAll",
 		"time",
 		"stop",
-    "encrypt",
-    "decrypt",
-    "setFilterExpression"
+    	"encrypt",
+    	"decrypt",
+    	"setFilterExpression",
+		"setHeartbeatInterval"
 	],
 	"methods_to_wrap": [
 		"publish",
-    "fire",
+    	"fire",
+		"deleteMessages",
+		"fetchMessages",
 		"hereNow",
 		"whereNow",
 		"setState",
@@ -28,7 +31,7 @@
 				"listChannels",
 				"removeChannels"
 			]
-		}, { 
+		}, {
 			"channelGroups": [
 				"addChannels",
 				"deleteGroup",

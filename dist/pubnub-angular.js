@@ -1,4 +1,4 @@
-/*! 4.0.2 */
+/*! 4.1.0 */
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -901,11 +901,20 @@
 	    value: function enableEventsBroadcast(eventsToBroadcast, args) {
 	      var _this = this;
 	
+	      var triggers = [];
+	      if (!args.triggerEvents) {
+	        return false;
+	      } else if (args.triggerEvents === true) {
+	        triggers = ['status', 'message', 'presence'];
+	      } else {
+	        triggers = args.triggerEvents;
+	      }
+	
 	      eventsToBroadcast.forEach(function (eventToBroadcast) {
-	        if (eventToBroadcast === 'status') {
+	        if (eventToBroadcast === 'status' && triggers.includes('status')) {
 	          _this.broadcastStatus = true;
 	        }
-	        if (eventToBroadcast === 'message') {
+	        if (eventToBroadcast === 'message' && triggers.includes('message')) {
 	          // Adds any message channel which are not presence channels
 	          if (args.channels && args.channels.length > 0) {
 	            args.channels.forEach(function (channel) {
@@ -923,7 +932,7 @@
 	            });
 	          }
 	        }
-	        if (eventToBroadcast === 'presence') {
+	        if (eventToBroadcast === 'presence' && triggers.includes('presence')) {
 	          // Adds the presence channels of the current channels
 	          if (args.withPresence) {
 	            if (args.channels && args.channels.length > 0) {
@@ -955,9 +964,12 @@
 	          }
 	        }
 	      });
+	
 	      if (this.subscribeListener === null) {
 	        this.initializeSubscribeListener();
 	      }
+	
+	      return true;
 	    }
 	  }]);
 	
@@ -981,11 +993,14 @@
 			"stop",
 			"encrypt",
 			"decrypt",
-			"setFilterExpression"
+			"setFilterExpression",
+			"setHeartbeatInterval"
 		],
 		"methods_to_wrap": [
 			"publish",
 			"fire",
+			"deleteMessages",
+			"fetchMessages",
 			"hereNow",
 			"whereNow",
 			"setState",
