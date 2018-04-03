@@ -1,3 +1,13 @@
+## [v4.2.0](https://github.com/pubnub/pubnub-angular/tree/v4.2.0)
+  April-02-2018
+
+
+  [Full Changelog](https://github.com/pubnub/pubnub-angular/compare/v4.1.0...v4.1.2)
+
+- 🌟Add reconnect for v4 wrapper
+
+
+
 
 ## [v4.1.0](https://github.com/pubnub/pubnub-angular/tree/v4.1.0)
   November-30-2017
