@@ -336,9 +336,22 @@
 	      _this[method] = function (args) {
 	        return _this.getOriginalInstance()[method](args);
 	      };
+	      _this[method] = function (arg1, arg2) {
+	        return _this.getOriginalInstance()[method](arg1, arg2);
+	      };
+	      _this[method] = function (arg1, arg2, arg3) {
+	        return _this.getOriginalInstance()[method](arg1, arg2, arg3);
+	      };
+	
 	      // Add the delegated method to the service
 	      service[method] = function (args) {
-	        return this.getInstance(config.default_instance_name)[method](args);
+	        return service.getInstance(config.default_instance_name)[method](args);
+	      };
+	      service[method] = function (arg1, arg2) {
+	        return service.getInstance(config.default_instance_name)[method](arg1, arg2);
+	      };
+	      service[method] = function (arg1, arg2, arg3) {
+	        return service.getInstance(config.default_instance_name)[method](arg1, arg2, arg3);
 	      };
 	    });
 	  }
@@ -1269,7 +1282,7 @@
 	  * This method allows a PubnubChannel to be inherited
 	  * The methods passed into this function will be added onto the array's prototype.
 	  /* They can override existing methods as well.
-	   * @param {Object} methods a list of functions to add onto the prototype
+	    * @param {Object} methods a list of functions to add onto the prototype
 	  * @returns {Function} the extended pubnubChannel object
 	  * @static
 	  */
