@@ -341,9 +341,9 @@
 	
 	      // Add the delegated method to the service
 	      service[method] = function () {
-	        var _service$getInstance;
+	        var _getInstance;
 	
-	        return (_service$getInstance = service.getInstance(config.default_instance_name))[method].apply(_service$getInstance, arguments);
+	        return (_getInstance = this.getInstance(config.default_instance_name))[method].apply(_getInstance, arguments);
 	      };
 	    });
 	  }

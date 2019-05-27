@@ -44,7 +44,7 @@ module.exports = class {
 
       // Add the delegated method to the service
       service[method] = function (...args) {
-        return service.getInstance(config.default_instance_name)[method](...args);
+        return this.getInstance(config.default_instance_name)[method](...args);
       };
     });
   }
