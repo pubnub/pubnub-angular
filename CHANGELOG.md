@@ -3,8 +3,8 @@
 
   [Full Changelog](https://github.com/pubnub/pubnub-angular/compare/v4.1.0...v4.1.2)
 
--  🌟Add reconnect for v4 wrapper
--  🌟Fix for encrypt method with customCipherKey
+  -🌟Add reconnect for v4 wrapper
+  -🌟Fix for encrypt method with customCipherKey
 
 
 
