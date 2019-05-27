@@ -40,11 +40,11 @@ module.exports = class {
 
     // Just delegate the methods to the wrapper
     wrapperConfig.methods_to_delegate.forEach((method) => {
-      this[method] = (...args) => this.getOriginalInstance()[method](args);
+      this[method] = (...args) => this.getOriginalInstance()[method](...args);
 
       // Add the delegated method to the service
       service[method] = function (...args) {
-        return service.getInstance(config.default_instance_name)[method](args);
+        return service.getInstance(config.default_instance_name)[method](...args);
       };
     });
   }

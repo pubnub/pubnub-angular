@@ -334,20 +334,16 @@
 	    // Just delegate the methods to the wrapper
 	    wrapperConfig.methods_to_delegate.forEach(function (method) {
 	      _this[method] = function () {
-	        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-	          args[_key] = arguments[_key];
-	        }
+	        var _getOriginalInstance;
 	
-	        return _this.getOriginalInstance()[method](args);
+	        return (_getOriginalInstance = _this.getOriginalInstance())[method].apply(_getOriginalInstance, arguments);
 	      };
 	
 	      // Add the delegated method to the service
 	      service[method] = function () {
-	        for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-	          args[_key2] = arguments[_key2];
-	        }
+	        var _service$getInstance;
 	
-	        return service.getInstance(config.default_instance_name)[method](args);
+	        return (_service$getInstance = service.getInstance(config.default_instance_name))[method].apply(_service$getInstance, arguments);
 	      };
 	    });
 	  }
