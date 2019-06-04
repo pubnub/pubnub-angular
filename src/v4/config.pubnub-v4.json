@@ -10,6 +10,7 @@
 		"time",
 		"stop",
     	"encrypt",
+		"reconnect",
     	"decrypt",
     	"setFilterExpression",
 		"setHeartbeatInterval"

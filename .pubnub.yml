@@ -1,8 +1,15 @@
 name: pubnub-angular
-version: 4.1.0
+version: 4.2.0
 schema: 1
 scm: github.com/pubnub/pubnub-angular
 changelog:
+  - version: v4.2.0
+    date: 2019-05-24
+    changes:
+      - type: feature
+        text: Add reconnect for v4 wrapper
+      - type: fix
+        text: Fix for encrypt method with customCipherKey
   - version: v4.1.0
     date: 2017-10-30
     changes:
