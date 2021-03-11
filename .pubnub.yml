@@ -8,14 +8,14 @@ changelog:
     changes:
       - type: feature
         text: Add reconnect for v4 wrapper
-      - type: fix
+      - type: bug
         text: Fix for encrypt method with customCipherKey
   - version: v4.1.0
     date: 2017-10-30
     changes:
       - type: feature
         text: Add deleteMessages and fetchMessages for v4 wrapper
-      - type: fix
+      - type: bug
         text: Active events broadcaster only with the param triggerEvent
   - version: v4.0.3
     date: 2017-09-21
@@ -25,12 +25,12 @@ changelog:
   - version: v4.0.2
     date: 2016-11-14
     changes:
-      - type: fix
+      - type: bug
         text: Add delegated method setFilterExpression for v4 wrapper
   - version: v4.0.1
     date: 2016-11-11
     changes:
-      - type: fix
+      - type: bug
         text: Add missing delegated methods (v3 -> fire, v4 -> removeListener, push, unsubscribeAll, decrypt, encrypt, fire )
   - version: v4.0.0
     date: 2016-10-06
