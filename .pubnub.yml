@@ -77,11 +77,11 @@ sdks:
   -
     full-name: PubNub AngularJS SDK
     short-name: pubnub-angular
+    tier: 2
     artifacts:
       -
         artifact-type: api-client
         language: Javascript
-        tier: 2
         tags:
           - Web
         source-repository: https://github.com/pubnub/pubnub-angular
@@ -853,7 +853,6 @@ sdks:
       -
         artifact-type: library
         language: Javascript
-        tier: 2
         tags:
           - Web
         source-repository: https://github.com/pubnub/pubnub-angular
@@ -1625,7 +1624,6 @@ sdks:
       -
         artifact-type: package
         language: Javascript
-        tier: 2
         tags:
           - Web
         source-repository: https://github.com/pubnub/pubnub-angular
