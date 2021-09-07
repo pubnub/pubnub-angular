@@ -78,6 +78,7 @@ sdks:
     full-name: PubNub AngularJS SDK
     short-name: pubnub-angular
     tier: 2
+    parent: Javascript    
     artifacts:
       -
         artifact-type: api-client
