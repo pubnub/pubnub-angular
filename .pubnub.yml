@@ -863,7 +863,7 @@ sdks:
             distribution-type: library
             distribution-repository: CDN
             package-name: pubnub-angular.js
-            location: http(s)://cdn.pubnub.com/sdk/pubnub-angular/pubnub-angular-4.2.0.js
+            location: https://cdn.pubnub.com/sdk/pubnub-angular/pubnub-angular-4.2.0.js
             requires:
               -
                 name: "pubnub"
